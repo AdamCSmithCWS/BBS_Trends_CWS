@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+raw_data/
+data/
+output/
+trends/
+website/
+coverage/
+raw_data/
+
