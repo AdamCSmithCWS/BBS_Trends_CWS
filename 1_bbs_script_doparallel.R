@@ -115,7 +115,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
    strat <- "bbs_cws"
 
    s <- stratify(by = strat,
-                 release = 2024,
+                 release = 2025,
               species = sp,
               quiet = TRUE) %>%
   prepare_data(min_max_route_years = 2,
@@ -127,7 +127,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
        filter(strata_name != "CA-NU-3")
      s <- stratify(by = strat,
                    strata_custom = strat_alt,
-                   release = 2024,
+                   release = 2025,
                    species = sp,
                    quiet = TRUE) %>%
        prepare_data(min_max_route_years = 2,

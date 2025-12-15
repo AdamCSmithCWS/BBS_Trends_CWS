@@ -5,7 +5,7 @@
 library(bbsBayes2)
 library(tidyverse)
 
-all <- load_bbs_data()
+all <- load_bbs_data(release = 2025)
 species_list <- all$species %>%
   filter(unid_combined == TRUE,
          !grepl("unid",english),
