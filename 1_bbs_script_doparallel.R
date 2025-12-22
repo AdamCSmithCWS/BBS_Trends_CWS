@@ -7,15 +7,15 @@ library(foreach)
 library(doParallel)
 library(cmdstanr)
 
-setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
+#setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
 
 # set output_dir to the directory where the saved modeling output rds files will be stored
 # necessary on most of my machines and VMs because these output files are very large
 # ( > 5GB/species for broad-ranging species)
-output_dir <- "F:/CWS_2023_BBS_Analyses/output"
-#output_dir <- "output"
+#output_dir <- "F:/CWS_2023_BBS_Analyses/output"
+output_dir <- "output"
 
-write_over <- TRUE # set to TRUE if overwriting previously run models
+write_over <- FALSE # set to TRUE if overwriting previously run models
 re_fit <- FALSE# set to TRUE if re-running poorly converged models
 
 if(re_fit){
@@ -63,7 +63,10 @@ if(re_fit){
 #
 # i <- which(sp_list$aou == 6882)
 #
-
+# Northern Strata that are not worth including
+strats_3 <- c("CA-MB-3S", "CA-NL-3C", "CA-NT-3N", "CA-NT-3S",
+              "CA-NU-3C", "CA-NU-3N", "CA-NU-3S",
+              "CA-QC-3C", "CA-QC-3N", "CA-QC-3S", "CA-YT-3S", "US-AK-3N", "US-AK-3S")
 
 # build cluster -----------------------------------------------------------
 
@@ -123,10 +126,8 @@ test <- foreach(i = rev(1:nrow(sp_list)),
                quiet = TRUE,
                min_year = fy)
 
-   if(any(grepl("3S", s$meta_strata$strata_name))){
-     strats_3 <- c("CA-MB-3S", "CA-NL-3C", "CA-NT-3N", "CA-NT-3S",
-                   "CA-NU-3C", "CA-NU-3N", "CA-NU-3S",
- "CA-QC-3C", "CA-QC-3N", "CA-QC-3S", "CA-YT-3S", "US-AK-3N", "US-AK-3S")
+   if(any(s$meta_strata$strata_name %in% strats_3)){
+
      strat_alt <- load_map(strat) %>%
        filter(!strata_name %in% strats_3)
 
@@ -135,7 +136,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
                    release = 2025,
                    species = sp,
                    quiet = TRUE,
-                   distance_to_strata = 4000) %>%
+                   distance_to_strata = 4000)  %>%
        prepare_data(min_max_route_years = 2,
                     quiet = TRUE,
                     min_year = fy)
