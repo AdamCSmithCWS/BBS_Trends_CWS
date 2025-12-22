@@ -26,9 +26,9 @@ if(re_fit){
 
 miss <- FALSE
 csv_recover <- FALSE
-machine = NULL
+#machine = NULL
 #machine = 1
-
+machine = c(7:10)
 
 
 
@@ -67,8 +67,8 @@ if(re_fit){
 
 # build cluster -----------------------------------------------------------
 
-n_cores = 5
-#n_cores <- floor(parallel::detectCores()/4)-1
+#n_cores = 5
+n_cores <- floor(parallel::detectCores()/4)
 
 cluster <- makeCluster(n_cores, type = "PSOCK")
 registerDoParallel(cluster)
@@ -82,7 +82,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
   {
 
    # for(i in 1:4){
-    for(i in rev(1:nrow(sp_list))){  # tmp_clr){ #
+    #for(i in rev(1:nrow(sp_list))){  # tmp_clr){ #
     sp <- as.character(sp_list[i,"english"])
     aou <- as.integer(sp_list[i,"aou"])
 
@@ -112,24 +112,30 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
 
 
-   strat <- "bbs_cws"
+   strat <- "bbs"
 
    s <- stratify(by = strat,
                  release = 2025,
               species = sp,
-              quiet = TRUE) %>%
+              quiet = TRUE,
+              distance_to_strata = 4000) %>%
   prepare_data(min_max_route_years = 2,
                quiet = TRUE,
                min_year = fy)
 
-   if("CA-NU-3" %in% s$meta_strata$strata_name){
+   if(any(grepl("3S", s$meta_strata$strata_name))){
+     strats_3 <- c("CA-MB-3S", "CA-NL-3C", "CA-NT-3N", "CA-NT-3S",
+                   "CA-NU-3C", "CA-NU-3N", "CA-NU-3S",
+ "CA-QC-3C", "CA-QC-3N", "CA-QC-3S", "CA-YT-3S", "US-AK-3N", "US-AK-3S")
      strat_alt <- load_map(strat) %>%
-       filter(strata_name != "CA-NU-3")
+       filter(!strata_name %in% strats_3)
+
      s <- stratify(by = strat,
                    strata_custom = strat_alt,
                    release = 2025,
                    species = sp,
-                   quiet = TRUE) %>%
+                   quiet = TRUE,
+                   distance_to_strata = 4000) %>%
        prepare_data(min_max_route_years = 2,
                     quiet = TRUE,
                     min_year = fy)
