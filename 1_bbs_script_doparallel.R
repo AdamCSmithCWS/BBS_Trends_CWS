@@ -27,8 +27,8 @@ if(re_fit){
 miss <- FALSE
 csv_recover <- FALSE
 #machine = NULL
-#machine = 1
-machine = c(7:10)
+machine = 6
+#machine = c(7:10)
 
 
 
@@ -52,12 +52,36 @@ if(re_fit){
   sp_list <- sp_list %>%
     filter(english %in% sp_re_fit)
 }
-# completed_files <- list.files("output",pattern = "fit_")
-# completed_aou <- as.integer(str_extract_all(completed_files,
-#                              "[[:digit:]]{1,}",
-#                              simplify = TRUE))
-# sp_list <- sp_list %>%
-#     filter(!aou %in% completed_aou)
+
+
+# checking for species already fit
+if(file.exists("previously_run.rds")){
+  previous <- readRDS("previously_run.rds")
+}else{
+  previous <- NULL
+}
+
+completed_files <- list.files(output_dir,pattern = "fit_")
+
+if(length(completed_files) > 0){
+completed_aou <- as.integer(str_extract_all(completed_files,
+                             "[[:digit:]]{1,}",
+                             simplify = TRUE))
+}else{
+  completed_aou <- NULL
+}
+
+if(!is.null(previous) | !is.null(completed_aou)){
+completed_aou <- unique(c(completed_aou,previous))
+}
+
+if(length(completed_aou) > 0){
+sp_list <- sp_list %>%
+    filter(!aou %in% completed_aou)
+
+saveRDS(completed_aou,"previously_run.rds")
+
+}
 #
 # sp_list <- sp_list %>% filter(!aou %in% c(6882,5630,4090))
 #
@@ -71,7 +95,7 @@ strats_3 <- c("CA-MB-3S", "CA-NL-3C", "CA-NT-3N", "CA-NT-3S",
 # build cluster -----------------------------------------------------------
 
 #n_cores = 5
-n_cores <- floor(parallel::detectCores()/4)
+n_cores <- 2#floor(parallel::detectCores()/4)-4
 
 cluster <- makeCluster(n_cores, type = "PSOCK")
 registerDoParallel(cluster)
@@ -85,7 +109,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
   {
 
    # for(i in 1:4){
-    #for(i in rev(1:nrow(sp_list))){  # tmp_clr){ #
+   # for(i in (3:nrow(sp_list))){  # tmp_clr){ #
     sp <- as.character(sp_list[i,"english"])
     aou <- as.integer(sp_list[i,"aou"])
 
@@ -143,7 +167,10 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
    }
    ## bbsBayes2 models do not currently work unless n_strata > 1
-   if(nrow(s$meta_strata) == 1){stop(paste("Only 1 stratum for",sp,"skipping to next species"))}
+   if(nrow(s$meta_strata) == 1){
+     warning(paste("Only 1 stratum for",sp,"skipping to next species"))
+     next
+     }
 
    if(nrow(s$meta_strata) > 2){ #spatial models are irrelevant with < 3 strata
   bbs_dat <- prepare_spatial(s,
