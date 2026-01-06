@@ -265,7 +265,7 @@ fit <- run_model(model_data = bbs_dat,
 
 
     }# end of if file.exists
-
+rm("fit")
   }
 
 parallel::stopCluster(cluster)
