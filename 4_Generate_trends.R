@@ -14,7 +14,7 @@ library(foreach)
 library(doParallel)
 library(patchwork)
 
-YYYY <- 2023
+YYYY <- 2024
 short_time <- 10
 
 #setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
@@ -27,6 +27,9 @@ source("functions/reliability.R")
 
 output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 external_dir <- "F:/CWS_2023_BBS_Analyses"
+
+output_dir <- "output"
+external_dir <- getwd()
 
 
 n_cores <- 6
@@ -83,7 +86,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
                 .errorhandling = "pass") %dopar%
   {
 
-     #for(i in c(nrow(sp_list):(nrow(sp_list)-4))){
+    for(i in 1:nrow(sp_list)){
     sp <- as.character(sp_list[i,"english"])
     esp <- as.character(sp_list[i,"french"])
     aou <- as.integer(sp_list[i,"aou"])
@@ -193,7 +196,8 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
         if(map_abund){
           map_tmp_ab <- plot_map(trends_tmp,
-                                 alternate_column = "rel_abundance" )
+                                 alternate_column = "rel_abundance" ,
+                                 col_viridis = TRUE)
           maps_ab[[j]] <- map_tmp_ab
         }
 

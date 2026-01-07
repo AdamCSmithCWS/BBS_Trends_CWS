@@ -11,8 +11,8 @@ library(doParallel)
 
 # set output_dir to the directory where the saved modeling output rds files are stored
 # output_dir <- "D:/CWS_2023_BBS_Analyses/output"
-# output_dir <- "output"
- output_dir <- "F:/CWS_2022_BBS_Analyses/output"
+ output_dir <- "output"
+# output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
 
@@ -76,6 +76,11 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
       summ <- get_summary(fit)
       saveRDS(summ,paste0("Convergence/summ_",aou,".rds"))
+
+      # saving raw data locally
+      raw_data <- fit$raw_data
+
+      saveRDS(raw_data,paste0("Raw_data/Raw_",aou,".rds"))
 
 
     }

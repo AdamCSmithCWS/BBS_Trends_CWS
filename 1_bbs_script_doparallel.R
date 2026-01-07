@@ -7,7 +7,7 @@ library(foreach)
 library(doParallel)
 library(cmdstanr)
 
-#setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
+setwd("C:/github/BBS_Trends_CWS")
 
 # set output_dir to the directory where the saved modeling output rds files will be stored
 # necessary on most of my machines and VMs because these output files are very large

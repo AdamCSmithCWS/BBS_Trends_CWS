@@ -17,10 +17,12 @@ library(doParallel)
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
 
 # set output_dir to the directory where the saved modeling output rds files are stored
-output_dir <- "F:/CWS_2023_BBS_Analyses/output"
-external_dir <- "F:/CWS_2023_BBS_Analyses"
+# output_dir <- "F:/CWS_2023_BBS_Analyses/output"
+# external_dir <- "F:/CWS_2023_BBS_Analyses"
 
-# output_dir <- "output"
+ output_dir <- "output"
+ external_dir <- getwd()
+
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 
 n_cores = 6 # if desired, can be run in parallel across many species
@@ -32,20 +34,20 @@ sp_list <- readRDS("sp_list_w_generations.rds") %>%
   filter(model == TRUE)
 
 
-
-
-# final list of species where model did not converge (Eastern Screech Owl)
- sp_drop <- readRDS("species_rerun_converge_fail_2024-12-11.rds")
-# # list of species for which the gam model was run because gamye would not converge
-# # includes American Goshawk, Eastern Screech-Owl, and Sharp-shinned Hawk
- sp_gam <- readRDS("species_rerun_converge_fail_2024-12-04.rds")
-# sp_rerun <- readRDS("species_rerun_converge_fail_2024-11-13.rds")
- sp_rerun <- c("Long-tailed Duck","Northern Shrike","Willow Ptarmigan", "Herring Gull",
-                "Common Loon",
-                "American Pipit",
-                "Redpoll (Common/Hoary)")
- sp_list <- sp_list %>%
-  filter(english %in% sp_rerun)
+sp_drop <- NULL
+sp_gam <- NULL # optional list of species where GAM model is used, instead of GAMYE
+# # final list of species where model did not converge (Eastern Screech Owl)
+#  sp_drop <- readRDS("species_rerun_converge_fail_2024-12-11.rds")
+# # # list of species for which the gam model was run because gamye would not converge
+# # # includes American Goshawk, Eastern Screech-Owl, and Sharp-shinned Hawk
+#  sp_gam <- readRDS("species_rerun_converge_fail_2024-12-04.rds")
+# # sp_rerun <- readRDS("species_rerun_converge_fail_2024-11-13.rds")
+#  sp_rerun <- c("Long-tailed Duck","Northern Shrike","Willow Ptarmigan", "Herring Gull",
+#                 "Common Loon",
+#                 "American Pipit",
+#                 "Redpoll (Common/Hoary)")
+#  sp_list <- sp_list %>%
+#   filter(english %in% sp_rerun)
 
 regs_to_estimate <- c("continent","country","prov_state","bcr","bcr_by_country","stratum")
 
@@ -66,7 +68,7 @@ test <- foreach(i = order_random,
                 .errorhandling = "pass") %dopar%
   {
 
- #for(i in rev(1:nrow(sp_list))){
+ for(i in rev(1:nrow(sp_list))){
     sp <- as.character(sp_list[i,"english"])
     aou <- as.integer(sp_list[i,"aou"])
 
@@ -91,7 +93,7 @@ test <- foreach(i = order_random,
 
 
 
-      strat <- "bbs_cws"
+      strat <- "bbs"
 
 
       fit <- readRDS(paste0(output_dir,"/fit_",aou,".rds"))
@@ -122,9 +124,6 @@ if("geom" %in% names(fit$meta_strata)){
         }
 
 
-      raw_data <- fit$raw_data
-
-      saveRDS(raw_data,paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
 
     }
 

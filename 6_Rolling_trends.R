@@ -11,8 +11,8 @@ library(foreach)
 library(doParallel)
 library(patchwork)
 
-YYYY <- 2023
-short_time <- 12
+YYYY <- 2024
+short_time <- 10
 
 #setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
@@ -20,6 +20,9 @@ short_time <- 12
 
 output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 external_dir <- "F:/CWS_2023_BBS_Analyses"
+
+output_dir <- "output"
+external_dir <- getwd()
 
 
 # custom functions to calculate reliability categories and determine website inclusion
@@ -36,20 +39,20 @@ re_run <- TRUE #set to TRUE to overwrite any previous output from this script
 sp_list <- readRDS("sp_list_w_generations.rds") %>%
   filter(model == TRUE)
 
-
-sp_rerun <- c("Northern Shrike","Willow Ptarmigan", "Herring Gull",
-              "Common Loon",
-              "American Pipit",
-              "Redpoll (Common/Hoary)")
-sp_list <- sp_list %>%
-  filter(english %in% sp_rerun)
+#
+# sp_rerun <- c("Northern Shrike","Willow Ptarmigan", "Herring Gull",
+#               "Common Loon",
+#               "American Pipit",
+#               "Redpoll (Common/Hoary)")
+# sp_list <- sp_list %>%
+#   filter(english %in% sp_rerun)
 
 
 regs_to_estimate <- c("continent","country","prov_state","bcr","stratum","bcr_by_country")
 
 # load previous trend data -----------------------------------------------------------
 
-lastyear = read_csv("data/All_BBS_trends_2022.csv")
+lastyear = read_csv(paste0("data/All_BBS_trends_",YYYY-1,".csv"))
 
 
 
@@ -95,7 +98,7 @@ test <- foreach(i = rev(c(1:nrow(sp_list))),
                 .errorhandling = "pass") %dopar%
   {
 
-    # for(i in 1:4){
+   for(i in 1:nrow(sp_list)){
     sp <- as.character(sp_list[i,"english"])
     esp <- as.character(sp_list[i,"french"])
     aou <- as.integer(sp_list[i,"aou"])

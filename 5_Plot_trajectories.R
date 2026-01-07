@@ -10,11 +10,14 @@ library(foreach)
 library(doParallel)
 library(patchwork)
 
-YYYY <- 2023
+YYYY <- 2024
 short_time <- 10
 
 output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 external_dir <- "F:/CWS_2023_BBS_Analyses"
+
+output_dir <- "output"
+external_dir <- getwd()
 
 #setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
@@ -37,11 +40,11 @@ regs_to_estimate <- c("continent","country","prov_state","bcr","stratum","bcr_by
 
 # load previous trend and index data -----------------------------------------------------------
 
-lastyear = read_csv("data/All_BBS_trends_2022.csv")
+lastyear = read_csv(paste0("data/All_BBS_trends_",YYYY-1,".csv"))
 
 
-lastyear_inds <- read_csv("data/All_BBS_Full_indices_2022.csv")
-lastyear_inds_smooth <- read_csv("data/All_BBS_Smoothed_Indices_2022.csv")
+lastyear_inds <- read_csv(paste0("data/All_BBS_Full_indices_",YYYY-1,".csv"))
+lastyear_inds_smooth <- read_csv(paste0("data/All_BBS_Smoothed_Indices_",YYYY-1,".csv"))
 
 
 # build cluster -----------------------------------------------------------
@@ -58,7 +61,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
                 .errorhandling = "pass") %dopar%
   {
 
-    # for(i in 1:4){
+ for(i in 1:nrow(sp_list)){
     sp <- as.character(sp_list[i,"english"])
     esp <- as.character(sp_list[i,"french"])
     aou <- as.integer(sp_list[i,"aou"])
@@ -294,7 +297,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
                 .errorhandling = "pass") %dopar%
   {
 
-    # for(i in 1:4){
+   for(i in 1:nrow(sp_list)){
     sp <- as.character(sp_list[i,"english"])
     esp <- as.character(sp_list[i,"french"])
     aou <- as.integer(sp_list[i,"aou"])

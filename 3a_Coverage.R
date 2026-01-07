@@ -25,7 +25,7 @@ library(ebirdst)
 library(sf)
 #ebirdst::set_ebirdst_access_key("t9el4omae1c3",overwrite = TRUE)
 
-external_dir <- "F:/CWS_2023_BBS_Analyses"
+external_dir <- getwd()#"F:/CWS_2023_BBS_Analyses"
 
 db <- load_map("latlong") %>%
   rename(grid_cell_name = strata_name,
@@ -41,16 +41,16 @@ ly <- max(bbsBayes2::load_bbs_data()$route$year)
 
 regs_to_estimate <- c("continent","country","prov_state","bcr","stratum","bcr_by_country")
 
-stratum <- load_map("bbs_cws")
+stratum <- load_map("bbs")
 
-prov_state <- load_map("bbs_cws") %>%
+prov_state <- load_map("bbs") %>%
   group_by(prov_state) %>%
   summarise() %>%
   mutate(strata_name = prov_state)
 
 bcr <- load_map("bcr")
 
-bcr_by_country <- load_map("bbs_cws") %>%
+bcr_by_country <- load_map("bbs") %>%
   group_by(bcr_by_country) %>%
   summarise() %>%
   rename(strata_name = bcr_by_country)
@@ -214,7 +214,7 @@ botw_seas <- readRDS("data/botw_seas.rds")
 
 
 
-n_cores = 15
+n_cores = 4
 #n_cores <- floor(parallel::detectCores()/4)-1
 
 cluster <- makeCluster(n_cores, type = "PSOCK")
@@ -222,24 +222,31 @@ registerDoParallel(cluster)
 
 re_run <- TRUE
 
-test <- foreach(i = rev(1:nrow(sp_list_gen)),
-                .packages = c("bbsBayes2",
-                              "tidyverse",
-                              "ebirdst",
-                              "SurveyCoverage",
-                              "sf"),
-                .errorhandling = "pass") %dopar%
-  {
+#test <- foreach(i = rev(1:nrow(sp_list_gen)),
+  #               .packages = c("bbsBayes2",
+  #                             "tidyverse",
+  #                             "ebirdst",
+  #                             "SurveyCoverage",
+  #                             "sf"),
+  #               .errorhandling = "pass") %dopar%
+  # {
 
-#for(i in rev(1:nrow(sp_list_gen))){
+for(i in rev(1:nrow(sp_list_gen))){
 
   sp_sel <- unname(unlist(sp_list_gen[i,"english"]))
   aou <- as.integer(sp_list_gen[i,"aou"])
 
   if(all(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
     #sp_list_gen[i,"eBird_range_data"] <- "Used"
-    #next
+    next
     }
+
+  if(!file.exists(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))){
+    sp_list_gen[i,"eBird_range_data"] <- "not modeled"
+    next
+  }
+  raw <- readRDS(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
+  strat <- "bbs"
 
   # filter(n_routes_w_obs > 19,
   #                 !is.na(english),
@@ -366,21 +373,14 @@ if(!grepl(pattern = "*\\(",
     sp_list_gen[i,"botw_range_data"] <- "failed"
     next}
 
-#} # temp loop end
 
 
 
-  strat <- "bbs_cws"
+  strat <- "bbs"
   three_g <- max(c(10,round(as.numeric(sp_list_gen[i,"GenLength"])*3)))
 
 
 # coverage by trend-period ----------------------------------------------
-if(!file.exists(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))){
-  sp_list_gen[i,"eBird_range_data"] <- "not modeled"
-  next
-}
-  raw <- readRDS(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
-  strat <- "bbs_cws"
 
   # s <- stratify(by = strat,
   #               release = 2024,
@@ -502,7 +502,7 @@ library(sf)
 #ebirdst::set_ebirdst_access_key("t9el4omae1c3",overwrite = TRUE)
 sp_list_gen <- readRDS("sp_list_w_generations.rds")
 
-external_dir <- "F:/CWS_2023_BBS_Analyses"
+#external_dir <- "F:/CWS_2023_BBS_Analyses"
 
 db <- load_map("latlong") %>%
   rename(grid_cell_name = strata_name,
@@ -512,7 +512,7 @@ qual_ebird <- ebirdst_runs
 
 ly <- max(bbsBayes2::load_bbs_data()$route$year)
 
-strat <- "bbs_cws"
+strat <- "bbs"
 
 base_map <- load_map(strat)
 
