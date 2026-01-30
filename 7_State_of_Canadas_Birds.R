@@ -5,6 +5,26 @@
 ###
 YYYY <- 2023
 
+
+##################
+
+## note for next analysis (data version 2025)
+## email from Catherine Jardine: December 8 2025
+# (Yellow-shafted Flicker) Northern Flicker =10470
+# (Red-shafted Flicker) Northern Flicker =10480
+# (Gray-headed Junco) Dark-eyed Junco =19111
+# (Slate-colored Junco) Dark-eyed Junco =45168
+# (White-winged Junco) Dark-eyed Junco =45934
+# (Oregon Junco) Dark-eyed Junco =19100
+# (Myrtle Warbler) Yellow-rumped Warbler =16620
+# (Audubon's Warbler) Yellow-rumped Warbler =16630
+# Dark-eyed Junco (all forms) =42218
+# Northern Flicker (all forms) =48798
+# Yellow-rumped Warbler (all forms) =16610
+
+
+
+
 webmaps <- FALSE # set to true if needing to create all map images for ECCC website
 
 library(bbsBayes2)

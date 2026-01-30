@@ -33,7 +33,7 @@ db <- load_map("latlong") %>%
 
 qual_ebird <- ebirdst_runs
 
-ly <- max(bbsBayes2::load_bbs_data()$route$year)
+ly <- max(bbsBayes2::load_bbs_data(release = 2025)$route$year)
 
 
 
@@ -214,24 +214,24 @@ botw_seas <- readRDS("data/botw_seas.rds")
 
 
 
-n_cores = 4
+n_cores = 3
 #n_cores <- floor(parallel::detectCores()/4)-1
 
 cluster <- makeCluster(n_cores, type = "PSOCK")
 registerDoParallel(cluster)
 
-re_run <- TRUE
+re_run <- FALSE
 
-#test <- foreach(i = rev(1:nrow(sp_list_gen)),
-  #               .packages = c("bbsBayes2",
-  #                             "tidyverse",
-  #                             "ebirdst",
-  #                             "SurveyCoverage",
-  #                             "sf"),
-  #               .errorhandling = "pass") %dopar%
-  # {
+test <- foreach(i = rev(1:nrow(sp_list_gen)),
+              .packages = c("bbsBayes2",
+                            "tidyverse",
+                            "ebirdst",
+                            "SurveyCoverage",
+                            "sf"),
+              .errorhandling = "pass") %dopar%
+{
 
-for(i in rev(1:nrow(sp_list_gen))){
+#for(i in rev(1:nrow(sp_list_gen))){
 
   sp_sel <- unname(unlist(sp_list_gen[i,"english"]))
   aou <- as.integer(sp_list_gen[i,"aou"])
@@ -242,7 +242,7 @@ for(i in rev(1:nrow(sp_list_gen))){
     }
 
   if(!file.exists(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))){
-    sp_list_gen[i,"eBird_range_data"] <- "not modeled"
+    #sp_list_gen[i,"eBird_range_data"] <- "not modeled"
     next
   }
   raw <- readRDS(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
@@ -296,7 +296,7 @@ sp_ebird <- ebirdst::get_species(sp_sel1)
     if(is.na(sp_ebird) & !grepl(pattern = "*\\(",
                                 sp_sel1)){
 
-    sp_list_gen[i,"eBird_range_data"] <- "Not available"
+    #sp_list_gen[i,"eBird_range_data"] <- "Not available"
 
 
 # search for botw range map -----------------------------------------------
@@ -314,7 +314,7 @@ sp_ebird <- ebirdst::get_species(sp_sel1)
                                  coverage_grid_custom = db,
                                  range_map = range_map_botw),silent = TRUE)
 
-    sp_list_gen[i,"botw_range_data"] <- "Used"
+    #sp_list_gen[i,"botw_range_data"] <- "Used"
 
     range_map_botw <- NA
 
@@ -354,7 +354,7 @@ if(!grepl(pattern = "*\\(",
       summarise()
 
     if(st_is_empty(range_map_botw)){
-      sp_list_gen[i,"botw_range_data"] <- "Not available"
+      #sp_list_gen[i,"botw_range_data"] <- "Not available"
       next
     }
 }else{
@@ -363,7 +363,7 @@ if(!grepl(pattern = "*\\(",
     range_info <- try(grid_range(sp_sel1,
                                  coverage_grid_custom = db,
                                  range_map = range_map_botw),silent = TRUE)
-    sp_list_gen[i,"botw_range_data"] <- "Used"
+    #sp_list_gen[i,"botw_range_data"] <- "Used"
 
 
   }

@@ -10,14 +10,14 @@ library(doParallel)
 
 
 # set output_dir to the directory where the saved modeling output rds files are stored
-# output_dir <- "D:/CWS_2023_BBS_Analyses/output"
- output_dir <- "output"
+ output_dir <- "D:/BBS_Trends_CWS/output"
+ #output_dir <- "output"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
 
 n_cores = 6
-re_run <- TRUE # set to TRUE if re-assessing convergence of models
+re_run <- FALSE # set to TRUE if re-assessing convergence of models
 
 
 sp_list <- readRDS("species_list.rds") %>%
@@ -105,7 +105,7 @@ for(i in 1:nrow(sp_list)){
   sp <- as.character(sp_list[i,"english"])
   aou <- as.integer(sp_list[i,"aou"])
 
-  if(file.exists(paste0("Convergence/summ_",aou,".rds"))){
+  if(file.exists(paste0(output_dir,"/fit_",aou,".rds")) & file.exists(paste0("Convergence/summ_",aou,".rds"))){
 
 
 summ <- readRDS(paste0("Convergence/summ_",aou,".rds")) %>%
@@ -186,8 +186,8 @@ ess_fail_rerun <- ess_fail_sum %>%
   filter(p_fail >= 0.01 | (p_fail > 0 & grepl("^n",variable_type)))
 
 ### one off decision to not re-run RWBL - ess-fail only for 1.2% of the strata-intercepts (2/163)
-ess_fail_rerun <- ess_fail_rerun %>%
-  filter(species != "Red-winged Blackbird")
+# ess_fail_rerun <- ess_fail_rerun %>%
+#   filter(species != "Red-winged Blackbird")
 
 
 paste(unique(ess_fail_rerun[,c("sp_n","species")]),collapse = ", ")

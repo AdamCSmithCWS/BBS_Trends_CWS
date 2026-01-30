@@ -7,14 +7,14 @@ library(foreach)
 library(doParallel)
 library(cmdstanr)
 
-setwd("C:/github/BBS_Trends_CWS")
+#setwd("C:/github/BBS_Trends_CWS")
 
 # set output_dir to the directory where the saved modeling output rds files will be stored
 # necessary on most of my machines and VMs because these output files are very large
 # ( > 5GB/species for broad-ranging species)
 #output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 output_dir <- "output"
-
+#output_dir <- "d:/BBS_Trends_CWS/output"
 write_over <- FALSE # set to TRUE if overwriting previously run models
 re_fit <- FALSE# set to TRUE if re-running poorly converged models
 
@@ -27,7 +27,7 @@ if(re_fit){
 miss <- FALSE
 csv_recover <- FALSE
 #machine = NULL
-machine = 6
+machine = 7
 #machine = c(7:10)
 
 
@@ -118,7 +118,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
        (write_over & !file.exists(paste0("fit_gam_",aou,"-",c(1),".csv"))) |  # if TRUE and model is not currently running
        (re_fit & (!file.exists(paste0(output_dir,"/fit_",aou,".rds")) &
                   !file.exists(paste0("fit_gam_",aou,"-",c(1),".csv"))) ) | # if refitting and model is not currently running
-       csv_recover){ # if TRUE then doesn't re-fit just reads in the csv files that may have failed to save to external disk
+       csv_recover){ # if csv_recover == TRUE then doesn't re-fit just reads in the csv files that may have failed to save to external disk
 
       if(csv_recover & !file.exists(paste0("fit_",aou,"-",c(1),".csv"))){next}
 
