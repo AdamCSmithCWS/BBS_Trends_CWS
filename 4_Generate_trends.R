@@ -25,10 +25,10 @@ short_time <- 10
 source("functions/web_trends.R")
 source("functions/reliability.R")
 
-output_dir <- "F:/CWS_2023_BBS_Analyses/output"
-external_dir <- "F:/CWS_2023_BBS_Analyses"
+output_dir <- "D:/CWS_2023_BBS_Analyses/output"
+#external_dir <- "F:/CWS_2023_BBS_Analyses"
 
-output_dir <- "output"
+#output_dir <- "output"
 external_dir <- getwd()
 
 

@@ -20,14 +20,15 @@ library(doParallel)
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 # external_dir <- "F:/CWS_2023_BBS_Analyses"
 
- output_dir <- "output"
+output_dir <- "D:/BBS_Trends_CWS/output"
+# output_dir <- "output"
  external_dir <- getwd()
 
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 
 n_cores = 6 # if desired, can be run in parallel across many species
 
-re_run <- TRUE # if TRUE will recalculate and overwrite previous saved indices for each species
+re_run <- FALSE # if TRUE will recalculate and overwrite previous saved indices for each species
 # if FALSE, will skip species with saved indices files
 
 sp_list <- readRDS("sp_list_w_generations.rds") %>%
@@ -68,7 +69,7 @@ test <- foreach(i = order_random,
                 .errorhandling = "pass") %dopar%
   {
 
- for(i in rev(1:nrow(sp_list))){
+ #for(i in rev(1:nrow(sp_list))){
     sp <- as.character(sp_list[i,"english"])
     aou <- as.integer(sp_list[i,"aou"])
 
