@@ -16,7 +16,7 @@ library(doParallel)
 
 
 
-n_cores = 6
+n_cores = 7
 re_run <- FALSE # set to TRUE if re-assessing convergence of models
 
 

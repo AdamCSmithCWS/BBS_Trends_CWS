@@ -214,7 +214,7 @@ botw_seas <- readRDS("data/botw_seas.rds")
 
 
 
-n_cores = 3
+n_cores = 4
 #n_cores <- floor(parallel::detectCores()/4)-1
 
 cluster <- makeCluster(n_cores, type = "PSOCK")

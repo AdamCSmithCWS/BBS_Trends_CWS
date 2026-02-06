@@ -86,7 +86,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
                 .errorhandling = "pass") %dopar%
   {
 
-    for(i in 1:nrow(sp_list)){
+    #for(i in 1:nrow(sp_list)){
     sp <- as.character(sp_list[i,"english"])
     esp <- as.character(sp_list[i,"french"])
     aou <- as.integer(sp_list[i,"aou"])
