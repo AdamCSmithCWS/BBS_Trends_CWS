@@ -229,9 +229,9 @@ if(re_fit){
 
 fit <- run_model(model_data = bbs_dat,
                  refresh = 400,
-                 iter_warmup = 6000,
-                 iter_sampling = 4000,
-                 thin = 4,
+                 iter_warmup = 1000,
+                 iter_sampling = 2000,
+                 thin = 2,
                  output_dir = output_dir,
                  #output_basename = paste0("fit_gam_",aou),
                  output_basename = paste0("fit_",aou),
