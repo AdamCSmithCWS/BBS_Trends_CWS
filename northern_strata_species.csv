@@ -1,0 +1,546 @@
+﻿"aou","english","french","species","n_obs","n_birds","n_routes","n_years","model","vm","northern"
+4451,"Thick-billed Kingbird","Tyran à bec épais","crassirostris",40,86,3,36,TRUE,1,NA
+4510,"Sulphur-bellied Flycatcher","Tyran tigré","luteiventris",47,113,5,40,TRUE,2,FALSE
+5700,"Yellow-eyed Junco","Junco aux yeux jaunes","phaeonotus",47,2066,6,35,TRUE,3,FALSE
+3975,"Arizona Woodpecker","Pic d'Arizona","arizonae",81,157,6,46,TRUE,4,FALSE
+4720,"Northern Beardless-Tyrannulet","Tyranneau imberbe","imberbe",115,209,8,43,TRUE,5,FALSE
+150,"Rhinoceros Auklet","Macareux rhinocéros","monocerata",67,961,9,43,TRUE,6,FALSE
+3140,"White-crowned Pigeon","Pigeon à couronne blanche","leucocephala",96,2695,9,55,TRUE,7,FALSE
+4410,"Broad-billed Hummingbird","Colibri circé","latirostris",82,190,10,41,TRUE,8,FALSE
+6960,"Eastern Yellow Wagtail","Bergeronnette de Béringie","tschutschensis",126,1432,10,31,TRUE,9,TRUE
+4600,"Greater Pewee","Moucherolle de Coues","pertinax",62,153,11,39,TRUE,10,FALSE
+730,"Aleutian Tern","Sterne des Aléoutiennes","aleuticus",86,1314,11,40,TRUE,1,TRUE
+5790,"Rufous-winged Sparrow","Bruant à épaulettes","carpalis",89,548,12,35,TRUE,2,FALSE
+6660,"Golden-cheeked Warbler","Paruline à dos noir","chrysoparia",77,329,13,39,TRUE,3,FALSE
+1220,"Brandt's Cormorant","Cormoran de Brandt","penicillatus",113,1989,13,51,TRUE,4,FALSE
+3460,"Gray Hawk","Buse grise","plagiatus",122,374,13,38,TRUE,5,FALSE
+4790,"Florida Scrub-Jay","Geai à gorge blanche","coerulescens",188,906,13,56,TRUE,6,FALSE
+4550,"Dusky-capped Flycatcher","Tyran olivâtre","tuberculifer",152,1516,14,52,TRUE,7,FALSE
+670,"Sandwich Tern","Sterne caugek","sandvicensis",45,374,15,34,TRUE,8,FALSE
+3824,"Monk Parakeet","Conure veuve","monachus",54,272,15,33,TRUE,9,FALSE
+1920,"(Great White Heron) Great Blue Heron","Grand Héron (blanche)","herodias occidentalis",58,244,15,36,TRUE,10,FALSE
+300,"Common Murre","Guillemot marmette","aalge",78,5268,15,40,TRUE,1,NA
+6510,"Olive Warbler","Fauvine des pins","taeniatus",138,426,15,38,TRUE,2,FALSE
+6230,"Black-whiskered Vireo","Viréo à moustaches","altiloquus",145,1514,15,55,TRUE,3,FALSE
+4820,"Mexican Jay","Geai du Mexique","wollweberi",203,4609,15,53,TRUE,4,FALSE
+5760,"Botteri's Sparrow","Bruant de Botteri","botterii",160,558,16,50,TRUE,5,FALSE
+1280,"Magnificent Frigatebird","Frégate superbe","magnificens",90,486,17,50,TRUE,6,FALSE
+6880,"Painted Redstart","Paruline à ailes blanches","pictus",181,850,17,50,TRUE,7,FALSE
+2800,"Wilson's Plover","Pluvier de Wilson","wilsonia",69,128,18,42,TRUE,8,FALSE
+6900,"Red-faced Warbler","Paruline à face rouge","rubrifrons",236,2081,18,53,TRUE,9,FALSE
+1710,"Greater White-fronted Goose","Oie rieuse","albifrons",86,1830,19,32,TRUE,10,TRUE
+2860,"American Oystercatcher","Huîtrier d'Amérique","palliatus",149,556,19,51,TRUE,1,FALSE
+7340,"Bridled Titmouse","Mésange arlequin","wollweberi",251,1730,19,51,TRUE,2,FALSE
+370,"Parasitic Jaeger","Labbe parasite","parasiticus",82,232,20,38,TRUE,3,TRUE
+2780,"Snowy Plover","Pluvier neigeux","nivosus",107,871,20,49,TRUE,4,FALSE
+2870,"Black Oystercatcher","Huîtrier de Bachman","bachmani",176,515,20,53,TRUE,5,TRUE
+1630,"Black Scoter","Macreuse à bec jaune","americana",68,748,21,32,TRUE,6,TRUE
+270,"Black Guillemot","Guillemot à miroir","grylle",79,306,21,35,TRUE,7,FALSE
+3070,"Lesser Prairie-Chicken","Tétras pâle","pallidicinctus",91,422,21,40,TRUE,8,FALSE
+3020,"Rock Ptarmigan","Lagopède alpin","muta",101,416,21,36,TRUE,9,TRUE
+2960,"Montezuma Quail","Colin arlequin","montezumae",107,353,21,44,TRUE,10,FALSE
+420,"Glaucous Gull","Goéland bourgmestre","hyperboreus",158,5777,21,34,TRUE,1,TRUE
+6300,"Black-capped Vireo","Viréo à tête noire","atricapilla",165,950,21,48,TRUE,2,FALSE
+2720,"American Golden-Plover","Pluvier bronzé","dominica",170,623,21,39,TRUE,3,TRUE
+5660,"(White-winged Junco) Dark-eyed Junco","Junco ardoisé (à ailes blanches)","hyemalis aikeni",380,8712,21,57,TRUE,4,FALSE
+2310,"Short-billed Dowitcher","Bécassin roux","griseus",87,278,22,41,TRUE,5,TRUE
+3690,"Spotted Owl","Chouette tachetée","occidentalis",43,50,24,33,TRUE,6,FALSE
+7571,"Bicknell's Thrush","Grive de Bicknell","bicknelli",76,110,24,38,TRUE,7,FALSE
+2650,"Whimbrel","Courlis corlieu","phaeopus",171,904,24,39,TRUE,8,TRUE
+380,"Long-tailed Jaeger","Labbe à longue queue","longicaudus",221,1496,24,36,TRUE,9,TRUE
+7470,"Arctic Warbler","Pouillot boréal","borealis",334,7285,26,40,TRUE,10,TRUE
+5030,"Audubon's Oriole","Oriole d'Audubon","graduacauda",205,605,27,51,TRUE,1,FALSE
+3840,"Groove-billed Ani","Ani à bec cannelé","sulcirostris",207,604,27,55,TRUE,2,FALSE
+400,"Black-legged Kittiwake","Mouette tridactyle","tridactyla",161,14999,28,46,TRUE,3,TRUE
+4190,"Common Pauraque","Engoulevent pauraqué","albicollis",171,327,28,52,TRUE,4,FALSE
+1980,"Reddish Egret","Aigrette roussâtre","rufescens",147,326,29,52,TRUE,5,FALSE
+1230,"Pelagic Cormorant","Cormoran pélagique","pelagicus",251,3959,29,56,TRUE,6,TRUE
+490,"Western Gull","Goéland d'Audubon","occidentalis",425,15006,29,56,TRUE,7,FALSE
+1170,"Northern Gannet","Fou de Bassan","bassanus",151,27503,30,31,TRUE,8,FALSE
+1540,"Long-tailed Duck","Harelde kakawi","hyemalis",193,1401,30,39,TRUE,9,TRUE
+4450,"Gray Kingbird","Tyran gris","dominicensis",198,1073,30,57,TRUE,10,FALSE
+290,"Pigeon Guillemot","Guillemot colombin","columba",274,1198,30,53,TRUE,1,TRUE
+5360,"Lapland Longspur","Plectrophane lapon","lapponicus",314,13573,30,42,TRUE,2,TRUE
+3180,"White-tipped Dove","Colombe de Verreaux","verreauxi",210,924,31,48,TRUE,3,FALSE
+1331,"Mexican Duck","Canard du Mexique","diazi",129,540,32,36,TRUE,4,FALSE
+3410,"White-tailed Hawk","Buse à queue blanche","albicaudatus",253,531,32,56,TRUE,5,FALSE
+1800,"Tundra Swan","Cygne siffleur","columbianus",197,2871,33,33,TRUE,6,TRUE
+4830,"Green Jay","Geai vert","yncas",327,1035,35,56,TRUE,7,FALSE
+6000,"Varied Bunting","Passerin varié","versicolor",220,511,36,51,TRUE,8,FALSE
+3470,"Rough-legged Hawk","Buse pattue","lagopus",107,156,37,39,TRUE,9,TRUE
+4490,"Great Kiskadee","Tyran quiquivi","sulphuratus",365,1296,37,57,TRUE,10,FALSE
+6210,"Northern Shrike","Pie-grièche boréale","borealis",64,83,38,36,TRUE,1,TRUE
+3400,"Zone-tailed Hawk","Buse à queue barrée","albonotatus",107,131,38,35,TRUE,2,FALSE
+5920,"Abert's Towhee","Tohi d'Abert","aberti",487,2319,40,55,TRUE,3,FALSE
+5500,"Seaside Sparrow","Bruant maritime","maritima",519,4253,41,58,TRUE,4,FALSE
+2230,"Red-necked Phalarope","Phalarope à bec étroit","lobatus",194,953,43,46,TRUE,5,TRUE
+4140,"Gilded Flicker","Pic chrysoïde","chrysoides",476,3161,43,56,TRUE,6,FALSE
+5860,"Olive Sparrow","Tohi olive","rufivirgatus",673,6700,45,57,TRUE,7,FALSE
+7060,"Long-billed Thrasher","Moqueur à long bec","longirostre",455,1401,47,56,TRUE,8,FALSE
+2420,"Least Sandpiper","Bécasseau minuscule","minutilla",217,903,48,48,TRUE,9,TRUE
+4461,"Couch's Kingbird","Tyran de Couch","couchii",500,2803,48,54,TRUE,10,FALSE
+630,"Gull-billed Tern","Sterne hansel","nilotica",262,1459,49,58,TRUE,1,FALSE
+1590,"Common Eider","Eider à duvet","mollissima",281,17694,49,57,TRUE,2,TRUE
+4110,"Gila Woodpecker","Pic des saguaros","uropygialis",761,11036,49,56,TRUE,3,FALSE
+4760,"Yellow-billed Magpie","Pie à bec jaune","nuttalli",1106,22584,49,56,TRUE,4,FALSE
+1660,"Surf Scoter","Macreuse à front blanc","perspicillata",113,1875,50,40,TRUE,5,TRUE
+230,"Marbled Murrelet","Guillemot marbré","marmoratus",455,4776,52,51,TRUE,6,FALSE
+3010,"Willow Ptarmigan","Lagopède des saules","lagopus",375,3995,53,42,TRUE,7,TRUE
+2070,"Limpkin","Courlan brun","guarauna",212,661,56,56,TRUE,8,FALSE
+1780,"Fulvous Whistling-Duck","Dendrocygne fauve","bicolor",513,8491,57,56,TRUE,9,FALSE
+7110,"LeConte's Thrasher","Moqueur de LeConte","lecontei",376,1702,58,55,TRUE,10,FALSE
+6883,"Eurasian Tree Sparrow","Moineau friquet","montanus",599,2919,58,57,TRUE,1,FALSE
+6090,"Hepatic Tanager","Piranga orangé","flava",660,2050,58,55,TRUE,2,FALSE
+2740,"Semipalmated Plover","Pluvier semipalmé","semipalmatus",236,841,59,46,TRUE,3,TRUE
+2180,"Purple Gallinule","Talève violacée","martinicus",226,548,64,57,TRUE,4,FALSE
+6970,"American Pipit","Pipit d'Amérique","rubescens",239,1162,65,45,TRUE,5,TRUE
+11,"Clark's Grebe","Grèbe à face blanche","clarkii",262,1928,66,38,TRUE,6,FALSE
+110,"Red-throated Loon","Plongeon catmarin","stellata",295,1286,66,43,TRUE,7,TRUE
+4340,"Allen's Hummingbird","Colibri d'Allen","sasin",581,3289,66,56,TRUE,8,FALSE
+1650,"White-winged Scoter","Macreuse à ailes blanches","deglandi",208,1975,67,54,TRUE,9,TRUE
+1550,"Harlequin Duck","Arlequin plongeur","histrionicus",261,1769,67,53,TRUE,10,TRUE
+5739,"Bell's Sparrow","Bruant de Bell","belli",574,4180,67,55,TRUE,1,FALSE
+3770,"Northern Hawk Owl","Chouette épervière","ulula",115,139,68,37,TRUE,2,FALSE
+100,"Pacific Loon","Plongeon du Pacifique","pacifica",274,935,69,46,TRUE,3,TRUE
+1210,"Neotropic Cormorant","Cormoran vigua","brasilianum",331,6386,69,51,TRUE,4,FALSE
+3950,"Red-cockaded Woodpecker","Pic à face blanche","borealis",333,835,69,58,TRUE,5,FALSE
+800,"Black Skimmer","Bec-en-ciseaux noir","niger",390,3524,69,58,TRUE,6,FALSE
+1260,"Brown Pelican","Pélican brun","occidentalis",700,17985,71,58,TRUE,7,FALSE
+6640,"Grace's Warbler","Paruline de Grace","graciae",947,7225,71,56,TRUE,8,FALSE
+2150,"Yellow Rail","Râle jaune","noveboracensis",210,505,76,45,TRUE,9,FALSE
+1480,"Greater Scaup","Fuligule milouinan","marila",366,4081,76,47,TRUE,10,TRUE
+650,"Royal Tern","Sterne royale","maximus",531,4801,76,58,TRUE,1,FALSE
+2110,"Clapper Rail","Râle tapageur","crepitans",749,2950,76,58,TRUE,2,FALSE
+6430,"Lucy's Warbler","Paruline de Lucy","luciae",978,17906,80,56,TRUE,3,FALSE
+5570,"Golden-crowned Sparrow","Bruant à couronne dorée","atricapilla",639,16535,81,48,TRUE,4,TRUE
+3350,"Harris's Hawk","Buse de Harris","unicinctus",722,2668,83,57,TRUE,5,FALSE
+2810,"Mountain Plover","Pluvier montagnard","montanus",527,1838,90,56,TRUE,6,FALSE
+7080,"Bendire's Thrasher","Moqueur de Bendire","bendirei",497,1383,91,56,TRUE,7,FALSE
+5000,"Tricolored Blackbird","Carouge de Californie","tricolor",675,85239,91,56,TRUE,8,FALSE
+3660,"Long-eared Owl","Hibou moyen-duc","otus",111,132,94,48,TRUE,9,FALSE
+2080,"King Rail","Râle élégant","elegans",410,1123,94,58,TRUE,10,FALSE
+1830,"Roseate Spoonbill","Spatule rosée","ajaja",542,4235,96,57,TRUE,1,FALSE
+7120,"Crissal Thrasher","Moqueur cul-roux","crissale",624,1267,98,54,TRUE,2,FALSE
+5310,"Lawrence's Goldfinch","Chardonneret gris","lawrencei",828,4861,99,56,TRUE,3,FALSE
+5650,"Black-chinned Sparrow","Bruant à menton noir","atrogularis",916,6973,100,56,TRUE,4,FALSE
+710,"Arctic Tern","Sterne arctique","paradisaea",622,5847,106,51,TRUE,5,TRUE
+4300,"Costa's Hummingbird","Colibri de Costa","costae",646,2474,106,56,TRUE,6,FALSE
+3700,"Great Gray Owl","Chouette lapone","nebulosa",164,180,107,47,TRUE,7,FALSE
+440,"Glaucous-winged Gull","Goéland à ailes grises","glaucescens",1052,30833,109,56,TRUE,8,TRUE
+5590,"American Tree Sparrow","Bruant hudsonien","arborea",891,20691,110,50,TRUE,9,TRUE
+4530,"Brown-crested Flycatcher","Tyran de Wied","tyrannulus",1326,16447,111,57,TRUE,10,FALSE
+7100,"California Thrasher","Moqueur de Californie","redivivum",1404,7463,111,56,TRUE,1,FALSE
+3050,"Greater Prairie-Chicken","Tétras des prairies","cupido",647,5417,114,57,TRUE,2,FALSE
+4100,"Golden-fronted Woodpecker","Pic à front doré","aurifrons",2051,23468,115,57,TRUE,3,FALSE
+1860,"Glossy Ibis","Ibis falcinelle","falcinellus",698,8424,117,58,TRUE,4,FALSE
+7320,"Black-crested Titmouse","Mésange à plumet noir","atricristatus",1785,18370,117,57,TRUE,5,FALSE
+2980,"Spruce Grouse","Tétras du Canada","canadensis",229,318,121,49,TRUE,6,TRUE
+1782,"Mute Swan","Cygne tuberculé","olor",534,3303,121,56,TRUE,7,FALSE
+2970,"Dusky Grouse","Tétras sombre","obscurus",303,442,123,53,TRUE,8,FALSE
+6340,"Gray Vireo","Viréo gris","vicinior",866,3519,123,55,TRUE,9,FALSE
+5009,"Chihuahuan Meadowlark","Sturnelle de Lilian","lilianae",1797,37365,129,57,TRUE,10,FALSE
+3720,"Northern Saw-whet Owl","Petite Nyctale","acadicus",168,192,130,54,TRUE,1,FALSE
+3732,"Western Screech-Owl","Petit-duc des montagnes","kennicottii",199,234,130,53,TRUE,2,FALSE
+3990,"White-headed Woodpecker","Pic à tête blanche","albolarvatus",1200,3248,131,55,TRUE,3,FALSE
+1340,"Mottled Duck","Canard brun","fulvigula",1184,8851,133,58,TRUE,4,FALSE
+7520,"Black-tailed Gnatcatcher","Gobemoucheron à queue noire","melanura",1320,9118,134,57,TRUE,5,FALSE
+3970,"Nuttall's Woodpecker","Pic de Nuttall","nuttallii",2062,10849,136,56,TRUE,6,FALSE
+4960,"Bronzed Cowbird","Vacher bronzé","aeneus",1239,12173,137,57,TRUE,7,FALSE
+4220,"Black Swift","Martinet sombre","niger",468,4219,139,56,TRUE,8,FALSE
+6180,"Bohemian Waxwing","Jaseur boréal","garrulus",667,2289,143,50,TRUE,9,FALSE
+6121,"Cave Swallow","Hirondelle à front brun","fulva",1149,39905,143,45,TRUE,10,FALSE
+5390,"Thick-billed Longspur","Plectrophane à ventre gris","mccownii",1086,17307,145,57,TRUE,1,FALSE
+4710,"Vermilion Flycatcher","Moucherolle vermillon","rubinus",1221,4015,146,57,TRUE,2,FALSE
+5940,"Pyrrhuloxia","Cardinal pyrrhuloxia","sinuatus",2321,41372,146,57,TRUE,3,FALSE
+3280,"White-tailed Kite","Élanion à queue blanche","leucurus",787,1524,150,56,TRUE,4,FALSE
+6440,"Virginia's Warbler","Paruline de Virginia","virginiae",1708,10006,150,56,TRUE,5,FALSE
+550,"Short-billed Gull","Goéland à bec court","brachyrhynchus",1181,10731,152,51,TRUE,6,TRUE
+3620,"Crested Caracara","Caracara huppé","plancus",1577,6802,159,57,TRUE,7,FALSE
+5911,"California Towhee","Tohi de Californie","crissalis",2998,45138,160,56,TRUE,8,FALSE
+7330,"Oak Titmouse","Mésange unicolore","inornatus",2539,35684,161,56,TRUE,9,FALSE
+1520,"Barrow's Goldeneye","Garrot d'Islande","islandica",765,2225,162,55,TRUE,10,FALSE
+2971,"Sooty Grouse","Tétras fuligineux","fuliginosus",1118,4442,164,56,TRUE,1,FALSE
+7570,"Gray-cheeked Thrush","Grive à joues grises","minimus",1343,18356,165,52,TRUE,2,TRUE
+2950,"Gambel's Quail","Colin de Gambel","gambelii",2329,51748,165,56,TRUE,3,FALSE
+1300,"Red-breasted Merganser","Harle huppé","serrator",556,3666,168,57,TRUE,4,TRUE
+740,"Least Tern","Petite Sterne","antillarum",921,12422,173,58,TRUE,5,FALSE
+5050,"Hooded Oriole","Oriole masqué","cucullatus",1119,3509,174,56,TRUE,6,FALSE
+3270,"Swallow-tailed Kite","Naucler à queue fourchue","forficatus",1031,2475,175,56,TRUE,7,FALSE
+6690,"Hermit Warbler","Paruline à tête jaune","occidentalis",2514,34749,175,56,TRUE,8,FALSE
+7420,"Wrentit","Cama brune","fasciata",3038,38422,177,56,TRUE,9,FALSE
+3090,"Greater Sage-Grouse","Tétras des armoises","urophasianus",837,5443,179,56,TRUE,10,FALSE
+600,"Bonaparte's Gull","Mouette de Bonaparte","philadelphia",657,3747,181,54,TRUE,1,TRUE
+5910,"Canyon Towhee","Tohi des canyons","fusca",2396,12708,187,57,TRUE,2,FALSE
+5690,"(Gray-headed Junco) Dark-eyed Junco","Junco ardoisé (à tête grise)","hyemalis caniceps",2474,30836,187,56,TRUE,3,FALSE
+1880,"Wood Stork","Tantale d'Amérique","americana",1063,8534,189,58,TRUE,4,FALSE
+4870,"Chihuahuan Raven","Corbeau à cou blanc","cryptoleucus",2332,25819,190,57,TRUE,5,FALSE
+5280,"(Common Redpoll) Redpoll","Sizerin flammé","flammea flammea",1745,30704,191,53,TRUE,6,TRUE
+2882,"Chukar","Perdrix choukar","chukar",1306,7476,192,56,TRUE,7,FALSE
+5275,"Redpoll (Common/Hoary)","Sizerin (flammé/blanchâtre)","flammea flammea / hornemanni",2042,42139,194,53,TRUE,8,TRUE
+7331,"Juniper Titmouse","Mésange des genévriers","ridgwayi",1772,6210,197,56,TRUE,9,FALSE
+2920,"Mountain Quail","Colin des montagnes","pictus",2634,21863,198,56,TRUE,10,FALSE
+1910,"Least Bittern","Petit Blongios","exilis",561,1391,202,58,TRUE,1,FALSE
+470,"Great Black-backed Gull","Goéland marin","marinus",1797,21479,203,58,TRUE,2,FALSE
+5130,"Boat-tailed Grackle","Quiscale des marais","major",2636,77562,208,58,TRUE,3,FALSE
+7460,"Verdin","Auripare verdin","flaviceps",2790,27176,209,57,TRUE,4,FALSE
+4040,"Williamson's Sapsucker","Pic de Williamson","thyroideus",1411,3484,210,56,TRUE,5,FALSE
+5800,"Rufous-crowned Sparrow","Tohi à calotte fauve","ruficeps",2124,10499,212,57,TRUE,6,FALSE
+3650,"American Barn Owl","Effraie dAmérique","furcata",428,564,215,56,TRUE,7,FALSE
+1990,"Tricolored Heron","Aigrette tricolore","tricolor",1580,8732,217,58,TRUE,8,FALSE
+6200,"Phainopepla","Phénopèple luisant","nitens",2000,12296,218,56,TRUE,9,FALSE
+4070,"Acorn Woodpecker","Pic glandivore","formicivorus",3660,74784,218,56,TRUE,10,FALSE
+2930,"Scaled Quail","Colin écaillé","squamata",3330,40589,223,57,TRUE,1,FALSE
+4080,"Lewis's Woodpecker","Pic de Lewis","lewis",1107,2746,224,56,TRUE,2,FALSE
+4210,"Lesser Nighthawk","Engoulevent minime","acutipennis",2169,17360,225,57,TRUE,3,FALSE
+580,"Laughing Gull","Mouette atricille","atricilla",2719,202842,227,58,TRUE,4,FALSE
+4360,"Calliope Hummingbird","Colibri calliope","calliope",1562,3261,231,56,TRUE,5,FALSE
+1770,"Black-bellied Whistling-Duck","Dendrocygne à ventre noir","autumnalis",1685,19022,241,57,TRUE,6,FALSE
+1810,"Trumpeter Swan","Cygne trompette","buccinator",860,3207,243,52,TRUE,7,FALSE
+4812,"California Scrub-Jay","Geai buissonnier","californica",4819,79102,243,56,TRUE,8,FALSE
+10,"Western Grebe","Grèbe élégant","occidentalis",1349,24841,244,38,TRUE,9,FALSE
+5491,"Nelson's Sparrow","Bruant de Nelson","nelsoni",1178,2266,245,58,TRUE,10,FALSE
+5040,"Scott's Oriole","Oriole jaune-verdâtre","parisorum",2792,13282,246,57,TRUE,1,FALSE
+7070,"Curve-billed Thrasher","Moqueur à bec courbe","curvirostre",2931,13875,247,57,TRUE,2,FALSE
+3210,"Inca Dove","Colombe inca","inca",2240,7768,252,57,TRUE,3,FALSE
+5380,"Chestnut-collared Longspur","Plectrophane à ventre noir","ornatus",3269,82050,252,57,TRUE,4,FALSE
+30,"Horned Grebe","Grèbe esclavon","auritus",1181,2871,255,57,TRUE,5,FALSE
+1870,"White-faced Ibis","Ibis à face blanche","chihi",1410,119531,255,57,TRUE,6,FALSE
+5450,"Baird's Sparrow","Bruant de Baird","bairdii",2182,16719,257,57,TRUE,7,FALSE
+640,"Caspian Tern","Sterne caspienne","caspia",1169,5038,262,58,TRUE,8,FALSE
+2560,"Solitary Sandpiper","Chevalier solitaire","solitaria",857,1616,263,53,TRUE,9,FALSE
+6320,"Hutton's Vireo","Viréo de Hutton","huttoni",2843,9825,263,56,TRUE,10,FALSE
+7130,"Cactus Wren","Troglodyte des cactus","brunneicapillus",3989,55330,263,57,TRUE,1,FALSE
+7010,"American Dipper","Cincle d'Amérique","mexicanus",1235,1760,270,56,TRUE,2,TRUE
+7300,"Pygmy Nuthatch","Sittelle pygmée","pygmaea",2499,19895,271,56,TRUE,3,FALSE
+2540,"Greater Yellowlegs","Grand Chevalier","melanoleuca",1324,4418,274,56,TRUE,4,TRUE
+2550,"Lesser Yellowlegs","Petit Chevalier","flavipes",1602,7198,276,55,TRUE,5,TRUE
+6780,"Connecticut Warbler","Paruline à gorge grise","agilis",1570,4909,278,57,TRUE,6,FALSE
+1180,"Anhinga","Anhinga d'Amérique","anhinga",1865,5641,279,58,TRUE,7,FALSE
+3790,"Northern Pygmy-Owl","Chevêchette naine","gnoma",689,901,282,56,TRUE,8,FALSE
+4813,"Woodhouse's Scrub-Jay","Geai de Woodhouse","woodhouseii",2972,14110,283,56,TRUE,9,FALSE
+7000,"Sprague's Pipit","Pipit de Sprague","spragueii",2238,16740,284,57,TRUE,10,FALSE
+12,"Western Grebe (Clark's/Western)","Grèbe élégant (à face blanche/élégant)","occidentalis / clarkii",1927,35804,286,56,TRUE,1,FALSE
+5750,"Bachman's Sparrow","Bruant des pinèdes","aestivalis",2353,9866,288,58,TRUE,2,FALSE
+4580,"Black Phoebe","Moucherolle noir","nigricans",3106,11360,292,56,TRUE,3,FALSE
+6292,"Plumbeous Vireo","Viréo plombé","plumbeus",3341,19424,294,57,TRUE,4,FALSE
+3560,"Peregrine Falcon","Faucon pèlerin","peregrinus",507,596,295,50,TRUE,5,TRUE
+20,"Red-necked Grebe","Grèbe jougris","grisegena",1713,6695,295,56,TRUE,6,TRUE
+4310,"Anna's Hummingbird","Colibri d'Anna","anna",2886,10387,295,56,TRUE,7,FALSE
+2190,"Common Gallinule","Gallinule d'Amérique","galeata",1630,9535,300,58,TRUE,8,FALSE
+4240,"Vaux's Swift","Martinet de Vaux","vauxi",1904,7284,300,56,TRUE,9,FALSE
+7410,"Chestnut-backed Chickadee","Mésange à dos marron","rufescens",4355,52178,302,56,TRUE,10,FALSE
+2973,"Blue Grouse (Dusky/Sooty)","Tétras sombre (sombre/fuligineux)","obscurus / fuliginosus",1504,5015,303,56,TRUE,1,FALSE
+4691,"Gray Flycatcher","Moucherolle gris","wrightii",2829,18244,304,56,TRUE,2,FALSE
+4480,"Cassin's Kingbird","Tyran de Cassin","vociferans",3154,27837,304,56,TRUE,3,FALSE
+4920,"Pinyon Jay","Geai des pinèdes","cyanocephalus",3141,47549,308,56,TRUE,4,FALSE
+4320,"Broad-tailed Hummingbird","Colibri à queue large","platycercus",3694,31927,318,56,TRUE,5,FALSE
+690,"Forster's Tern","Sterne de Forster","forsteri",1654,12363,325,58,TRUE,6,FALSE
+5738,"Sagebrush Sparrow","Bruant des armoises","nevadensis",3011,52450,329,56,TRUE,7,FALSE
+4640,"(Cordilleran Flycatcher) Western Flycatcher","Moucherolle obscur (groupe occidentalis)","difficilis occidentalis",2899,16524,330,57,TRUE,8,FALSE
+4030,"Red-breasted Sapsucker","Pic à poitrine rouge","ruber",3492,14881,331,56,TRUE,9,FALSE
+4010,"American Three-toed Woodpecker","Pic à dos rayé","dorsalis",1111,2024,334,54,TRUE,10,TRUE
+3960,"Ladder-backed Woodpecker","Pic arlequin","scalaris",4636,14643,344,57,TRUE,1,FALSE
+700,"Common Tern","Sterne pierregarin","hirundo",1591,12676,352,58,TRUE,2,FALSE
+1840,"White Ibis","Ibis blanc","albus",3447,110597,362,58,TRUE,3,FALSE
+3120,"Band-tailed Pigeon","Pigeon à queue barrée","fasciata",3968,31796,363,56,TRUE,4,FALSE
+6380,"Swainson's Warbler","Paruline de Swainson","swainsonii",1984,3530,365,58,TRUE,5,FALSE
+2260,"Black-necked Stilt","Échasse d'Amérique","mexicanus",2164,28467,367,58,TRUE,6,FALSE
+6720,"Palm Warbler","Paruline à couronne rousse","palmarum",1748,6577,373,58,TRUE,7,FALSE
+5780,"Cassin's Sparrow","Bruant de Cassin","cassinii",5740,175326,374,57,TRUE,8,FALSE
+3200,"Common Ground Dove","Colombe à queue noire","passerina",4950,28121,375,58,TRUE,9,FALSE
+7170,"Canyon Wren","Troglodyte des canyons","mexicanus",2412,5209,378,57,TRUE,10,FALSE
+1530,"Bufflehead","Petit Garrot","albeola",1740,7137,385,56,TRUE,1,FALSE
+1470,"Canvasback","Fuligule à dos blanc","valisineria",2047,11931,385,57,TRUE,2,FALSE
+40,"Eared Grebe","Grèbe à cou noir","nigricollis",1824,43452,386,57,TRUE,3,FALSE
+7221,"Pacific Wren","Troglodyte de Baird","pacificus",5480,65373,391,56,TRUE,4,TRUE
+6680,"Townsend's Warbler","Paruline de Townsend","townsendi",4599,57244,395,56,TRUE,5,FALSE
+3080,"Sharp-tailed Grouse","Tétras à queue fine","phasianellus",2376,9319,401,57,TRUE,6,FALSE
+2490,"Marbled Godwit","Barge marbrée","fedoa",4528,26677,402,57,TRUE,7,FALSE
+5090,"Rusty Blackbird","Quiscale rouilleux","carolinus",1338,3317,410,58,TRUE,8,TRUE
+5470,"Henslow's Sparrow","Bruant de Henslow","henslowii",1768,3914,410,58,TRUE,9,FALSE
+4180,"Common Poorwill","Engoulevent de Nuttall","nuttallii",1696,3016,413,57,TRUE,10,FALSE
+4021,"Red-naped Sapsucker","Pic à nuque rouge","nuchalis",4608,13713,413,56,TRUE,1,FALSE
+590,"Franklin's Gull","Mouette de Franklin","pipixcan",3231,216293,421,57,TRUE,2,FALSE
+4330,"Rufous Hummingbird","Colibri roux","rufus",4206,15647,421,56,TRUE,3,FALSE
+3190,"White-winged Dove","Tourterelle à ailes blanches","asiatica",3905,82655,424,57,TRUE,4,FALSE
+5480,"LeConte's Sparrow","Bruant de LeConte","leconteii",3446,14679,431,57,TRUE,5,FALSE
+4000,"Black-backed Woodpecker","Pic à dos noir","arcticus",1190,1951,432,57,TRUE,6,FALSE
+6650,"Black-throated Gray Warbler","Paruline grise","nigrescens",5081,35016,432,56,TRUE,7,FALSE
+4250,"White-throated Swift","Martinet à gorge blanche","saxatalis",2725,25577,438,57,TRUE,8,FALSE
+4910,"Clark's Nutcracker","Cassenoix d'Amérique","columbiana",4139,19907,443,56,TRUE,9,FALSE
+4641,"(Pacific-slope Flycatcher) Western Flycatcher","Moucherolle obscur (groupe difficilis)","difficilis difficilis",5884,74651,452,56,TRUE,10,FALSE
+6610,"Blackpoll Warbler","Paruline rayée","striata",2574,22219,455,58,TRUE,1,TRUE
+2030,"Yellow-crowned Night Heron","Bihoreau violacé","violacea",1737,6830,458,58,TRUE,2,FALSE
+530,"California Gull","Goéland de Californie","californicus",2921,113462,458,56,TRUE,3,FALSE
+6580,"Cerulean Warbler","Paruline azurée","cerulea",3406,9311,458,58,TRUE,4,FALSE
+5150,"Pine Grosbeak","Durbec des sapins","enucleator",2075,5989,460,58,TRUE,5,TRUE
+2940,"California Quail","Colin de Californie","californica",7502,94491,469,56,TRUE,6,FALSE
+6420,"Golden-winged Warbler","Paruline à ailes dorées","chrysoptera",3394,8538,470,58,TRUE,7,FALSE
+5730,"Black-throated Sparrow","Bruant à gorge noire","bilineata",6496,151542,470,57,TRUE,8,FALSE
+7630,"Varied Thrush","Grive à collier","naevius",5644,92857,477,56,TRUE,9,TRUE
+5900,"Green-tailed Towhee","Tohi à queue verte","chlorurus",6572,74154,481,56,TRUE,10,FALSE
+2120,"Virginia Rail","Râle de Virginie","limicola",1326,1969,484,58,TRUE,1,FALSE
+5180,"Cassin's Finch","Roselin de Cassin","cassinii",5570,37389,493,56,TRUE,2,FALSE
+4430,"Scissor-tailed Flycatcher","Tyran à longue queue","forficatus",9816,157658,494,57,TRUE,3,FALSE
+4290,"Black-chinned Hummingbird","Colibri à gorge noire","alexandri",3146,6789,496,57,TRUE,4,FALSE
+1510,"Common Goldeneye","Garrot à oeil d'or","clangula",1723,4348,497,57,TRUE,5,TRUE
+6291,"Cassin's Vireo","Viréo de Cassin","cassinii",6733,37389,500,56,TRUE,6,FALSE
+7020,"Sage Thrasher","Moqueur des armoises","montanus",6267,118194,501,56,TRUE,7,FALSE
+2881,"Gray Partridge","Perdrix grise","perdix",3165,8656,511,58,TRUE,8,FALSE
+1460,"Redhead","Fuligule à tête rouge","americana",3661,35424,517,57,TRUE,9,FALSE
+7430,"Bushtit","Orite buissonnière","minimus",4752,38847,517,56,TRUE,10,FALSE
+7670,"Western Bluebird","Merlebleu de l'Ouest","mexicana",5430,33254,520,56,TRUE,1,FALSE
+6600,"Bay-breasted Warbler","Paruline à poitrine baie","castanea",2967,10981,526,58,TRUE,2,FALSE
+3850,"Greater Roadrunner","Grand Géocoucou","californianus",4666,11397,529,57,TRUE,3,FALSE
+2640,"Long-billed Curlew","Courlis à long bec","americanus",5084,35815,531,57,TRUE,4,FALSE
+1250,"American White Pelican","Pélican d'Amérique","erythrorhynchos",3429,67927,533,56,TRUE,5,FALSE
+1410,"Cinnamon Teal","Sarcelle cannelle","cyanoptera",3042,18162,540,56,TRUE,6,FALSE
+7290,"Brown-headed Nuthatch","Sittelle à tête brune","pusilla",7431,31290,541,58,TRUE,7,FALSE
+6010,"Painted Bunting","Passerin nonpareil","ciris",9208,121268,544,58,TRUE,8,FALSE
+1670,"Ruddy Duck","Érismature rousse","jamaicensis",3777,30510,546,57,TRUE,9,FALSE
+3670,"Short-eared Owl","Hibou des marais","flammeus",1721,3990,555,57,TRUE,10,TRUE
+2250,"American Avocet","Avocette d'Amérique","americana",3420,35124,557,57,TRUE,1,FALSE
+3340,"American Goshawk","Autour dAmérique","atricapillus",918,1005,558,57,TRUE,2,FALSE
+1970,"Snowy Egret","Aigrette neigeuse","thula",3664,31226,560,58,TRUE,3,FALSE
+3480,"Ferruginous Hawk","Buse rouilleuse","regalis",3322,6722,564,57,TRUE,4,FALSE
+6260,"Philadelphia Vireo","Viréo de Philadelphie","philadelphicus",2889,9568,588,58,TRUE,5,FALSE
+6050,"Lark Bunting","Bruant noir et blanc","melanocorys",7079,510215,589,57,TRUE,6,FALSE
+5120,"Great-tailed Grackle","Quiscale à longue queue","mexicanus",6202,211290,591,57,TRUE,7,FALSE
+2580,"Willet","Chevalier semipalmé","semipalmata",6633,40486,591,58,TRUE,8,FALSE
+6500,"Cape May Warbler","Paruline tigrée","tigrina",3051,7984,592,58,TRUE,9,FALSE
+770,"Black Tern","Guifette noire","niger",5156,53740,603,58,TRUE,10,FALSE
+3290,"Mississippi Kite","Milan du Mississippi","mississippiensis",4222,13961,605,58,TRUE,1,FALSE
+7540,"Townsend's Solitaire","Solitaire de Townsend","townsendi",5358,16088,609,56,TRUE,2,FALSE
+6330,"Bell's Vireo","Viréo de Bell","bellii",6002,33242,615,58,TRUE,3,FALSE
+4680,"Hammond's Flycatcher","Moucherolle de Hammond","hammondii",7133,52472,616,56,TRUE,4,FALSE
+7380,"Mountain Chickadee","Mésange de Gambel","gambeli",9416,104625,626,56,TRUE,5,FALSE
+5671,"(Oregon Junco) Dark-eyed Junco","Junco ardoisé (groupe oreganus)","hyemalis oreganus",11218,184091,627,56,TRUE,6,FALSE
+1310,"Hooded Merganser","Harle couronné","cucullatus",1543,2593,631,58,TRUE,7,FALSE
+1330,"American Black Duck","Canard noir","rubripes",2638,8826,636,58,TRUE,8,FALSE
+1490,"Lesser Scaup","Petit Fuligule","affinis",4447,46751,637,57,TRUE,9,TRUE
+3780,"Burrowing Owl","Chevêche des terriers","cunicularia",4252,16719,642,58,TRUE,10,FALSE
+7400,"Boreal Chickadee","Mésange à tête brune","hudsonicus",3884,10697,643,58,TRUE,1,TRUE
+5300,"Lesser Goldfinch","Chardonneret mineur","psaltria",6880,64732,643,57,TRUE,2,FALSE
+3550,"Prairie Falcon","Faucon des prairies","mexicanus",2136,2864,644,56,TRUE,3,FALSE
+4690,"Dusky Flycatcher","Moucherolle sombre","oberholseri",8179,62671,666,56,TRUE,4,FALSE
+2240,"Wilson's Phalarope","Phalarope de Wilson","tricolor",4415,29327,667,58,TRUE,5,FALSE
+6390,"Worm-eating Warbler","Paruline vermivore","vermivorum",5902,13633,672,58,TRUE,6,FALSE
+2280,"American Woodcock","Bécasse d'Amérique","minor",1381,1912,681,58,TRUE,7,FALSE
+1500,"Ring-necked Duck","Fuligule à collier","collaris",2765,10951,683,58,TRUE,8,FALSE
+5220,"White-winged Crossbill","Bec-croisé bifascié","leucoptera",3077,41418,698,58,TRUE,9,TRUE
+4780,"Steller's Jay","Geai de Steller","stelleri",10790,107097,700,56,TRUE,10,FALSE
+3730,"Eastern Screech-Owl","Petit-duc maculé","asio",1234,1472,701,58,TRUE,1,FALSE
+4630,"Yellow-bellied Flycatcher","Moucherolle à ventre jaune","flaviventris",4622,26378,704,58,TRUE,2,FALSE
+2000,"Little Blue Heron","Aigrette bleue","caerulea",7001,45729,704,58,TRUE,3,FALSE
+5850,"Fox Sparrow","Bruant fauve","iliaca",6957,96077,716,58,TRUE,4,TRUE
+7240,"Sedge Wren","Troglodyte à bec court","stellaris",7525,43352,723,58,TRUE,5,FALSE
+6800,"MacGillivray's Warbler","Paruline des buissons","tolmiei",9644,70727,728,56,TRUE,6,FALSE
+6410,"Blue-winged Warbler","Paruline à ailes bleues","cyanoptera",7442,19219,747,58,TRUE,7,FALSE
+4642,"Western Flycatcher (Cordilleran/Pacific-slope)","Moucherolle côtier (des ravins/ côtier)","difficilis",8986,92863,752,57,TRUE,8,FALSE
+4540,"Ash-throated Flycatcher","Tyran à gorge cendrée","cinerascens",11916,134847,754,57,TRUE,9,FALSE
+5620,"Brewer's Sparrow","Bruant de Brewer","breweri",9981,199714,759,57,TRUE,10,FALSE
+5540,"White-crowned Sparrow","Bruant à couronne blanche","leucophrys",8916,143820,774,56,TRUE,1,TRUE
+1370,"American Wigeon","Canard d'Amérique","americana",5117,25306,783,57,TRUE,2,TRUE
+6540,"Black-throated Blue Warbler","Paruline bleue","caerulescens",8601,28655,788,58,TRUE,3,FALSE
+3490,"Golden Eagle","Aigle royal","chrysaetos",3939,6193,797,57,TRUE,4,TRUE
+6370,"Prothonotary Warbler","Paruline orangée","citrea",8768,33435,798,58,TRUE,5,FALSE
+6560,"(Audubon's Warbler) Yellow-rumped Warbler","Paruline à croupion jaune (groupe auduboni)","coronata audoboni",11713,167754,815,57,TRUE,6,FALSE
+4160,"Chuck-will's-widow","Engoulevent de Caroline","carolinensis",11898,37678,816,58,TRUE,7,FALSE
+1420,"Northern Shoveler","Canard souchet","clypeata",5987,47681,837,57,TRUE,8,TRUE
+5990,"Lazuli Bunting","Passerin azuré","amoena",9540,58076,854,57,TRUE,9,FALSE
+510,"Herring Gull","Goéland argenté","argentatus",6925,162689,861,58,TRUE,10,TRUE
+1350,"Gadwall","Canard chipeau","strepera",7937,83310,863,57,TRUE,1,FALSE
+6860,"Canada Warbler","Paruline du Canada","canadensis",7550,21623,870,58,TRUE,2,FALSE
+7250,"Marsh Wren","Troglodyte des marais","palustris",6934,47222,871,58,TRUE,3,FALSE
+4171,"Eastern Whip-poor-will","Engoulevent bois-pourri","vociferus",6253,13451,875,58,TRUE,4,FALSE
+2020,"Black-crowned Night Heron","Bihoreau gris","nycticorax",3684,13953,880,58,TRUE,5,FALSE
+6470,"Tennessee Warbler","Paruline obscure","peregrina",6097,63375,882,58,TRUE,6,FALSE
+2001,"Western Cattle-Egret","Héron garde-boeufs","ibis",11420,484628,899,58,TRUE,7,FALSE
+6620,"Blackburnian Warbler","Paruline à gorge orangée","fusca",10895,45519,910,58,TRUE,8,FALSE
+1430,"Northern Pintail","Canard pilet","acuta",5999,51829,914,58,TRUE,9,TRUE
+7680,"Mountain Bluebird","Merlebleu azuré","currucoides",10811,70964,918,57,TRUE,10,FALSE
+3570,"Merlin","Faucon émerillon","columbarius",2373,2924,939,57,TRUE,1,TRUE
+6630,"Yellow-throated Warbler","Paruline à gorge jaune","dominica",9255,31667,944,58,TRUE,2,FALSE
+4900,"Fish Crow","Corneille de rivage","ossifragus",13826,111245,974,58,TRUE,3,FALSE
+6760,"Louisiana Waterthrush","Paruline hochequeue","motacilla",8958,16611,1011,58,TRUE,4,FALSE
+7150,"Rock Wren","Troglodyte des rochers","obsoletus",10850,59999,1011,57,TRUE,5,FALSE
+5610,"Clay-colored Sparrow","Bruant des plaines","pallida",13257,241305,1014,58,TRUE,6,FALSE
+7190,"Bewick's Wren","Troglodyte de Bewick","bewickii",12185,104106,1021,58,TRUE,7,FALSE
+1390,"Green-winged Teal","Sarcelle d'hiver","crecca",4540,16015,1027,58,TRUE,8,TRUE
+6840,"Hooded Warbler","Paruline à capuchon","citrina",15172,72440,1027,58,TRUE,9,FALSE
+6460,"Orange-crowned Warbler","Paruline verdâtre","celata",12110,125362,1034,56,TRUE,10,TRUE
+7222,"Winter Wren","Troglodyte des forêts","hiemalis",12733,80699,1042,58,TRUE,1,FALSE
+4840,"Canada Jay","Mésangeai du Canada","canadensis",8218,40968,1048,58,TRUE,2,TRUE
+6770,"Kentucky Warbler","Paruline du Kentucky","formosa",14328,46796,1050,58,TRUE,3,FALSE
+5210,"Red Crossbill","Bec-croisé des sapins","curvirostra",7145,80261,1054,57,TRUE,4,FALSE
+6790,"Mourning Warbler","Paruline triste","philadelphia",12476,75051,1055,58,TRUE,5,FALSE
+5960,"Black-headed Grosbeak","Cardinal à tête noire","melanocephalus",14579,120739,1058,57,TRUE,6,FALSE
+2060,"Sandhill Crane","Grue du Canada","canadensis",9621,72742,1069,58,TRUE,7,TRUE
+6070,"Western Tanager","Piranga à tête rouge","ludoviciana",15543,185315,1075,57,TRUE,8,FALSE
+5880,"Spotted Towhee","Tohi tacheté","maculatus",15687,204122,1102,57,TRUE,9,FALSE
+2610,"Upland Sandpiper","Maubèche des champs","longicauda",11921,87508,1106,58,TRUE,10,FALSE
+6150,"Violet-green Swallow","Hirondelle à face blanche","thalassina",13501,174619,1116,57,TRUE,1,TRUE
+6570,"Magnolia Warbler","Paruline à tête cendrée","magnolia",13701,123662,1128,58,TRUE,2,FALSE
+3260,"Black Vulture","Urubu noir","atratus",13408,95732,1129,58,TRUE,3,FALSE
+5140,"Evening Grosbeak","Gros-bec errant","vespertinus",8262,72730,1134,58,TRUE,4,FALSE
+1290,"Common Merganser","Grand Harle","merganser",5108,13960,1140,58,TRUE,5,TRUE
+2210,"American Coot","Foulque d'Amérique","americana",8942,107032,1150,58,TRUE,6,FALSE
+5080,"Bullock's Oriole","Oriole de Bullock","bullockii",14954,85299,1158,57,TRUE,7,FALSE
+6730,"Prairie Warbler","Paruline des prés","discolor",17288,71927,1159,58,TRUE,8,FALSE
+4970,"Yellow-headed Blackbird","Carouge à tête jaune","xanthocephalus",12975,348068,1162,58,TRUE,9,FALSE
+1960,"Great Egret","Grande Aigrette","alba",11292,95443,1167,58,TRUE,10,FALSE
+4570,"Say's Phoebe","Moucherolle à ventre roux","saya",11943,36041,1175,57,TRUE,1,TRUE
+6670,"Black-throated Green Warbler","Paruline à gorge noire","virens",16583,94397,1178,58,TRUE,2,FALSE
+70,"Common Loon","Plongeon huard","immer",9812,26585,1180,58,TRUE,3,TRUE
+5670,"(Slate-colored Junco) Dark-eyed Junco","Junco ardoisé (groupe hyemalis)","hyemalis hyemalis",14485,173879,1183,58,TRUE,4,TRUE
+2140,"Sora","Marouette de Caroline","carolina",8699,36431,1216,58,TRUE,5,FALSE
+5830,"Lincoln's Sparrow","Bruant de Lincoln","lincolnii",11788,88742,1225,58,TRUE,6,TRUE
+4750,"Black-billed Magpie","Pie d'Amérique","hudsonia",18654,238856,1227,57,TRUE,7,TRUE
+60,"Pied-billed Grebe","Grèbe à bec bigarré","podiceps",6623,18166,1246,58,TRUE,8,FALSE
+3420,"Swainson's Hawk","Buse de Swainson","swainsoni",13011,41844,1262,57,TRUE,9,FALSE
+1900,"American Bittern","Butor d'Amérique","lentiginosus",8432,23518,1286,58,TRUE,10,FALSE
+4020,"Yellow-bellied Sapsucker","Pic maculé","varius",17243,84434,1286,58,TRUE,1,FALSE
+4130,"(Red-shafted Flicker) Northern Flicker","Pic flamboyant (groupe cafer)","auratus cafer",20109,99321,1286,57,TRUE,2,FALSE
+6290,"Blue-headed Vireo","Viréo à tête bleue","solitarius",15140,63924,1293,58,TRUE,3,FALSE
+6450,"Nashville Warbler","Paruline à joues grises","ruficapilla",17245,186083,1303,58,TRUE,4,FALSE
+5580,"White-throated Sparrow","Bruant à gorge blanche","albicollis",20473,490542,1303,58,TRUE,5,FALSE
+6100,"Summer Tanager","Piranga vermillon","rubra",24575,143821,1317,58,TRUE,6,FALSE
+6590,"Chestnut-sided Warbler","Paruline à flancs marron","pensylvanica",22976,223237,1322,58,TRUE,7,FALSE
+6850,"Wilson's Warbler","Paruline à calotte noire","pusilla",11354,102721,1323,58,TRUE,8,TRUE
+6550,"(Myrtle Warbler) Yellow-rumped Warbler","Paruline à croupion jaune (groupe coronata)","coronata coronata",17739,180547,1326,58,TRUE,9,TRUE
+7360,"Carolina Chickadee","Mésange de Caroline","carolinensis",32764,289912,1335,58,TRUE,10,FALSE
+4650,"Acadian Flycatcher","Moucherolle vert","virescens",22460,102669,1338,58,TRUE,1,FALSE
+7260,"Brown Creeper","Grimpereau brun","americana",9617,23172,1353,58,TRUE,2,TRUE
+7480,"Golden-crowned Kinglet","Roitelet à couronne dorée","satrapa",13051,73574,1361,58,TRUE,3,TRUE
+6040,"Dickcissel","Dickcissel d'Amérique","americana",25422,747412,1381,58,TRUE,4,FALSE
+3640,"Osprey","Balbuzard pêcheur","haliaetus",8127,20448,1384,58,TRUE,5,FALSE
+1400,"Blue-winged Teal","Sarcelle à ailes bleues","discors",10267,89159,1388,58,TRUE,6,FALSE
+6750,"Northern Waterthrush","Paruline des ruisseaux","noveboracensis",13092,65783,1396,58,TRUE,7,TRUE
+540,"Ring-billed Gull","Goéland à bec cerclé","delawarensis",11859,439553,1407,58,TRUE,8,FALSE
+3000,"Ruffed Grouse","Gélinotte huppée","umbellus",6659,14502,1443,58,TRUE,9,FALSE
+1200,"Double-crested Cormorant","Cormoran à aigrettes","auritum",7549,83063,1446,58,TRUE,10,FALSE
+5840,"Swamp Sparrow","Bruant des marais","georgiana",18766,76865,1452,58,TRUE,1,FALSE
+4620,"Western Wood-Pewee","Pioui de l'Ouest","sordidulus",19338,176250,1477,57,TRUE,2,FALSE
+6310,"White-eyed Vireo","Viréo aux yeux blancs","griseus",29579,263298,1496,58,TRUE,3,FALSE
+6710,"Pine Warbler","Paruline des pins","pinus",25145,214581,1514,58,TRUE,4,FALSE
+3320,"Sharp-shinned Hawk","Épervier brun","striatus",2953,3162,1539,58,TRUE,5,FALSE
+4590,"Olive-sided Flycatcher","Moucherolle à côtés olive","cooperi",13790,52439,1556,58,TRUE,6,FALSE
+7560,"Veery","Grive fauve","fuscescens",27801,272861,1562,58,TRUE,7,FALSE
+7490,"Ruby-crowned Kinglet","Roitelet à couronne rubis","calendula",17136,197060,1578,58,TRUE,8,TRUE
+5170,"Purple Finch","Roselin pourpré","purpureus",20609,85020,1619,58,TRUE,9,FALSE
+3520,"Bald Eagle","Pygargue à tête blanche","leucocephalus",6615,17983,1644,58,TRUE,10,TRUE
+7580,"Swainson's Thrush","Grive à dos olive","ustulatus",20700,465310,1657,58,TRUE,1,TRUE
+3430,"Broad-winged Hawk","Petite Buse","platypterus",8682,11449,1675,58,TRUE,2,FALSE
+4022,"Sapsuckers (Yellow-bellied/Red-naped/Red-breasted/Williamson's)","Pics buveur de sève (maculé/à nuque rouge/à poitrine rouge)","sp.",22185,99089,1696,58,TRUE,3,FALSE
+4940,"Bobolink","Goglu des prés","oryzivorus",32100,417993,1698,58,TRUE,4,FALSE
+3680,"Barred Owl","Chouette rayée","varia",8554,13542,1705,58,TRUE,5,FALSE
+4661,"Alder Flycatcher","Moucherolle des aulnes","alnorum",23531,217243,1716,58,TRUE,6,TRUE
+4470,"Western Kingbird","Tyran de l'Ouest","verticalis",27114,327701,1718,57,TRUE,7,FALSE
+5100,"Brewer's Blackbird","Quiscale de Brewer","cyanocephalus",29081,859526,1723,58,TRUE,8,FALSE
+3880,"Black-billed Cuckoo","Coulicou à bec noir","erythropthalmus",14715,35220,1745,58,TRUE,9,FALSE
+5520,"Lark Sparrow","Bruant à joues marron","grammacus",23853,239155,1754,58,TRUE,10,FALSE
+5330,"Pine Siskin","Tarin des pins","pinus",15286,198619,1769,58,TRUE,1,TRUE
+6080,"Scarlet Tanager","Piranga écarlate","olivacea",32160,153483,1781,58,TRUE,2,FALSE
+7180,"Carolina Wren","Troglodyte de Caroline","ludovicianus",40486,653011,1799,58,TRUE,3,FALSE
+3390,"Red-shouldered Hawk","Buse à épaulettes","lineatus",18249,45008,1801,58,TRUE,4,FALSE
+5950,"Rose-breasted Grosbeak","Cardinal à poitrine rose","ludovicianus",33124,162512,1802,58,TRUE,5,FALSE
+6280,"Yellow-throated Vireo","Viréo à gorge jaune","flavifrons",26242,73668,1832,58,TRUE,6,FALSE
+5970,"Blue Grosbeak","Guiraca bleu","caerulea",32775,221836,1841,58,TRUE,7,FALSE
+3091,"Ring-necked Pheasant","Faisan de Colchide","colchicus",28899,485156,1871,58,TRUE,8,FALSE
+4660,"Willow Flycatcher","Moucherolle des saules","traillii",23590,99799,1877,58,TRUE,9,FALSE
+22860,"Eurasian Collared-Dove","Tourterelle turque","decaocto",14252,100226,1886,38,TRUE,10,FALSE
+6480,"Northern Parula","Paruline à collier","americana",26699,146823,1891,58,TRUE,1,FALSE
+4060,"Red-headed Woodpecker","Pic à tête rouge","erythrocephalus",27951,105439,1904,58,TRUE,2,FALSE
+7310,"Tufted Titmouse","Mésange bicolore","bicolor",49479,627946,1913,58,TRUE,3,FALSE
+2890,"Northern Bobwhite","Colin de Virginie","virginianus",41271,907503,1944,58,TRUE,4,FALSE
+7590,"Hermit Thrush","Grive solitaire","guttatus",28281,281191,1976,58,TRUE,5,TRUE
+6360,"Black-and-white Warbler","Paruline noir et blanc","varia",27150,117812,1978,58,TRUE,6,FALSE
+5677,"Dark-eyed Junco (all forms)","Junco ardoisé (toutes les formes)","hyemalis",29370,408537,1980,58,TRUE,7,TRUE
+6160,"Bank Swallow","Hirondelle de rivage","riparia",16083,234645,1997,58,TRUE,8,TRUE
+5870,"Eastern Towhee","Tohi à flancs roux","erythrophthalmus",47389,568809,2018,58,TRUE,9,FALSE
+7280,"Red-breasted Nuthatch","Sittelle à poitrine rousse","canadensis",24964,148594,2034,58,TRUE,10,TRUE
+6295,"Solitary Vireo (Blue-headed/Cassin's)","Viréo à tête bleue (à tête bleue/de Cassin)","cassinii / solitarius",25241,120799,2042,58,TRUE,1,FALSE
+6830,"Yellow-breasted Chat","Ictérie polyglotte","virens",34419,334401,2046,58,TRUE,2,FALSE
+4670,"Least Flycatcher","Moucherolle tchébec","minimus",31081,193512,2059,58,TRUE,3,FALSE
+4090,"Red-bellied Woodpecker","Pic à ventre roux","carolinus",49767,459018,2073,58,TRUE,4,FALSE
+6220,"Loggerhead Shrike","Pie-grièche migratrice","ludovicianus",25796,94296,2077,58,TRUE,5,FALSE
+5060,"Orchard Oriole","Oriole des vergers","spurius",36334,190416,2089,58,TRUE,6,FALSE
+7550,"Wood Thrush","Grive des bois","mustelina",49286,450271,2093,58,TRUE,7,FALSE
+6556,"Yellow-rumped Warbler (all forms)","Paruline à croupion jaune (toutes les formes)","coronata",30048,358639,2098,58,TRUE,8,TRUE
+3310,"Northern Harrier","Busard des marais","hudsonius",15055,29590,2113,58,TRUE,9,TRUE
+2300,"Wilson's Snipe","Bécassine de Wilson","delicata",25838,170051,2123,58,TRUE,10,TRUE
+5011,"Western Meadowlark","Sturnelle de l'Ouest","neglecta",39579,2403313,2125,58,TRUE,1,FALSE
+2630,"Spotted Sandpiper","Chevalier grivelé","macularius",13447,29799,2157,58,TRUE,2,TRUE
+6740,"Ovenbird","Paruline couronnée","aurocapilla",40988,577814,2158,58,TRUE,3,FALSE
+5630,"Field Sparrow","Bruant des champs","pusilla",49323,452036,2160,58,TRUE,4,FALSE
+5460,"Grasshopper Sparrow","Bruant sauterelle","savannarum",31091,267444,2194,58,TRUE,5,FALSE
+7510,"Blue-gray Gnatcatcher","Gobemoucheron gris-bleu","caerulea",35507,231147,2201,58,TRUE,6,FALSE
+2010,"Green Heron","Héron vert","virescens",25803,53631,2232,58,TRUE,7,FALSE
+5070,"Baltimore Oriole","Oriole de Baltimore","galbula",47010,271423,2248,58,TRUE,8,FALSE
+6870,"American Redstart","Paruline flamboyante","ruticilla",33336,250756,2284,58,TRUE,9,FALSE
+3330,"Cooper's Hawk","Épervier de Cooper","cooperii",7233,8336,2303,58,TRUE,10,FALSE
+3870,"Yellow-billed Cuckoo","Coulicou à bec jaune","americanus",44955,288836,2307,58,TRUE,1,FALSE
+5400,"Vesper Sparrow","Bruant vespéral","gramineus",35347,527389,2321,58,TRUE,2,FALSE
+1440,"Wood Duck","Canard branchu","sponsa",15155,40801,2322,58,TRUE,3,FALSE
+5010,"Eastern Meadowlark","Sturnelle des prés","magna",57917,1186130,2330,58,TRUE,4,FALSE
+4280,"Ruby-throated Hummingbird","Colibri à gorge rubis","colubris",25265,44742,2366,58,TRUE,5,FALSE
+6110,"Purple Martin","Hirondelle noire","subis",38416,442720,2382,58,TRUE,6,FALSE
+3100,"Wild Turkey","Dindon sauvage","gallopavo",19516,65948,2399,58,TRUE,7,FALSE
+5930,"Northern Cardinal","Cardinal rouge","cardinalis",66889,1946549,2430,58,TRUE,8,FALSE
+4610,"Eastern Wood-Pewee","Pioui de l'Est","virens",58581,318195,2455,58,TRUE,9,FALSE
+4230,"Chimney Swift","Martinet ramoneur","pelagica",55783,555127,2483,58,TRUE,10,FALSE
+5980,"Indigo Bunting","Passerin indigo","cyanea",63686,1237032,2520,58,TRUE,1,FALSE
+7660,"Eastern Bluebird","Merlebleu de l'Est","sialis",52165,374825,2536,58,TRUE,2,FALSE
+4520,"Great Crested Flycatcher","Tyran huppé","crinitus",61082,347268,2569,58,TRUE,3,FALSE
+4560,"Eastern Phoebe","Moucherolle phébi","phoebe",54312,253368,2570,58,TRUE,4,FALSE
+5420,"Savannah Sparrow","Bruant des prés","sandwichensis",43047,702896,2591,58,TRUE,5,TRUE
+7350,"Black-capped Chickadee","Mésange à tête noire","atricapillus",47362,398760,2597,58,TRUE,6,TRUE
+4740,"Horned Lark","Alouette hausse-col","alpestris",47080,1559291,2621,58,TRUE,7,FALSE
+7270,"White-breasted Nuthatch","Sittelle à poitrine blanche","carolinensis",43488,164802,2656,58,TRUE,8,FALSE
+7030,"Northern Mockingbird","Moqueur polyglotte","polyglottos",57299,1361914,2667,58,TRUE,9,FALSE
+4200,"Common Nighthawk","Engoulevent d'Amérique","minor",27908,164964,2671,58,TRUE,10,FALSE
+7050,"Brown Thrasher","Moqueur roux","rufum",61390,302354,2746,58,TRUE,1,FALSE
+3750,"Great Horned Owl","Grand-duc d'Amérique","virginianus",13137,21915,2755,58,TRUE,2,FALSE
+4050,"Pileated Woodpecker","Grand Pic","pileatus",39660,106912,2816,58,TRUE,3,FALSE
+4665,"Traill's Flycatcher (Alder/Willow)","Moucherolle de Traill (des aulnes/ des saules)","alnorum / traillii",47431,318164,2863,58,TRUE,4,TRUE
+6270,"Warbling Vireo","Viréo mélodieux","gilvus",51041,374722,2887,58,TRUE,5,FALSE
+6190,"Cedar Waxwing","Jaseur d'Amérique","cedrorum",48379,486666,2932,58,TRUE,6,FALSE
+7040,"Gray Catbird","Moqueur chat","carolinensis",61858,534966,2974,58,TRUE,7,FALSE
+4860,"Common Raven","Grand Corbeau","corax",43972,362848,2996,58,TRUE,8,TRUE
+5190,"House Finch","Roselin familier","mexicanus",46098,599264,3033,58,TRUE,9,FALSE
+7210,"Northern House Wren","Troglodyte familier","aedon",62956,640214,3040,58,TRUE,10,FALSE
+4770,"Blue Jay","Geai bleu","cristata",79406,1020746,3055,58,TRUE,1,FALSE
+6170,"Northern Rough-winged Swallow","Hirondelle à ailes hérissées","serripennis",35224,184615,3145,58,TRUE,2,FALSE
+3900,"Belted Kingfisher","Martin-pêcheur d'Amérique","alcyon",25505,38222,3181,58,TRUE,3,TRUE
+4120,"(Yellow-shafted Flicker) Northern Flicker","Pic flamboyant (groupe auratus)","auratus auratus",65179,242795,3201,58,TRUE,4,FALSE
+5077,"Northern Oriole (Bullock's/Baltimore)","Oriole du Nord (de Bullock/de Baltimore)","bullockii / galbula",62056,357229,3234,58,TRUE,5,FALSE
+6120,"Cliff Swallow","Hirondelle à front blanc","pyrrhonota",43193,1888158,3243,58,TRUE,6,TRUE
+1720,"Canada Goose","Bernache du Canada","canadensis",29692,687161,3245,58,TRUE,7,TRUE
+6240,"Red-eyed Vireo","Viréo aux yeux rouges","olivaceus",70009,1313576,3274,58,TRUE,8,FALSE
+3131,"Rock Pigeon","Pigeon biset","livia",55081,762265,3352,58,TRUE,9,FALSE
+4440,"Eastern Kingbird","Tyran tritri","tyrannus",72654,439482,3379,58,TRUE,10,FALSE
+6140,"Tree Swallow","Hirondelle bicolore","bicolor",52667,458734,3410,58,TRUE,1,TRUE
+5110,"Common Grackle","Quiscale bronzé","quiscula",84891,3850595,3418,58,TRUE,2,FALSE
+5290,"American Goldfinch","Chardonneret jaune","tristis",75549,887418,3426,58,TRUE,3,FALSE
+5810,"Song Sparrow","Bruant chanteur","melodia",75990,1643812,3437,58,TRUE,4,TRUE
+1320,"Mallard","Canard colvert","platyrhynchos",43181,484053,3488,58,TRUE,5,TRUE
+3930,"Hairy Woodpecker","Pic chevelu","villosus",36069,70504,3498,58,TRUE,6,FALSE
+3250,"Turkey Vulture","Urubu à tête rouge","aura",50636,378538,3505,58,TRUE,7,FALSE
+3940,"Downy Woodpecker","Pic mineur","pubescens",61749,195255,3530,58,TRUE,8,TRUE
+1940,"Great Blue Heron","Grand Héron","herodias",43308,118055,3559,58,TRUE,9,FALSE
+3600,"American Kestrel","Crécerelle d'Amérique","sparverius",40604,91194,3563,58,TRUE,10,FALSE
+6520,"Yellow Warbler","Paruline jaune","petechia",65414,598452,3648,58,TRUE,1,TRUE
+6882,"House Sparrow","Moineau domestique","domesticus",87007,3769960,3686,58,TRUE,2,FALSE
+5012,"Meadowlark (Eastern/Western/Chihuahuan)","Sturnelle (prés/Ouest/Lilian)","sp.",99785,3631269,3809,58,TRUE,3,FALSE
+5600,"Chipping Sparrow","Bruant familier","passerina",84983,1227051,3892,58,TRUE,4,FALSE
+6810,"Common Yellowthroat","Paruline masquée","trichas",87344,1115594,3974,58,TRUE,5,FALSE
+2730,"Killdeer","Pluvier kildir","vociferus",85133,671231,4068,58,TRUE,6,FALSE
+4930,"European Starling","Étourneau sansonnet","vulgaris",98733,5040176,4123,58,TRUE,7,FALSE
+4880,"American Crow","Corneille d'Amérique","brachyrhynchos",101047,3158661,4161,58,TRUE,8,TRUE
+3370,"Red-tailed Hawk (all forms)","Buse à queue rousse (toutes les formes)","jamaicensis",58123,146812,4199,58,TRUE,9,FALSE
+6130,"Barn Swallow","Hirondelle rustique","rustica",99857,1777986,4201,58,TRUE,10,FALSE
+3160,"Mourning Dove","Tourterelle triste","macroura",110316,3485709,4223,58,TRUE,1,FALSE
+4950,"Brown-headed Cowbird","Vacher à tête brune","ater",102411,1531792,4265,58,TRUE,2,FALSE
+4123,"Northern Flicker (all forms)","Pic flamboyant (toutes les formes)","auratus",86619,346002,4277,58,TRUE,3,FALSE
+4980,"Red-winged Blackbird","Carouge à épaulettes","phoeniceus",107909,7096895,4329,58,TRUE,4,FALSE
+7610,"American Robin","Merle d'Amérique","migratorius",106375,4115008,4358,58,TRUE,5,TRUE
