@@ -90,7 +90,8 @@ saveRDS(completed_aou,"previously_run.rds")
 # Northern Strata that are not worth including
 strats_3 <- c("CA-MB-3S", "CA-NL-3C", "CA-NT-3N", "CA-NT-3S",
               "CA-NU-3C", "CA-NU-3N", "CA-NU-3S",
-              "CA-QC-3C", "CA-QC-3N", "CA-QC-3S", "CA-YT-3S", "US-AK-3N", "US-AK-3S")
+              "CA-QC-3C", "CA-QC-3N", "CA-QC-3S", "CA-YT-3S", "US-AK-3N", "US-AK-3S",
+              "US-AK-2")
 
 # build cluster -----------------------------------------------------------
 
