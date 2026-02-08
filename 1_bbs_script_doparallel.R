@@ -15,21 +15,33 @@ library(cmdstanr)
 #output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 output_dir <- "output"
 #output_dir <- "d:/BBS_Trends_CWS/output"
-write_over <- FALSE # set to TRUE if overwriting previously run models
-re_fit <- FALSE# set to TRUE if re-running poorly converged models
+re_fit <- TRUE# set to TRUE if re-running poorly converged models
+write_over <- TRUE # set to TRUE if overwriting previously run models
 
-if(re_fit){
-  #sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_",as_date(Sys.Date()),".rds"))
-  sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_2024-12-04.rds"))
-  sp_re_fit <- c("American Robin")
+if(!write_over & re_fit){
+  message("re_fit is true but write_over is FALSE. Setting write_over to true")
+  write_over <- TRUE
 }
 
 miss <- FALSE
 csv_recover <- FALSE
 #machine = NULL
-machine = 7
-#machine = c(7:10)
+machine = 7 #laptop
+machine = c(1:5) #Tower
+machine = c(6,8,9,10) #HRE
 
+
+if(re_fit){
+  #sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_",as_date(Sys.Date()),".rds"))
+  sp_re_fit <- read_csv("northern_strata_species.csv") %>%
+    filter(vm %in% machine,
+           northern) %>%
+    select(english) %>%
+    unlist() %>%
+    unname()
+  # sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_2024-12-04.rds"))
+  # sp_re_fit <- c("American Robin")
+}
 
 
 #n_cores <- floor((parallel::detectCores()-1)/4) # requires 4 cores per species
@@ -53,7 +65,7 @@ if(re_fit){
     filter(english %in% sp_re_fit)
 }
 
-
+if(!re_fit){
 # checking for species already fit
 if(file.exists("previously_run.rds")){
   previous <- readRDS("previously_run.rds")
@@ -82,6 +94,7 @@ sp_list <- sp_list %>%
 saveRDS(completed_aou,"previously_run.rds")
 
 }
+}
 #
 # sp_list <- sp_list %>% filter(!aou %in% c(6882,5630,4090))
 #
@@ -90,8 +103,7 @@ saveRDS(completed_aou,"previously_run.rds")
 # Northern Strata that are not worth including
 strats_3 <- c("CA-MB-3S", "CA-NL-3C", "CA-NT-3N", "CA-NT-3S",
               "CA-NU-3C", "CA-NU-3N", "CA-NU-3S",
-              "CA-QC-3C", "CA-QC-3N", "CA-QC-3S", "CA-YT-3S", "US-AK-3N", "US-AK-3S",
-              "US-AK-2")
+              "CA-QC-3C", "CA-QC-3N", "CA-QC-3S", "CA-YT-3S", "US-AK-3N", "US-AK-3S")
 
 # build cluster -----------------------------------------------------------
 
@@ -236,6 +248,7 @@ fit <- run_model(model_data = bbs_dat,
                  #output_basename = paste0("fit_gam_",aou),
                  output_basename = paste0("fit_",aou),
                  save_model = FALSE,
+                 adapt_delta = 0.8,
                  overwrite = write_over,
                  show_exceptions = FALSE,
                  init_alternate = 1)
