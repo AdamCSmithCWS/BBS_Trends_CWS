@@ -17,22 +17,23 @@ library(patchwork)
 YYYY <- 2024
 short_time <- 10
 
-#setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
-#setwd("C:/github/CWS_2023_BBS_Analyses")
+#setwd("D:/BBS_Trends_CWS/")
 
 
 # custom functions to calculate reliability categories and determine website inclusion
 source("functions/web_trends.R")
 source("functions/reliability.R")
 
-output_dir <- "D:/CWS_2023_BBS_Analyses/output"
-#external_dir <- "F:/CWS_2023_BBS_Analyses"
+# output_dir <- "output"
+# external_dir <- getwd()
 
+output_dir <- "D:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- getwd()
+external_dir <- "D:/BBS_Trends_CWS"
+# output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
-n_cores <- 6
+n_cores <- 8
 re_run <- TRUE
 
 # species list that also includes generation length

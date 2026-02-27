@@ -21,14 +21,16 @@ library(doParallel)
 # external_dir <- "F:/CWS_2023_BBS_Analyses"
 
 output_dir <- "D:/BBS_Trends_CWS/output"
-# output_dir <- "output"
- external_dir <- getwd()
+#output_dir <- "output"
+external_dir <- "D:/BBS_Trends_CWS"
+# output_dir <- "F:/CWS_2022_BBS_Analyses/output"
+
 
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 
 n_cores = 6 # if desired, can be run in parallel across many species
 
-re_run <- FALSE # if TRUE will recalculate and overwrite previous saved indices for each species
+re_run <- TRUE # if TRUE will recalculate and overwrite previous saved indices for each species
 # if FALSE, will skip species with saved indices files
 
 sp_list <- readRDS("sp_list_w_generations.rds") %>%
@@ -78,7 +80,7 @@ test <- foreach(i = order_random,
 
 
     if(file.exists(paste0(output_dir,"/fit_",aou,".rds")) &
-       (!file.exists(paste0("Indices/Inds_",aou,".rds")) | re_run)){
+       (!file.exists(paste0(external_dir,"/Indices/Inds_",aou,".rds")) | re_run)){
 
       # identifying first years for selected species ----------------------------
       fy <- NULL

@@ -17,6 +17,7 @@ output_dir <- "output"
 #output_dir <- "d:/BBS_Trends_CWS/output"
 re_fit <- TRUE# set to TRUE if re-running poorly converged models
 write_over <- TRUE # set to TRUE if overwriting previously run models
+check_previously_run <- FALSE
 
 if(!write_over & re_fit){
   message("re_fit is true but write_over is FALSE. Setting write_over to true")
@@ -25,23 +26,51 @@ if(!write_over & re_fit){
 
 miss <- FALSE
 csv_recover <- FALSE
-#machine = NULL
-machine = 7 #laptop
-machine = c(1:5) #Tower
-machine = c(6,8,9,10) #HRE
+machine = NULL
+# machine = 7 #laptop
+# machine = c(1:5) #Tower
+# machine = c(6,8,9,10) #HRE
 
 
 if(re_fit){
   #sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_",as_date(Sys.Date()),".rds"))
-  sp_re_fit <- read_csv("northern_strata_species.csv") %>%
-    filter(vm %in% machine,
-           northern) %>%
-    select(english) %>%
-    unlist() %>%
-    unname()
+  # sp_re_fit <- read_csv("northern_strata_species.csv") %>%
+  #   filter(#vm %in% machine,
+  #          northern) #%>%
+  #   select(english) %>%
+  #   unlist() %>%
+  #   unname()
   # sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_2024-12-04.rds"))
   # sp_re_fit <- c("American Robin")
-}
+  sp_re_fit <- c("Hermit Thrush",
+                 "Chipping Sparrow",
+                 "Sandhill Crane",
+                 "Barn Swallow",
+                 "Tree Swallow",
+                 "Traill's Flycatcher (Alder/Willow)",
+                 "Alder Flycatcher",
+                 "Northern Flicker (all forms)",
+                 "(Yellow-shafted Flicker) Northern Flicker",
+                 "Red-tailed Hawk (all forms)",
+                 "Red-necked Grebe",
+                 "Wilson's Snipe",
+                 "Bufflehead",
+                 "American Robin",
+                 "American Tree Sparrow",
+                 "Fox Sparrow",
+                 "White-crowned Sparrow",
+                 "Savannah Sparrow",
+                 "Swamp Sparrow",
+                 "Red-winged Blackbird",
+                 "Northern Waterthrush",
+                 "Tennessee Warbler",
+                 "Orange-crowned Warbler",
+                 "Yellow Warbler",
+                 "Blackpoll Warbler",
+                 "Palm Warbler",
+                 "(Myrtle Warbler) Yellow-rumped Warbler",
+                 "Yellow-rumped Warbler (all forms)")
+   }
 
 
 #n_cores <- floor((parallel::detectCores()-1)/4) # requires 4 cores per species
@@ -65,7 +94,7 @@ if(re_fit){
     filter(english %in% sp_re_fit)
 }
 
-if(!re_fit){
+if(!re_fit & check_previously_run){
 # checking for species already fit
 if(file.exists("previously_run.rds")){
   previous <- readRDS("previously_run.rds")
@@ -186,8 +215,19 @@ test <- foreach(i = rev(1:nrow(sp_list)),
      }
 
    if(nrow(s$meta_strata) > 2){ #spatial models are irrelevant with < 3 strata
-  bbs_dat <- prepare_spatial(s,
-                  strata_map = load_map(strat)) %>%
+     bbs_dat_sp <- prepare_spatial(s,
+                  strata_map = load_map(strat),
+                  # nearest_fill = TRUE,
+                  # island_link_dist_factor = 2
+                   voronoi = TRUE,
+                  #buffer_type = "convex_hull",
+                    buffer_dist = 750000
+                  )
+
+     #print(bbs_dat_sp$spatial_data$map)
+
+      saveRDS(bbs_dat_sp,paste0("raw_data/spatial_neighbours_",aou,".rds"))
+  bbs_dat <- bbs_dat_sp %>%
   prepare_model(.,
                 model = "gamye",
                 model_variant = "spatial")
@@ -227,24 +267,13 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
 if(re_fit){
 
-  # bbs_dat <- prepare_spatial(s,
-  #                            strata_map = load_map(strat)) %>%
-  #   prepare_model(model = "gam",
-  #                 model_variant = "spatial")
-
-  # bbs_dat <- prepare_spatial(s,
-  #                            strata_map = load_map(strat)) %>%
-  #   prepare_model(.,
-  #                 model = "gamye",
-  #                 model_variant = "spatial",
-  #                 model_file = "models_alt/gamye_spatial_bbs_CV_COPY.stan")
 
 fit <- run_model(model_data = bbs_dat,
                  refresh = 400,
                  iter_warmup = 1000,
                  iter_sampling = 2000,
                  thin = 2,
-                 output_dir = output_dir,
+                 #output_dir = output_dir,
                  #output_basename = paste0("fit_gam_",aou),
                  output_basename = paste0("fit_",aou),
                  save_model = FALSE,
@@ -253,14 +282,11 @@ fit <- run_model(model_data = bbs_dat,
                  show_exceptions = FALSE,
                  init_alternate = 1)
 
-# Summ <- fit$model_fit$summary()
-
-
-
 
 }else{
   fit <- run_model(model_data = bbs_dat,
                    refresh = 400,
+#                   output_basename = paste0("fit_first_diff_",aou),
                    output_basename = paste0("fit_",aou),
                    save_model = FALSE,
                    overwrite = write_over,
@@ -271,12 +297,15 @@ fit <- run_model(model_data = bbs_dat,
    bbsBayes2::save_model_run(fit,
                              retain_csv = FALSE,
                              save_file_path = paste0(output_dir,
+                                                     #"/fit_first_diff_",
                                                      "/fit_",
-                                                     #"/fit_gam_",
                                                      aou,
                                                      ".rds"))
 
 
+   # inds <- generate_indices(fit,hpdi = TRUE)
+   # trajs <- plot_indices(inds,ci_width = 0.9,add_observed_means = TRUE)
+   # trajs[[1]]
 
     }# end of if file.exists
 rm("fit")

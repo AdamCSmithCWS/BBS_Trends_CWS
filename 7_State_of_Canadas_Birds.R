@@ -3,25 +3,10 @@
 ### Google Drive and for upload into the NatureCounts database to support
 ###  - State of Canada's Birds, etc.
 ###
-YYYY <- 2023
+YYYY <- 2024
 
 
 ##################
-
-## note for next analysis (data version 2025)
-## email from Catherine Jardine: December 8 2025
-# (Yellow-shafted Flicker) Northern Flicker =10470
-# (Red-shafted Flicker) Northern Flicker =10480
-# (Gray-headed Junco) Dark-eyed Junco =19111
-# (Slate-colored Junco) Dark-eyed Junco =45168
-# (White-winged Junco) Dark-eyed Junco =45934
-# (Oregon Junco) Dark-eyed Junco =19100
-# (Myrtle Warbler) Yellow-rumped Warbler =16620
-# (Audubon's Warbler) Yellow-rumped Warbler =16630
-# Dark-eyed Junco (all forms) =42218
-# Northern Flicker (all forms) =48798
-# Yellow-rumped Warbler (all forms) =16610
-
 
 
 
@@ -34,7 +19,8 @@ library(ggrepel)
 library(readxl)
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
 
-external_dir <- "F:/CWS_2023_BBS_Analyses"
+external_dir <- "d:/BBS_Trends_CWS"
+output_dir <- "d:/BBS_Trends_CWS/output"
 
 source("functions/mapping.R")
 source("functions/loess_func.R")
@@ -80,7 +66,7 @@ sp_list <- readRDS("sp_list_w_generations.rds") %>%
 
 
 
-re_collect <- TRUE
+re_collect <- FALSE
 # Compile all trends and indices ------------------------------------------------------
 
 if(re_collect){
@@ -129,14 +115,53 @@ saveRDS(indices_smooth,"output/indices_smooth_collected.rds")
 
 }
 
+
+# Checking for long-term hind-casting ------------------------------------
+
+back_cast <- trends %>%
+  filter(#backcast_flag < 0.67,
+         trend_time == "Long-term",
+         region_type == "stratum")
+
+strat_back <- back_cast %>%
+  group_by(region,backcast_reliab) %>%
+  summarise(n_species = n(),
+            .groups = "drop") %>%
+  pivot_wider(id_cols = c(region),
+              names_from = backcast_reliab,
+              values_from = n_species) %>%
+  rowwise() %>%
+  mutate(Low = ifelse(is.na(Low),0,Low),
+         Medium = ifelse(is.na(Medium),0,Medium),
+         High = ifelse(is.na(High),0,High),
+         n_sp = sum(Low,Medium,High),
+         p_low = Low/n_sp)
+
+strat_to_bolster <- strat_back %>%
+  filter(p_low > 0.66) %>%
+  select(region) %>%
+  unlist()
+
+strat_to_bolster
+# region1    region2    region3
+# "CA-AB-6N" "CA-NT-6N" "CA-NT-7W"
+#
+
+sp_to_run_w_voronoi <- trends %>%
+  filter(region %in% strat_to_bolster) %>%
+  select(species,bbs_num) %>%
+  distinct()
+
+saveRDS(sp_to_run_w_voronoi,"species_to_consider_voronoi.rds")
+
 # Compare to last year's trends -------------------------------------------
 
-avian_core <- readxl::read_xlsx("data/ECCC Avian Core 20241025.xlsx") %>%
-  filter(Full_Species == "Yes") %>%
-  select(Species_ID, BBS_Number, Sort_Order) %>%
+avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
+  filter(Full_Species__Espèce_complète == "Yes - Oui") %>%
+  select(Species_ID_Espèce, BBS_Number__Numéro_BBS, Sort_Order__Ordre_de_tri) %>%
   rename_with(.,.fn = ~paste0(.x,"_core")) %>%
   distinct() %>%
-  mutate(aou = as.integer(BBS_Number_core))
+  mutate(aou = as.integer(BBS_Number__Numéro_BBS_core))
 
 core_link <- sp_list %>%
   ungroup() %>%
@@ -145,7 +170,7 @@ core_link <- sp_list %>%
 
 
 
-lastyear = read_csv("data/All_BBS_trends_2022.csv")
+lastyear = read_csv("data/All_BBS_trends_2023.csv")
 
 ly_trends <- lastyear[,c("species","bbs_num","region","trend_time",
                          "n_strata_included","n_routes",
@@ -153,14 +178,14 @@ ly_trends <- lastyear[,c("species","bbs_num","region","trend_time",
                          "trend_q_0.05","trend_q_0.95",
                          "width_of_95_percent_credible_interval",
                          "reliab.cov","coverage")] %>%
-  rename(trend_2022 = trend,
-         trend_q_0.05_2022 = trend_q_0.05,
-         trend_q_0.95_2022 = trend_q_0.95,
-         number_of_strata_2022 = n_strata_included,
-         number_of_routes_2022 = n_routes,
-         CI_2022 = width_of_95_percent_credible_interval,
-         reliab_cov_2022 = reliab.cov,
-         coverage_2022 = coverage) %>%
+  rename(trend_2023 = trend,
+         trend_q_0.05_2023 = trend_q_0.05,
+         trend_q_0.95_2023 = trend_q_0.95,
+         number_of_strata_2023 = n_strata_included,
+         number_of_routes_2023 = n_routes,
+         CI_2023 = width_of_95_percent_credible_interval,
+         reliab_cov_2023 = reliab.cov,
+         coverage_2023 = coverage) %>%
   filter(region %in% c("continent","Canada","United States of America")) %>%
   select(-c(species))
 
@@ -172,13 +197,13 @@ trends_comp <- trends %>%
                     "region",
                     "trend_time")) %>%
   left_join(.,core_link,by = c("bbs_num" = "aou")) %>%
-  mutate(diff_trend = trend - trend_2022,
-         diff_coverage = reliab.cov - reliab_cov_2022) %>%
+  mutate(diff_trend = trend - trend_2023,
+         diff_coverage = reliab.cov - reliab_cov_2023) %>%
   rename(CI = width_of_95_percent_credible_interval)
 
 
 comp_xy <- ggplot(data = trends_comp,
-                  aes(x = trend_2022,
+                  aes(x = trend_2023,
                       y = trend,
                       alpha = 1/CI))+
   geom_point()+
@@ -187,15 +212,55 @@ comp_xy <- ggplot(data = trends_comp,
   geom_vline(xintercept = 0)+
   facet_grid(cols = vars(trend_time),
              rows = vars(region),
-             scales = "free")
+             scales = "free")+
+  scale_colour_viridis_d(begin = 0.1, end = 0.9)
 
-comp_xy
+pdf("trends_comparison.pdf",
+    width = 11, height = 8.5)
+print(comp_xy)
+
+trends_comp_can <- trends_comp %>%
+  filter(region == "Canada",
+         trend_time == "Long-term") %>%
+  mutate(non_overlap = ifelse((diff_trend > (trend-trend_q_0.05)) |
+                            (diff_trend < (trend-trend_q_0.95)),
+                          TRUE,FALSE))
+sp_labs <- trends_comp_can %>%
+  filter(non_overlap)
+
+comp_xy <- ggplot(data = trends_comp_can,
+                  aes(x = trend_2023,
+                      y = trend,
+                      alpha = 1/CI,
+                      colour = non_overlap))+
+  geom_point()+
+  geom_errorbar(aes(ymin = trend_q_0.05,
+                    ymax = trend_q_0.95,
+                    colour = non_overlap),
+                alpha = 0.2,
+                width = 0)+
+  geom_errorbar(aes(xmin = trend_q_0.05_2023,
+                    xmax = trend_q_0.95_2023,
+                    colour = non_overlap),
+                alpha = 0.2,
+                width = 0)+
+  geom_abline(intercept = 0,slope = 1)+
+  geom_hline(yintercept = 0)+
+  geom_vline(xintercept = 0)+
+  ggrepel::geom_text_repel(data = sp_labs,aes(label = Species_ID_Espèce_core),
+                           min.segment.length = 0)+
+  coord_cartesian(xlim = c(-8,8),
+                  ylim = c(-8,8))+
+  theme_bw()+
+  scale_colour_viridis_d(end = 0.8, direction = -1)
+print(comp_xy)
+dev.off()
 
 
 
 
 comp_xy_cov <- ggplot(data = trends_comp,
-                  aes(x = reliab_cov_2022,
+                  aes(x = reliab_cov_2023,
                       y = reliab.cov,
                       colour = coverage))+
   geom_point(alpha = 0.2)+
@@ -204,10 +269,16 @@ comp_xy_cov <- ggplot(data = trends_comp,
   geom_vline(xintercept = 0)+
   facet_grid(cols = vars(trend_time),
              rows = vars(region),
-             scales = "free")
+             scales = "free")+
+  theme_bw()+
+  scale_colour_viridis_d(begin = 0.1, end = 0.9)
 
 comp_xy_cov
 
+pdf("coverage_comparison.pdf",
+    width = 11, height = 8.5)
+print(comp_xy_cov)
+dev.off()
 
 
 trends_comp_sel <- trends_comp %>%
@@ -216,13 +287,13 @@ trends_comp_sel <- trends_comp %>%
 
 
 comp_xy_sel <- ggplot(data = trends_comp_sel,
-                  aes(x = trend_2022,
+                  aes(x = trend_2023,
                       y = trend,
                       colour = factor(bbs_num)))+
   geom_point()+
   geom_errorbar(aes(ymin = trend_q_0.05, ymax = trend_q_0.95),
                 alpha = 0.4)+
-  geom_errorbarh(aes(xmin = trend_q_0.05_2022, xmax = trend_q_0.95_2022),
+  geom_errorbarh(aes(xmin = trend_q_0.05_2023, xmax = trend_q_0.95_2023),
                  alpha = 0.4)+
   geom_abline(intercept = 0,slope = 1)+
   geom_hline(yintercept = 0)+

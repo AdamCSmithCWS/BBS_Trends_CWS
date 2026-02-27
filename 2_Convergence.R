@@ -12,11 +12,12 @@ library(doParallel)
 # set output_dir to the directory where the saved modeling output rds files are stored
  output_dir <- "D:/BBS_Trends_CWS/output"
  #output_dir <- "output"
+ external_dir <- "D:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
 
-n_cores = 7
+n_cores = 4
 re_run <- FALSE # set to TRUE if re-assessing convergence of models
 
 
@@ -26,13 +27,14 @@ sp_list <- readRDS("species_list.rds") %>%
 # sp_list <- sp_list %>%
 #   filter(english %in% sp_re_fit)
 #
-# sp_rerun <- c("Northern Shrike","Willow Ptarmigan", "Herring Gull",
-#               "Common Loon",
-#               "American Pipit",
-#               "Redpoll (Common/Hoary)")
+# sp_re_fit <- read_csv("northern_strata_species.csv") %>%
+#   filter(northern) %>%
+#   select(english) %>%
+#   unlist() %>%
+#   unname()
 # sp_list <- sp_list %>%
-#   filter(english %in% sp_rerun)
-#
+#   filter(english %in% sp_re_fit)
+
 
 # build cluster -----------------------------------------------------------
 
@@ -53,7 +55,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
     aou <- as.integer(sp_list[i,"aou"])
 
     if(file.exists(paste0(output_dir,"/fit_",aou,".rds")) &
-       (!file.exists(paste0("Convergence/summ_",aou,".rds")) | re_run )){
+       (!file.exists(paste0(external_dir,"/Convergence/summ_",aou,".rds")) | re_run )){
 
       # identifying first years for selected species ----------------------------
       fy <- NULL
@@ -75,12 +77,12 @@ test <- foreach(i = rev(1:nrow(sp_list)),
       fit <- readRDS(paste0(output_dir,"/fit_",aou,".rds"))
 
       summ <- get_summary(fit)
-      saveRDS(summ,paste0("Convergence/summ_",aou,".rds"))
+      saveRDS(summ,paste0(external_dir,"/Convergence/summ_",aou,".rds"))
 
       # saving raw data locally
       raw_data <- fit$raw_data
 
-      saveRDS(raw_data,paste0("Raw_data/Raw_",aou,".rds"))
+      saveRDS(raw_data,paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
 
 
     }
@@ -108,7 +110,7 @@ for(i in 1:nrow(sp_list)){
   if(file.exists(paste0(output_dir,"/fit_",aou,".rds")) & file.exists(paste0("Convergence/summ_",aou,".rds"))){
 
 
-summ <- readRDS(paste0("Convergence/summ_",aou,".rds")) %>%
+summ <- readRDS(paste0(external_dir,"/Convergence/summ_",aou,".rds")) %>%
   mutate(species = sp,
          sp_n = aou)
 

@@ -2,7 +2,7 @@
 
 
 ###  - State of Canada's Birds
-YYYY <- 2023
+YYYY <- 2024
 
 webmaps <- FALSE # set to true if needing to create all map images for ECCC website
 
@@ -13,9 +13,10 @@ library(ggrepel)
 library(foreach)
 library(doParallel)
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
-
-external_dir <- "F:/CWS_2023_BBS_Analyses"
-
+output_dir <- "D:/BBS_Trends_CWS/output"
+#output_dir <- "output"
+external_dir <- "D:/BBS_Trends_CWS"
+# output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 
 sp_list <- readRDS("sp_list_w_generations.rds") %>%
   filter(model == TRUE)
@@ -63,7 +64,7 @@ sp_list <- readRDS("sp_list_w_generations.rds") %>%
 # Compare to last year's trends -------------------------------------------
 
 
-lastyear = read_csv("data/All_BBS_trends_2022.csv")
+lastyear = read_csv("data/All_BBS_trends_2023.csv")
 
 ly_trends <- lastyear[,c("species","bbs_num","region","trend_time",
                          "n_strata_included","n_routes",
@@ -87,7 +88,8 @@ for(jj in (1:nrow(species_to_run))){
   species <- as.character(species_to_run[jj,"english"])
   espece <- as.character(species_to_run[jj,"french"])
   aou <- as.integer(species_to_run[jj,"aou"])
-  if(file.exists(paste0(external_dir,"/Figures/temp_rds_storage/",aou,"_maps.RDS"))){
+  if(file.exists(paste0(external_dir,"/Figures/temp_rds_storage/",aou,"_maps.RDS")) &
+     file.exists(paste0(external_dir,"/Figures/temp_rds_storage/",aou,"_highlevel_simple_trajs.RDS"))){
   species_f_bil <- gsub(paste(species,espece),pattern = "[[:space:]]|[[:punct:]]",
                         replacement = "_")
 
@@ -197,6 +199,10 @@ tplot <- ggplot(data = trends_1)+
 }
 
 dev.off()
+
+
+
+
 
 
 

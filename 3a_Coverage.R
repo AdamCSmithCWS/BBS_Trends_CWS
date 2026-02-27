@@ -25,7 +25,10 @@ library(ebirdst)
 library(sf)
 #ebirdst::set_ebirdst_access_key("t9el4omae1c3",overwrite = TRUE)
 
-external_dir <- getwd()#"F:/CWS_2023_BBS_Analyses"
+output_dir <- "D:/BBS_Trends_CWS/output"
+#output_dir <- "output"
+external_dir <- "D:/BBS_Trends_CWS"
+# output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 db <- load_map("latlong") %>%
   rename(grid_cell_name = strata_name,
@@ -79,14 +82,17 @@ sp_list <- readRDS("species_list.rds") %>%
   filter(model == TRUE)
 
 # Three generation times --------------------------------------------------
+naturecounts::nc_metadata() #update the metadata species codes etc.
 sp_codes <- naturecounts::meta_species_codes() %>%
   filter(authority == "BBS2") %>%
   mutate(aou = as.integer(species_code),
          naturecounts_species_id = species_id) %>%
   select(aou,naturecounts_species_id)
 
+
 sp_list <- sp_list %>%
   left_join(sp_codes, by = "aou")
+
 
 sp_id <- naturecounts::meta_species_taxonomy() %>%
   select(english_name,sort_order,scientific_name,species_id) %>%
@@ -95,8 +101,20 @@ sp_id <- naturecounts::meta_species_taxonomy() %>%
 sp_list <- sp_list %>%
   left_join(sp_id, by = c("naturecounts_species_id"))
 
-redo_generations <- FALSE
-re_naturecounts <- FALSE
+## replacing a few specific naturecounts id numbers for species complexes
+## email from Catherine Jardine: December 8 2025
+nc_lump_link <- read_csv("data/naturecounts_lump_links.csv")
+
+for(i in 1:nrow(nc_lump_link)){
+  cd_rep <- as.integer(nc_lump_link[i,"naturecounts_species_id"])
+  eng <- as.character(nc_lump_link[i,"english"])
+  j <- which(sp_list$english == eng)
+  if(is.na(j)){warning(eng,"is missing")}
+  sp_list[j,"naturecounts_species_id"] <- cd_rep
+}
+
+redo_generations <- TRUE
+re_naturecounts <- TRUE
 if(re_naturecounts){
 gen_years_all <- naturecounts::nc_query_table(table = "SpeciesLifeHistory") %>%
   filter(subcategDescr == "Average generation length (years)")
@@ -107,6 +125,7 @@ saveRDS(gen_years_all,paste("data/all_naturecounts_generation_data.rds"))
 
 if(redo_generations){
 if(re_naturecounts){
+
 
   gen_years <- naturecounts::nc_query_table(table = "SpeciesLifeHistory") %>%
     filter(subcategDescr == "Average generation length (years)",
@@ -214,13 +233,13 @@ botw_seas <- readRDS("data/botw_seas.rds")
 
 
 
-n_cores = 4
+n_cores = 6
 #n_cores <- floor(parallel::detectCores()/4)-1
 
 cluster <- makeCluster(n_cores, type = "PSOCK")
 registerDoParallel(cluster)
 
-re_run <- FALSE
+re_run <- TRUE
 
 test <- foreach(i = rev(1:nrow(sp_list_gen)),
               .packages = c("bbsBayes2",
@@ -390,7 +409,7 @@ if(!grepl(pattern = "*\\(",
   #                quiet = TRUE)
   saveRDS(range_info,paste0(external_dir,"/coverage/range_map_coverage_",aou,".rds"))
 
-  if(all(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds")))){
+  if(all(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
     #sp_list_gen[i,"eBird_range_data"] <- "Used"
     next
   }
@@ -541,7 +560,7 @@ if(!file.exists(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))){
 raw <- readRDS(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
 
 
-pdf(paste0("coverage_maps/coverage_maps_",species_f_bil,".pdf"))
+pdf(paste0(external_dir,"/coverage_maps/coverage_maps_",species_f_bil,".pdf"))
 
 for(ttime in c("Long-term","Short-term","Three-generation")){
 

@@ -12,12 +12,13 @@ library(patchwork)
 
 YYYY <- 2024
 short_time <- 10
-
-output_dir <- "F:/CWS_2023_BBS_Analyses/output"
-external_dir <- "F:/CWS_2023_BBS_Analyses"
-
-output_dir <- "output"
-external_dir <- getwd()
+#
+# output_dir <- "F:/CWS_2023_BBS_Analyses/output"
+# external_dir <- "F:/CWS_2023_BBS_Analyses"
+output_dir <- "D:/BBS_Trends_CWS/output"
+#output_dir <- "output"
+external_dir <- "D:/BBS_Trends_CWS"
+# output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 #setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
@@ -436,4 +437,5 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
 
 parallel::stopCluster(cluster)
+
 

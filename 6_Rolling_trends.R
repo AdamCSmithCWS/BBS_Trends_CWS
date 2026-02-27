@@ -18,11 +18,10 @@ short_time <- 10
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
 
 
-output_dir <- "F:/CWS_2023_BBS_Analyses/output"
-external_dir <- "F:/CWS_2023_BBS_Analyses"
-
-output_dir <- "output"
-external_dir <- getwd()
+output_dir <- "D:/BBS_Trends_CWS/output"
+#output_dir <- "output"
+external_dir <- "D:/BBS_Trends_CWS"
+# output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
 # custom functions to calculate reliability categories and determine website inclusion

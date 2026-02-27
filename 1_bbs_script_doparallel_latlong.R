@@ -1,0 +1,312 @@
+## Script to fit BBS models in parallel
+##
+
+library(bbsBayes2)
+library(tidyverse)
+library(foreach)
+library(doParallel)
+library(cmdstanr)
+
+#setwd("C:/github/BBS_Trends_CWS")
+
+# set output_dir to the directory where the saved modeling output rds files will be stored
+# necessary on most of my machines and VMs because these output files are very large
+# ( > 5GB/species for broad-ranging species)
+#output_dir <- "F:/CWS_2023_BBS_Analyses/output"
+output_dir <- "output"
+#output_dir <- "d:/BBS_Trends_CWS/output"
+re_fit <- FALSE# set to TRUE if re-running poorly converged models
+write_over <- TRUE # set to TRUE if overwriting previously run models
+
+if(!write_over & re_fit){
+  message("re_fit is true but write_over is FALSE. Setting write_over to true")
+  write_over <- TRUE
+}
+
+miss <- FALSE
+csv_recover <- FALSE
+machine = NULL
+# machine = 7 #laptop
+# machine = c(1:5) #Tower
+# machine = c(6,8,9,10) #HRE
+
+
+if(re_fit){
+  #sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_",as_date(Sys.Date()),".rds"))
+  sp_re_fit <- read_csv("northern_strata_species.csv") %>%
+    filter(vm %in% machine,
+           northern) %>%
+    select(english) %>%
+    unlist() %>%
+    unname()
+  # sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_2024-12-04.rds"))
+  # sp_re_fit <- c("American Robin")
+}
+
+
+#n_cores <- floor((parallel::detectCores()-1)/4) # requires 4 cores per species
+
+if(!is.null(machine)){
+  sp_list <- readRDS("species_list.rds") %>%
+    filter(vm %in% machine,
+           model == TRUE)
+}else{
+  sp_list <- readRDS("species_list.rds") %>%
+    filter(model == TRUE)
+}
+
+if(miss){
+  sp_list <- readRDS("species_missing.rds") %>%
+    filter(model == TRUE)
+}
+
+if(re_fit){
+  sp_list <- sp_list %>%
+    filter(english %in% sp_re_fit)
+}
+
+# if(!re_fit){
+#   # checking for species already fit
+#   if(file.exists("previously_run.rds")){
+#     previous <- readRDS("previously_run.rds")
+#   }else{
+#     previous <- NULL
+#   }
+#
+#   completed_files <- list.files(output_dir,pattern = "fit_")
+#
+#   if(length(completed_files) > 0){
+#     completed_aou <- as.integer(str_extract_all(completed_files,
+#                                                 "[[:digit:]]{1,}",
+#                                                 simplify = TRUE))
+#   }else{
+#     completed_aou <- NULL
+#   }
+#
+#   if(!is.null(previous) | !is.null(completed_aou)){
+#     completed_aou <- unique(c(completed_aou,previous))
+#   }
+#
+#   if(length(completed_aou) > 0){
+#     sp_list <- sp_list %>%
+#       filter(!aou %in% completed_aou)
+#
+#     saveRDS(completed_aou,"previously_run.rds")
+#
+#   }
+# }
+#
+# sp_list <- sp_list %>% filter(!aou %in% c(6882,5630,4090))
+#
+# i <- which(sp_list$aou == 6882)
+#
+# Northern Strata that are not worth including
+strats_3 <- ""#c("CA-MB-3S", "CA-NL-3C", "CA-NT-3N", "CA-NT-3S",
+#               "CA-NU-3C", "CA-NU-3N", "CA-NU-3S",
+#               "CA-QC-3C", "CA-QC-3N", "CA-QC-3S", "CA-YT-3S", "US-AK-3N", "US-AK-3S")
+
+# build cluster -----------------------------------------------------------
+
+#n_cores = 5
+n_cores <- 2#floor(parallel::detectCores()/4)-4
+
+cluster <- makeCluster(n_cores, type = "PSOCK")
+registerDoParallel(cluster)
+
+
+test <- foreach(i = rev(1:nrow(sp_list)),
+                .packages = c("bbsBayes2",
+                              "tidyverse",
+                              "cmdstanr"),
+                .errorhandling = "pass") %dopar%
+  {
+
+    # for(i in 1:4){
+    # for(i in (3:nrow(sp_list))){  # tmp_clr){ #
+    sp <- as.character(sp_list[i,"english"])
+    aou <- as.integer(sp_list[i,"aou"])
+
+    if((!file.exists(paste0(output_dir,"/fit_first_diff_",aou,".rds")) &
+        !file.exists(paste0("fit_",aou,"-",c(1),".csv"))) |  # checks to see if the model has been fit or if it is currently running
+       (write_over & !file.exists(paste0("fit_first_diff_",aou,"-",c(1),".csv"))) |  # if TRUE and model is not currently running
+       (re_fit & (!file.exists(paste0(output_dir,"/fit_",aou,".rds")) &
+                  !file.exists(paste0("fit_first_diff_",aou,"-",c(1),".csv"))) ) | # if refitting and model is not currently running
+       csv_recover){ # if csv_recover == TRUE then doesn't re-fit just reads in the csv files that may have failed to save to external disk
+
+      if(csv_recover & !file.exists(paste0("fit_",aou,"-",c(1),".csv"))){next}
+
+      #   print(paste(sp,aou))
+      # }
+      # }
+      # identifying first years for selected species ----------------------------
+      fy <- NULL
+      if(aou %in% c(4661,4660)){ #Alder and Willow Flycatcher
+        fy <- 1978 #5 years after the split
+      }
+      if(aou %in% c(10,11,22860)){ # Clark's and Western Grebe and EUCD
+        fy <- 1990 #5 years after the split and first year EUCD observed on > 3 BBS routes
+      }
+      if(aou == 6121){ # CAve Swallow
+        fy = 1985
+      }
+
+
+
+      strat <- "latlong"
+
+      s <- stratify(by = strat,
+                    release = 2025,
+                    species = sp,
+                    quiet = TRUE,
+                    distance_to_strata = 4000) %>%
+        prepare_data(min_max_route_years = 2,
+                     min_n_routes = 1,
+                     quiet = TRUE,
+                     min_year = fy,
+                     min_span = 5)
+
+      if(any(s$meta_strata$strata_name %in% strats_3)){
+
+        strat_alt <- load_map(strat) %>%
+          filter(!strata_name %in% strats_3)
+
+        s <- stratify(by = strat,
+                      strata_custom = strat_alt,
+                      release = 2025,
+                      species = sp,
+                      quiet = TRUE,
+                      distance_to_strata = 4000)  %>%
+          prepare_data(min_max_route_years = 2,
+                       quiet = TRUE,
+                       min_year = fy)
+
+      }
+      ## bbsBayes2 models do not currently work unless n_strata > 1
+      if(nrow(s$meta_strata) == 1){
+        warning(paste("Only 1 stratum for",sp,"skipping to next species"))
+        next
+      }
+
+      if(nrow(s$meta_strata) > 2){ #spatial models are irrelevant with < 3 strata
+        bbs_dat_sp <- prepare_spatial(s,
+                                      strata_map = load_map(strat),
+                                      #queen = TRUE,
+                                      # nearest_fill = TRUE,
+                                      # island_link_dist_factor = 2
+                                      voronoi = TRUE,
+                                      #buffer_type = "convex_hull",
+                                      buffer_dist = 75000
+        )
+
+        print(bbs_dat_sp$spatial_data$map)
+
+        saveRDS(bbs_dat_sp,paste0("raw_data/spatial_neighbours_latlong_",aou,".rds"))
+        bbs_dat <- bbs_dat_sp %>%
+          prepare_model(.,
+                        model = "first_diff",
+                        model_variant = "spatial")
+
+      }else{
+        bbs_dat <- prepare_model(s,
+                                 model = "first_diff",
+                                 model_variant = "hier")
+      }
+
+      if(csv_recover){
+        fit <- bbs_dat
+        csv_files <- paste0("fit_",aou,"-",c(1:4),".csv")
+        check1 <- try(cmdstanr::as_cmdstan_fit(files = csv_files),
+                      silent = TRUE)
+        if(class(check1)[1] == "try-error"){
+          check1 <- try(cmdstanr::as_cmdstan_fit(files = csv_files),
+                        silent = TRUE)
+        }
+        if(class(check1)[1] == "try-error"){
+          print(aou)
+          print(check1)
+          next}
+        check2 <- try(check1$summary(variables = "STRATA"),silent = TRUE)
+        if(class(check2)[1] == "try-error"){
+          print(aou)
+          print(check2)
+          next}
+        fit[["model_fit"]] <- check1
+        save_model_run(fit,retain_csv = FALSE,
+                       save_file_path = paste0(output_dir,
+                                               "/fit_",
+                                               aou,
+                                               ".rds"))
+
+        next}
+
+      if(re_fit){
+
+        # bbs_dat <- prepare_spatial(s,
+        #                            strata_map = load_map(strat)) %>%
+        #   prepare_model(model = "first_diff",
+        #                 model_variant = "spatial")
+
+        # bbs_dat <- prepare_spatial(s,
+        #                            strata_map = load_map(strat)) %>%
+        #   prepare_model(.,
+        #                 model = "first_diffye",
+        #                 model_variant = "spatial",
+        #                 model_file = "models_alt/first_diffye_spatial_bbs_CV_COPY.stan")
+
+        fit <- run_model(model_data = bbs_dat,
+                         refresh = 400,
+                         iter_warmup = 1000,
+                         iter_sampling = 2000,
+                         thin = 2,
+                         output_dir = output_dir,
+                         #output_basename = paste0("fit_first_diff_",aou),
+                         output_basename = paste0("fit_first_diff_",aou),
+                         save_model = FALSE,
+                         adapt_delta = 0.8,
+                         overwrite = write_over,
+                         show_exceptions = FALSE,
+                         init_alternate = 1)
+
+        # Summ <- fit$model_fit$summary()
+
+
+
+
+      }else{
+        fit <- run_model(model_data = bbs_dat,
+                         refresh = 400,
+                         output_basename = paste0("fit_first_diff_",aou),
+                         save_model = FALSE,
+                         overwrite = write_over,
+                         init_alternate = 1)
+
+      }
+
+      bbsBayes2::save_model_run(fit,
+                                retain_csv = FALSE,
+                                save_file_path = paste0(output_dir,
+                                                        "/fit_first_diff_",
+                                                        #"/fit_first_diff_",
+                                                        aou,
+                                                        ".rds"))
+      summ <- get_summary(fit)
+      inds <- generate_indices(fit,hpdi = TRUE)
+      trajs <- plot_indices(inds,ci_width = 0.9,add_observed_means = TRUE)
+      trajs[[1]]
+      provs <- assign_prov_state(load_map("latlong"),min_overlap = 0.51)
+
+
+      inds <- generate_indices(fit,hpdi = TRUE,regions = "country",
+                               regions_index = provs)
+
+      trajs <- plot_indices(inds,ci_width = 0.9,add_observed_means = TRUE, add_number_routes = TRUE)
+      trajs
+
+
+    }# end of if file.exists
+    rm("fit")
+  }
+
+parallel::stopCluster(cluster)
+
+
