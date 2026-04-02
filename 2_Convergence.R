@@ -18,7 +18,7 @@ library(doParallel)
 
 
 n_cores = 4
-re_run <- FALSE # set to TRUE if re-assessing convergence of models
+re_run <- TRUE # set to TRUE if re-assessing convergence of models
 
 
 sp_list <- readRDS("species_list.rds") %>%
@@ -27,13 +27,42 @@ sp_list <- readRDS("species_list.rds") %>%
 # sp_list <- sp_list %>%
 #   filter(english %in% sp_re_fit)
 #
-# sp_re_fit <- read_csv("northern_strata_species.csv") %>%
-#   filter(northern) %>%
-#   select(english) %>%
-#   unlist() %>%
-#   unname()
+# sp_re_fit <- c("Hermit Thrush",
+#                "Chipping Sparrow",
+#                "Sandhill Crane",
+#                "Barn Swallow",
+#                "Tree Swallow",
+#                "Traill's Flycatcher (Alder/Willow)",
+#                "Alder Flycatcher",
+#                "Northern Flicker (all forms)",
+#                "(Yellow-shafted Flicker) Northern Flicker",
+#                "Red-tailed Hawk (all forms)",
+#                "Red-necked Grebe",
+#                "Wilson's Snipe",
+#                "Bufflehead",
+#                "American Robin",
+#                "American Tree Sparrow",
+#                "Fox Sparrow",
+#                "White-crowned Sparrow",
+#                "Savannah Sparrow",
+#                "Swamp Sparrow",
+#                "Red-winged Blackbird",
+#                "Northern Waterthrush",
+#                "Tennessee Warbler",
+#                "Orange-crowned Warbler",
+#                "Yellow Warbler",
+#                "Blackpoll Warbler",
+#                "Palm Warbler",
+#                "(Myrtle Warbler) Yellow-rumped Warbler",
+#                "Yellow-rumped Warbler (all forms)")
+#
 # sp_list <- sp_list %>%
 #   filter(english %in% sp_re_fit)
+#
+#
+#   sp_re_fit2 <- c(4120,5600,7610,6140,4123,3370)
+# sp_list <- sp_list %>%
+#   filter(!aou %in% sp_re_fit2)
 
 
 # build cluster -----------------------------------------------------------
@@ -54,7 +83,8 @@ test <- foreach(i = rev(1:nrow(sp_list)),
     sp <- as.character(sp_list[i,"english"])
     aou <- as.integer(sp_list[i,"aou"])
 
-    if(file.exists(paste0(output_dir,"/fit_",aou,".rds")) &
+    if((file.exists(paste0(output_dir,"/fit_",aou,".rds")) |
+        file.exists(paste0(output_dir,"/fit_gam_",aou,".rds"))) &
        (!file.exists(paste0(external_dir,"/Convergence/summ_",aou,".rds")) | re_run )){
 
       # identifying first years for selected species ----------------------------
@@ -73,8 +103,14 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
       strat <- "bbs_cws"
 
+if(file.exists(paste0(output_dir,"/fit_gam_",aou,".rds"))){ # if the gam version of the model has been fit, use it
+  # gam version is only fit if the gamye fails to converge
+  fit <- readRDS(paste0(output_dir,"/fit_gam_",aou,".rds"))
+}else{
+  fit <- readRDS(paste0(output_dir,"/fit_",aou,".rds"))
+}
+      #
 
-      fit <- readRDS(paste0(output_dir,"/fit_",aou,".rds"))
 
       summ <- get_summary(fit)
       saveRDS(summ,paste0(external_dir,"/Convergence/summ_",aou,".rds"))
@@ -126,6 +162,8 @@ saveRDS(summ_comb,"Convergence/All_species_convergence_summary.rds")
 }else{
 summ_comb <- readRDS("Convergence/All_species_convergence_summary.rds")
 }
+
+
 sp_run <- summ_comb %>%
   group_by(sp_n) %>%
   summarise(max_rhat = max(rhat, na.rm = TRUE),
@@ -185,7 +223,7 @@ ess_fail_sum <- fail_ess %>%
          p_fail = n_fail_TRUE/(n_fail_FALSE+n_fail_TRUE))
 
 ess_fail_rerun <- ess_fail_sum %>%
-  filter(p_fail >= 0.01 | (p_fail > 0 & grepl("^n",variable_type)))
+  filter(p_fail >= 0.02 | (p_fail > 0 & grepl("^n",variable_type)))
 
 ### one off decision to not re-run RWBL - ess-fail only for 1.2% of the strata-intercepts (2/163)
 # ess_fail_rerun <- ess_fail_rerun %>%
@@ -223,7 +261,7 @@ rhat_fail_sum <- fail_rhat %>%
          p_fail = n_fail_TRUE/(n_fail_FALSE+n_fail_TRUE))
 
 rhat_fail_rerun <- rhat_fail_sum %>%
-  filter(p_fail >= 0.01 | (p_fail > 0 & grepl("^n",variable_type)))
+  filter(p_fail >= 0.02 | (p_fail > 0 & grepl("^n",variable_type)))
 
 paste(unique(rhat_fail_rerun[,c("sp_n","species")]),collapse = ", ")
 

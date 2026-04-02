@@ -97,7 +97,7 @@ test <- foreach(i = rev(c(1:nrow(sp_list))),
                 .errorhandling = "pass") %dopar%
   {
 
-   for(i in 1:nrow(sp_list)){
+   #for(i in 1:nrow(sp_list)){
     sp <- as.character(sp_list[i,"english"])
     esp <- as.character(sp_list[i,"french"])
     aou <- as.integer(sp_list[i,"aou"])
@@ -138,7 +138,36 @@ test <- foreach(i = rev(c(1:nrow(sp_list))),
 
       roll_trends_out <- NULL
 
-      trajs <- readRDS(paste0(external_dir,"/Figures/temp_rds_storage/",aou,"_highlevel_simple_trajs.RDS"))
+      ind <- readRDS(paste0(external_dir,"/Indices/Ind_plot_",aou,".rds"))
+
+
+      trajs_all <- plot_indices(ind,
+                                title = FALSE,
+                                ci_width = 0.9,
+                                add_observed_means = FALSE,
+                                add_number_routes = FALSE,
+                                min_year = fy,
+                                title_size = 12,
+                                axis_title_size = 10,
+                                axis_text_size = 10)
+
+
+      # trajs <- readRDS(paste0(external_dir,"/Figures/temp_rds_storage/",aou,"_highlevel_simple_trajs.RDS"))
+      traj1 <- trajs_all[["continent"]]
+      n1 <- inds$indices %>%
+        filter(region == "continent",
+               year >= fy)
+
+      strats <- str_split_1(unlist(n1[1,"strata_included"]),
+                            pattern = " ; ")
+      upy <- max(n1$index_q_0.95,na.rm = TRUE)/2
+
+
+      trajs <- traj1 +
+        geom_ribbon(data = n1, aes(x = year,y = index,ymin = index_q_0.05,ymax = index_q_0.95),
+                    fill = grey(0.5),alpha = 0.2)+
+        geom_line(data = n1, aes(x = year,y = index),
+                  colour = grey(0.5))
 
 
       pdf(paste0(external_dir,"/trends/rolling_trend_maps/",species_f_bil,"_rolling_trend_map.pdf"),
@@ -161,7 +190,7 @@ test <- foreach(i = rev(c(1:nrow(sp_list))),
         map_tmp <- plot_map(trends_10temp,
                                 title = FALSE)
 
-        traj1 <- trajs[["continent"]]+
+        traj1 <- trajs+
           geom_errorbar(data = ends,
                     aes(x = year, ymin = 0,
                         ymax = index),

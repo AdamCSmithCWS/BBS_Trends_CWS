@@ -50,6 +50,6 @@ for(i in (1:nrow(sp_list))){  # tmp_clr){ #
 
 }
 
-write_excel_csv(sp_list,"northern_strata_species.csv")
+write_excel_csv(sp_list,"northern_strata_species2.csv")
 
 table(sp_list$vm,sp_list$northern)

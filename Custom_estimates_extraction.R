@@ -5,23 +5,27 @@
 #
 #
 
-species_sel <- c("Great Horned Owl")
 
-outname <- "grhowl"# must supply meaningful file name suffix for output files
-
-
-YYYY <- 2023
+YYYY <- 2024
 
 library(bbsBayes2)
 library(tidyverse)
 
 
+external_dir <- "d:/BBS_Trends_CWS"
+output_dir <- "d:/BBS_Trends_CWS/output"
+
 sp_list <- readRDS("species_list.rds") %>%
   filter(model == TRUE)
 
-trends <- readRDS(paste0("Website/All_BBS_Trends_",YYYY,".rds"))
-indices <- readRDS(paste0("Website/All_BBS_Full_Indices_",YYYY,".rds"))
-indices_smooth <- readRDS(paste0("Website/All_BBS_Smoothed_Indices_",YYYY,".rds"))
+trends <- readRDS(paste0(external_dir,"/Website/All_BBS_Trends_",YYYY,".rds"))
+indices <- readRDS(paste0(external_dir,"/Website/All_BBS_Full_Indices_",YYYY,".rds"))
+indices_smooth <- readRDS(paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_",YYYY,".rds"))
+
+
+species_sel <- c("Rufous Hummingbird")
+
+outname <- "RUHU"# must supply meaningful file name suffix for output files
 
 tr <- NULL
 i <- NULL
@@ -51,8 +55,7 @@ write_excel_csv(ism,
 
 i_plot <- i %>%
   filter(region == "Canada",
-         trend_time == "Long-term",
-         year > 1994)
+         trend_time == "Long-term")
 tmpnat <- ggplot(data = i_plot,
                  aes(x = year,y = index))+
   geom_ribbon(aes(ymin = index_q_0.05,
@@ -64,7 +67,7 @@ tmpnat <- ggplot(data = i_plot,
   xlab("")+
   theme_bw()
 
-png(paste0("temp/custom_output/tmp_grhowl_traj_bbs.png"),
+png(paste0("temp/custom_output/tmp_",outname,"_traj_bbs.png"),
     res = 300, height = 5, width = 8,
     units = "in")
 print(tmpnat)
@@ -77,20 +80,19 @@ dev.off()
 
 
 
-reg_sel <- c("NB")
+
+
+YYYY <- 2024
+
+
+# trends <- readRDS(paste0("Website/All_BBS_Trends_",YYYY,".rds"))
+# indices <- readRDS(paste0("Website/All_BBS_Full_Indices_",YYYY,".rds"))
+# indices_smooth <- readRDS(paste0("Website/All_BBS_Smoothed_Indices_",YYYY,".rds"))
+
+
+reg_sel <- c("AB")
 
 outname <- reg_sel# must supply meaningful file name suffix for output files
-
-
-YYYY <- 2022
-
-library(bbsBayes2)
-library(tidyverse)
-
-
-trends <- readRDS(paste0("Website/All_BBS_Trends_",YYYY,".rds"))
-indices <- readRDS(paste0("Website/All_BBS_Full_Indices_",YYYY,".rds"))
-indices_smooth <- readRDS(paste0("Website/All_BBS_Smoothed_Indices_",YYYY,".rds"))
 
 tr <- NULL
 i <- NULL

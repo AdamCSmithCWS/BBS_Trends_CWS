@@ -42,7 +42,8 @@ re_run <- TRUE
 
 sp_list <- readRDS("sp_list_w_generations.rds") %>%
   filter(model == TRUE)
-
+sp_list <- sp_list %>%
+  filter(english %in% sp_re_fit)
 
 # sp_rerun <- c("Northern Shrike","Willow Ptarmigan", "Herring Gull",
 #               "Common Loon",
@@ -184,13 +185,13 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
         map_tmp2 <- plot_map(trends_tmp,
                     title = FALSE,
-                    alternate_column = "trend_q_0.25") +
-          labs(title = paste(j,"25% CI (trend_q_0.25)"))
+                    alternate_column = "trend_q_0.1") +
+          labs(title = paste(j,"10% CI (trend_q_0.1)"))
 
         map_tmp3 <- plot_map(trends_tmp,
                              title = FALSE,
-                             alternate_column = "trend_q_0.75") +
-          labs(title = paste(j,"75% CI (trend_q_0.75)"))
+                             alternate_column = "trend_q_0.9") +
+          labs(title = paste(j,"90% CI (trend_q_0.9)"))
 
         map_tmp4 <- map_tmp2 + map_tmp3 + plot_layout(guides = "collect")
         maps_out_quart[[j]] <- map_tmp4

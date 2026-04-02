@@ -64,7 +64,7 @@ sp_list <- readRDS("sp_list_w_generations.rds") %>%
 # Compare to last year's trends -------------------------------------------
 
 
-lastyear = read_csv(past0("data/All_BBS_trends_",YYYY-1,".csv"))
+lastyear = read_csv(paste0("data/All_BBS_trends_",YYYY-1,".csv"))
 
 lastyear_inds <- read_csv(paste0("data/All_BBS_Full_indices_",YYYY-1,".csv"))
 lastyear_inds_smooth <- read_csv(paste0("data/All_BBS_Smoothed_Indices_",YYYY-1,".csv"))
@@ -182,7 +182,7 @@ tplot <- ggplot(data = trends_1)+
       rr <- str_replace_all(j,"_","-")
     }
 
-    labl <- paste(esp,"/",sp,"-",rr)
+    labl <- paste(espece,"/",species,"-",rr)
 
     n1 <- inds$indices %>%
       filter(region == rr,
@@ -305,7 +305,7 @@ tplot <- ggplot(data = trends_1)+
 }
   print(layt)
 
-  print(species)
+  print(paste(species,round(jj/nrow(species_to_run),2)))
   }else{
   print(paste("No estimates for",species,aou))
 }
@@ -328,7 +328,7 @@ start_years <- c("Long-term","Short-term","Three-generation")
 
 
 
-n_cores <- 6
+n_cores <- 8
 cluster <- makeCluster(n_cores, type = "PSOCK")
 registerDoParallel(cluster)
 
@@ -347,7 +347,7 @@ test <- foreach(jj = rev(c(1:nrow(species_to_run))),
   species_f_bil <- gsub(paste(species,espece),pattern = "[[:space:]]|[[:punct:]]",
                         replacement = "_")
 
-  if(!file.exists(paste0(external_dir,"/Indices/Inds_",aou,".rds")) &
+  if(file.exists(paste0(external_dir,"/Indices/Inds_",aou,".rds")) &
      (!file.exists(paste0(external_dir,"/Figures/trend_maps/",species_f_bil,"_trend_maps.pdf")) |
       re_run)){
 

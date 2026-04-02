@@ -16,8 +16,8 @@ library(cmdstanr)
 output_dir <- "output"
 #output_dir <- "d:/BBS_Trends_CWS/output"
 re_fit <- TRUE# set to TRUE if re-running poorly converged models
-write_over <- TRUE # set to TRUE if overwriting previously run models
-check_previously_run <- FALSE
+write_over <- FALSE # set to TRUE if overwriting previously run models
+check_previously_run <- TRUE
 
 if(!write_over & re_fit){
   message("re_fit is true but write_over is FALSE. Setting write_over to true")
@@ -33,7 +33,11 @@ machine = NULL
 
 
 if(re_fit){
-  #sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_",as_date(Sys.Date()),".rds"))
+ # sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_",as_date(Sys.Date()),".rds"))
+  sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_2026-03-26.rds"))
+
+  sp_re_fit <- sp_re_fit[-which(sp_re_fit == "Pied-billed Grebe")]
+
   # sp_re_fit <- read_csv("northern_strata_species.csv") %>%
   #   filter(#vm %in% machine,
   #          northern) #%>%
@@ -42,34 +46,34 @@ if(re_fit){
   #   unname()
   # sp_re_fit <- readRDS(paste0("species_rerun_converge_fail_2024-12-04.rds"))
   # sp_re_fit <- c("American Robin")
-  sp_re_fit <- c("Hermit Thrush",
-                 "Chipping Sparrow",
-                 "Sandhill Crane",
-                 "Barn Swallow",
-                 "Tree Swallow",
-                 "Traill's Flycatcher (Alder/Willow)",
-                 "Alder Flycatcher",
-                 "Northern Flicker (all forms)",
-                 "(Yellow-shafted Flicker) Northern Flicker",
-                 "Red-tailed Hawk (all forms)",
-                 "Red-necked Grebe",
-                 "Wilson's Snipe",
-                 "Bufflehead",
-                 "American Robin",
-                 "American Tree Sparrow",
-                 "Fox Sparrow",
-                 "White-crowned Sparrow",
-                 "Savannah Sparrow",
-                 "Swamp Sparrow",
-                 "Red-winged Blackbird",
-                 "Northern Waterthrush",
-                 "Tennessee Warbler",
-                 "Orange-crowned Warbler",
-                 "Yellow Warbler",
-                 "Blackpoll Warbler",
-                 "Palm Warbler",
-                 "(Myrtle Warbler) Yellow-rumped Warbler",
-                 "Yellow-rumped Warbler (all forms)")
+  # sp_re_fit <- c("Hermit Thrush",
+  #                "Chipping Sparrow",
+  #                "Sandhill Crane",
+  #                "Barn Swallow",
+  #                "Tree Swallow",
+  #                "Traill's Flycatcher (Alder/Willow)",
+  #                "Alder Flycatcher",
+  #                "Northern Flicker (all forms)",
+  #                "(Yellow-shafted Flicker) Northern Flicker",
+  #                "Red-tailed Hawk (all forms)",
+  #                "Red-necked Grebe",
+  #                "Wilson's Snipe",
+  #                "Bufflehead",
+  #                "American Robin",
+  #                "American Tree Sparrow",
+  #                "Fox Sparrow",
+  #                "White-crowned Sparrow",
+  #                "Savannah Sparrow",
+  #                "Swamp Sparrow",
+  #                "Red-winged Blackbird",
+  #                "Northern Waterthrush",
+  #                "Tennessee Warbler",
+  #                "Orange-crowned Warbler",
+  #                "Yellow Warbler",
+  #                "Blackpoll Warbler",
+  #                "Palm Warbler",
+  #                "(Myrtle Warbler) Yellow-rumped Warbler",
+  #                "Yellow-rumped Warbler (all forms)")
    }
 
 
@@ -94,7 +98,7 @@ if(re_fit){
     filter(english %in% sp_re_fit)
 }
 
-if(!re_fit & check_previously_run){
+if(check_previously_run){
 # checking for species already fit
 if(file.exists("previously_run.rds")){
   previous <- readRDS("previously_run.rds")
@@ -137,7 +141,7 @@ strats_3 <- c("CA-MB-3S", "CA-NL-3C", "CA-NT-3N", "CA-NT-3S",
 # build cluster -----------------------------------------------------------
 
 #n_cores = 5
-n_cores <- 2#floor(parallel::detectCores()/4)-4
+n_cores <- 4#floor(parallel::detectCores()/4)-4
 
 cluster <- makeCluster(n_cores, type = "PSOCK")
 registerDoParallel(cluster)
@@ -216,12 +220,12 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
    if(nrow(s$meta_strata) > 2){ #spatial models are irrelevant with < 3 strata
      bbs_dat_sp <- prepare_spatial(s,
-                  strata_map = load_map(strat),
+                  strata_map = load_map(strat)
                   # nearest_fill = TRUE,
                   # island_link_dist_factor = 2
-                   voronoi = TRUE,
+                  # voronoi = TRUE,
                   #buffer_type = "convex_hull",
-                    buffer_dist = 750000
+                  #  buffer_dist = 750000
                   )
 
      #print(bbs_dat_sp$spatial_data$map)
@@ -271,8 +275,8 @@ if(re_fit){
 fit <- run_model(model_data = bbs_dat,
                  refresh = 400,
                  iter_warmup = 1000,
-                 iter_sampling = 2000,
-                 thin = 2,
+                 iter_sampling = 3000,
+                 thin = 3,
                  #output_dir = output_dir,
                  #output_basename = paste0("fit_gam_",aou),
                  output_basename = paste0("fit_",aou),
@@ -287,7 +291,8 @@ fit <- run_model(model_data = bbs_dat,
   fit <- run_model(model_data = bbs_dat,
                    refresh = 400,
 #                   output_basename = paste0("fit_first_diff_",aou),
-                   output_basename = paste0("fit_",aou),
+#output_basename = paste0("fit_gam_",aou),
+output_basename = paste0("fit_",aou),
                    save_model = FALSE,
                    overwrite = write_over,
                    init_alternate = 1)
@@ -299,6 +304,7 @@ fit <- run_model(model_data = bbs_dat,
                              save_file_path = paste0(output_dir,
                                                      #"/fit_first_diff_",
                                                      "/fit_",
+                                                     #"/fit_gam_",
                                                      aou,
                                                      ".rds"))
 

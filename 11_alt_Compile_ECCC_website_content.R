@@ -25,18 +25,23 @@ indices_smooth <- readRDS(paste0("Website/All_BBS_Smoothed_Indices_",YYYY,".rds"
 
 
 web <- trends %>%
-  filter(for_web == TRUE,
-         region != "continent",
-         region_type != "bcr",
-         trend_time != "Three-generation",
+  filter(trend_time != "Three-generation",
          !(region == "BCR7" & region_type == "prov_state")) %>%
-  mutate(prob_decrease_0_25_percent = prob_decrease_0_percent-prob_decrease_25_percent,
+  mutate(region = ifelse(region_type == "bcr",
+                         paste0("BCR_",region),
+                         region),
+         region = ifelse(region == "continent", "Survey-wide",region),
+         region_type = as.character(region_type),
+         region_type = ifelse(region_type == "continent", "survey-wide",region_type),
+         prob_decrease_0_25_percent = prob_decrease_0_percent-prob_decrease_25_percent,
          prob_decrease_25_50_percent = prob_decrease_0_percent - (prob_decrease_0_25_percent + prob_decrease_50_percent),
          prob_increase_0_33_percent = prob_increase_0_percent-prob_increase_33_percent,
          prob_increase_33_100_percent = prob_increase_0_percent - (prob_increase_0_33_percent + prob_increase_100_percent),
          mapfile = paste(bbs_num,region,trend_time,"map.png",sep = "_"),
          strata_included = paste(strata_included,strata_excluded,sep = " ; "),
          strata_excluded = "")
+
+
 
 
 
@@ -76,6 +81,101 @@ names_match <- web %>%
 
 web <- web %>%
   filter(bbs_num %in% names_match$bbs_num)
+
+
+# Table of regions --------------------------------------------------------
+
+regions_w_trends <- web %>%
+  select(region,region_type) %>%
+  distinct() %>%
+  arrange(region_type,region)
+
+bcrs <- sf::read_sf("data/bcr_2025_lakes12.gpkg") %>%
+  mutate(region_type = "bcr",
+         region = paste0("BCR_",bcr_label),
+         region_name_en = bcr_name_en,
+         region_name_fr = bcr_name_fr) %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+
+
+strats <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+  filter(statprov_name != "Newfoundland") %>%
+  mutate(country_name = ifelse(country_name == "United States",
+                               "United States of America",
+                               country_name),
+         region_type = "stratum",
+         region = paste0(country_code,"-",statprov_code,"-",bcr_label),
+         region_name_en = paste0(country_name,"-",statprov_name,"-",bcr_name_en),
+         #region_name_fr = paste0(country_name,"-",statprov_name,"-",bcr_name_fr),
+         region_name_fr = "") %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+
+bcr_country <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+  mutate(country_name = ifelse(country_name == "United States",
+                               "United States of America",
+                               country_name),
+         region_type = "bcr_by_country",
+         region = paste0(country_name,"-","BCR_",bcr_label),
+         region_name_en = paste0(country_name,"-",bcr_name_en),
+         #region_name_fr = paste0(country_name,"-",bcr_name_fr),
+         region_name_fr = "") %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+countries <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+  mutate(country_name = ifelse(country_name == "United States",
+                               "United States of America",
+                               country_name),
+         region_type = "country",
+         region = paste0(country_name),
+         region_name_en = paste0(country_name),
+         #region_name_fr = paste0(country_name),
+         region_name_fr = "") %>%
+  filter(country_code %in% c("US","CA")) %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+
+prov_state <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+  mutate(country_name = ifelse(country_name == "United States",
+                               "United States of America",
+                               country_name),
+         region_type = "prov_state",
+         region = paste0(statprov_code),
+         region_name_en = paste0(statprov_name),
+         #region_name_fr = paste0(statprov_name),
+         region_name_fr = "") %>%
+  filter(country_code %in% c("US","CA"),
+         region_name_en != "Newfoundland") %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+survey_w <- data.frame(region_type = "survey-wide",
+                       region = "Survey-wide",
+                       region_name_en = "Survey-wide",
+                       region_name_fr = "")
+
+regions <- bind_rows(survey_w,
+                     countries,
+                     prov_state,
+                     bcrs,
+                     bcr_country,
+                     strats) %>%
+  distinct() %>%
+  inner_join(regions_w_trends,
+             by = c("region_type","region"))
+
+write_excel_csv(regions,"website/list_of_regions.csv")
+
 
 # miss_bbs_num <- names_match %>%
 #   select(bbs_num,species) %>%
@@ -120,10 +220,7 @@ if(webmaps){
 
 
 #loading base maps for the website plots
-canmap <- bbsBayes2::load_map("bbs_cws") %>%
-  filter(country == "Canada")
-basemap <- bbsBayes2::load_map("bbs_usgs") %>%
-  filter(country == "Canada")
+canmap <- bbsBayes2::load_map("bbs")
 
 
 ## looping through species to create the maps in folder webmaps
@@ -219,7 +316,7 @@ web = web[,clout]
 names(web) = clnms
 
 
-readr::write_excel_csv(web, paste0("website/",YYYY," BBS trends for website.csv"))
+readr::write_excel_csv(web, paste0("website/",YYYY," BBS trends for website w US.csv"))
 
 
 
@@ -236,24 +333,25 @@ readr::write_excel_csv(web, paste0("website/",YYYY," BBS trends for website.csv"
 
 
 webi_short <- indices %>%
-  filter(for_web == TRUE,
-         region != "continent",
-         region_type != "bcr",
-         year > (YYYY-11),
-         trend_time == "Short-term",
-         !(region == "BCR7" & region_type == "prov_state"))
+  mutate(region_type = as.character(region_type),
+    region = ifelse(region_type == "bcr",
+                         paste0("BCR_",region),
+                         region)) %>%
+  filter(year > (YYYY-11),
+         trend_time == "Short-term")
 
 webi <- indices %>%
-  filter(for_web == TRUE,
-         region != "continent",
-         region_type != "bcr",
-         year > 1969,
-         trend_time == "Long-term",
-         !(region == "BCR7" & region_type == "prov_state")) %>%
+  mutate(region = ifelse(region_type == "bcr",
+                         paste0("BCR_",region),
+                         region)) %>%
+  filter(year > 1969,
+         trend_time == "Long-term") %>%
   bind_rows(.,webi_short)
 
 webi <- webi %>%
-  filter(bbs_num %in% names_match$bbs_num)
+  filter(bbs_num %in% names_match$bbs_num) %>%
+  mutate(region = ifelse(region == "continent", "Survey-wide",region),
+         region_type = ifelse(region_type == "continent", "survey-wide",region_type))
 
 clouti =  c("bbs_num",
             "species",
@@ -301,7 +399,8 @@ index_trend_test <- webi %>%
             by = c("species","trendtype","geo.area"))
 }
 
-readr::write_excel_csv(webi, paste0("website/",YYYY," BBS indices for website.csv"))
+readr::write_excel_csv(webi, paste0("website/",YYYY," BBS indices for website w US.csv"))
+
 
 
 

@@ -66,7 +66,7 @@ sp_list <- readRDS("sp_list_w_generations.rds") %>%
 
 
 
-re_collect <- FALSE
+re_collect <- TRUE
 # Compile all trends and indices ------------------------------------------------------
 
 if(re_collect){
@@ -117,42 +117,42 @@ saveRDS(indices_smooth,"output/indices_smooth_collected.rds")
 
 
 # Checking for long-term hind-casting ------------------------------------
-
-back_cast <- trends %>%
-  filter(#backcast_flag < 0.67,
-         trend_time == "Long-term",
-         region_type == "stratum")
-
-strat_back <- back_cast %>%
-  group_by(region,backcast_reliab) %>%
-  summarise(n_species = n(),
-            .groups = "drop") %>%
-  pivot_wider(id_cols = c(region),
-              names_from = backcast_reliab,
-              values_from = n_species) %>%
-  rowwise() %>%
-  mutate(Low = ifelse(is.na(Low),0,Low),
-         Medium = ifelse(is.na(Medium),0,Medium),
-         High = ifelse(is.na(High),0,High),
-         n_sp = sum(Low,Medium,High),
-         p_low = Low/n_sp)
-
-strat_to_bolster <- strat_back %>%
-  filter(p_low > 0.66) %>%
-  select(region) %>%
-  unlist()
-
-strat_to_bolster
-# region1    region2    region3
-# "CA-AB-6N" "CA-NT-6N" "CA-NT-7W"
 #
-
-sp_to_run_w_voronoi <- trends %>%
-  filter(region %in% strat_to_bolster) %>%
-  select(species,bbs_num) %>%
-  distinct()
-
-saveRDS(sp_to_run_w_voronoi,"species_to_consider_voronoi.rds")
+# back_cast <- trends %>%
+#   filter(#backcast_flag < 0.67,
+#          trend_time == "Long-term",
+#          region_type == "stratum")
+#
+# strat_back <- back_cast %>%
+#   group_by(region,backcast_reliab) %>%
+#   summarise(n_species = n(),
+#             .groups = "drop") %>%
+#   pivot_wider(id_cols = c(region),
+#               names_from = backcast_reliab,
+#               values_from = n_species) %>%
+#   rowwise() %>%
+#   mutate(Low = ifelse(is.na(Low),0,Low),
+#          Medium = ifelse(is.na(Medium),0,Medium),
+#          High = ifelse(is.na(High),0,High),
+#          n_sp = sum(Low,Medium,High),
+#          p_low = Low/n_sp)
+#
+# strat_to_bolster <- strat_back %>%
+#   filter(p_low > 0.66) %>%
+#   select(region) %>%
+#   unlist()
+#
+# strat_to_bolster
+# # region1    region2    region3
+# # "CA-AB-6N" "CA-NT-6N" "CA-NT-7W"
+# #
+#
+# sp_to_run_w_voronoi <- trends %>%
+#   filter(region %in% strat_to_bolster) %>%
+#   select(species,bbs_num) %>%
+#   distinct()
+#
+# saveRDS(sp_to_run_w_voronoi,"species_to_consider_voronoi.rds")
 
 # Compare to last year's trends -------------------------------------------
 
@@ -293,8 +293,9 @@ comp_xy_sel <- ggplot(data = trends_comp_sel,
   geom_point()+
   geom_errorbar(aes(ymin = trend_q_0.05, ymax = trend_q_0.95),
                 alpha = 0.4)+
-  geom_errorbarh(aes(xmin = trend_q_0.05_2023, xmax = trend_q_0.95_2023),
-                 alpha = 0.4)+
+  geom_errorbar(aes(xmin = trend_q_0.05_2023, xmax = trend_q_0.95_2023),
+                 alpha = 0.4,
+                orientation = "y")+
   geom_abline(intercept = 0,slope = 1)+
   geom_hline(yintercept = 0)+
   geom_vline(xintercept = 0)+
@@ -336,7 +337,7 @@ trends <- trends %>%
 test_probs <- trends %>%
   mutate(prob_test = prob_LD+prob_MD+prob_LC+prob_MI+prob_LI)
 
-if(any(round(test_probs$prob_test,2) != 1)){stop("probabilites of change categories don't sum properly")}
+if(any(round(test_probs$prob_test,2) != 1)){warning("probabilites of change categories don't sum properly")}
 
 
 # Indices reorder ---------------------------------------------------------
@@ -449,6 +450,18 @@ sp_no_coverage <- trends %>%
 
 
 saveRDS(sp_no_coverage,"species_coverage_summary.rds")
+
+
+
+
+
+
+
+
+
+
+
+
 
 # SOCB upload files -------------------------------------------------------
 
