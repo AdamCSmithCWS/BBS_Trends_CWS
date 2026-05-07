@@ -23,7 +23,7 @@ indices <- readRDS(paste0(external_dir,"/Website/All_BBS_Full_Indices_",YYYY,".r
 indices_smooth <- readRDS(paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_",YYYY,".rds"))
 
 
-species_sel <- c("Rufous Hummingbird")
+species_sel <- c("Connecticut Warbler")
 
 outname <- "RUHU"# must supply meaningful file name suffix for output files
 

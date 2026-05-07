@@ -48,8 +48,8 @@ web <- trends %>%
 # web_species <- read.csv("required_data/BBS_AvianCore.csv")
 
 avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
-  filter(Full_Species__Espèce_complète == "Yes - Oui" |
-           Species_ID_Espèce == "WAVI") %>%
+   filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES",
+                                   "CORE","HORE")) %>%
   select(Species_ID_Espèce, BBS_Number__Numéro_BBS, Sort_Order__Ordre_de_tri) %>%
   rename_with(.,.fn = ~paste0(.x,"_core")) %>%
   distinct() %>%
@@ -58,6 +58,22 @@ avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
          aou = ifelse(aou == 4641, 4642,aou),
          aou = ifelse(Species_ID_Espèce_core == "AHGU", 510,aou),
          aou = ifelse(Species_ID_Espèce_core == "WAVI", 6270,aou))
+
+
+avian_core_table <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
+  filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES",
+                                   "CORE","HORE")) %>%
+  select(Species_ID_Espèce, Full_Species__Espèce_complète, BBS_Number__Numéro_BBS,
+         English_Name__Nom_Anglais,French_Name__Nom_Français,
+         Scientific_Name__Nom_Scientifique, Sort_Order__Ordre_de_tri,
+         Family_CmName_EN__Nom_Famille_Anglais,Family_CmName_FR__Nom_Famille_Français) %>%
+  #rename_with(.,.fn = ~paste0(.x,"_core")) %>%
+  distinct() %>%
+  mutate(aou = as.integer(BBS_Number__Numéro_BBS),
+         aou = ifelse(aou == 5280, 5275,aou),
+         aou = ifelse(aou == 4641, 4642,aou),
+         aou = ifelse(Species_ID_Espèce == "AHGU", 510,aou),
+         aou = ifelse(Species_ID_Espèce == "WAVI", 6270,aou))
 
 
 
@@ -83,6 +99,92 @@ web <- web %>%
   filter(bbs_num %in% names_match$bbs_num)
 
 
+web_sp <- web %>%
+  select(species,espece,bbs_num) %>%
+  distinct() %>%
+  rename(sp = species,
+         es = espece)
+
+
+BBS_AVIANCORE <- avian_core_table %>%
+  select(Sort_Order__Ordre_de_tri,
+         Full_Species__Espèce_complète,
+         Species_ID_Espèce,
+         English_Name__Nom_Anglais,
+         French_Name__Nom_Français,
+         Scientific_Name__Nom_Scientifique,
+         Family_CmName_EN__Nom_Famille_Anglais,
+         Family_CmName_FR__Nom_Famille_Français,
+         aou) %>%
+  filter(aou %in% names_match$bbs_num) %>%
+  rename(Sort_Order = Sort_Order__Ordre_de_tri,
+         Full_Species = Full_Species__Espèce_complète,
+         Species_ID = Species_ID_Espèce,
+         English_Name = English_Name__Nom_Anglais,
+         French_Name = French_Name__Nom_Français,
+         Scientific_Name = Scientific_Name__Nom_Scientifique,
+         Family_CmName_EN = Family_CmName_EN__Nom_Famille_Anglais,
+         Family_CmName_FR = Family_CmName_FR__Nom_Famille_Français,
+         BBS_Number = aou) %>%
+  mutate(Full_Species = ifelse(Full_Species == "Yes - Oui",
+                               "Yes","No")) %>%
+  inner_join(web_sp, by = c("BBS_Number" = "bbs_num")) %>%
+  mutate(English_Name = ifelse(grepl(pattern = "identif",x = English_Name),sp,English_Name),
+         French_Name = ifelse(grepl(pattern = "identif",x = French_Name),es,French_Name),
+         English_Name = ifelse(!grepl(pattern = "(",x = English_Name, fixed = TRUE) &
+                                 Full_Species == "No",sp,English_Name),
+         English_Name = ifelse(grepl(pattern = "Sapsuckers (",x = English_Name, fixed = TRUE),
+                               "Sapsuckers (Yellow-bellied/Red-naped/Red-breasted)",English_Name),
+         French_Name = ifelse(!grepl(pattern = "(",x = French_Name, fixed = TRUE) &
+                                Full_Species == "No",es,French_Name),
+         test_en = ifelse(English_Name == sp,TRUE,FALSE),
+         test_fr = ifelse(French_Name == es,TRUE,FALSE))
+
+en_fail <- BBS_AVIANCORE %>%
+  filter(!test_en)
+
+fr_fail <- BBS_AVIANCORE %>%
+  filter(!test_fr)
+
+BBS_AVIANCORE <- BBS_AVIANCORE %>%
+  select(-c(sp,es,test_en,test_fr))
+
+write_excel_csv(BBS_AVIANCORE,paste0("website/bbs_aviancore_",YYYY+1,".csv"))
+
+bbs_sp_repl <- BBS_AVIANCORE %>%
+  select(BBS_Number,English_Name,French_Name) %>%
+  distinct()
+
+web <- web %>%
+  inner_join(bbs_sp_repl,
+             by = c("bbs_num" = "BBS_Number")) %>%
+  mutate(species = English_Name,
+         espece = French_Name) %>%
+  select(-c(English_Name,French_Name))
+
+
+families <- BBS_AVIANCORE %>%
+  select(Sort_Order,Family_CmName_EN,Family_CmName_FR) %>%
+  group_by(Family_CmName_EN,Family_CmName_FR) %>%
+  summarise(sort_min = min(Sort_Order)) %>%
+  arrange(sort_min) %>%
+  ungroup() %>%
+  mutate(familyID = row_number()) %>%
+  rename(familyNameE = Family_CmName_EN,
+         familyNameF = Family_CmName_FR) %>%
+  select(familyID,familyNameE,familyNameF) %>%
+  mutate(sortE = familyID,
+         sortF = familyID)
+
+
+
+write_excel_csv(families,paste0("website/bbs_families_",YYYY+1,".csv"))
+
+
+
+
+table(web$species, useNA = "always")
+
 # Table of regions --------------------------------------------------------
 
 regions_w_trends <- web %>%
@@ -90,79 +192,114 @@ regions_w_trends <- web %>%
   distinct() %>%
   arrange(region_type,region)
 
+states <- rnaturalearth::ne_states(country = c("Canada","United States of America")) %>%
+  sf::st_drop_geometry() %>% select(postal,name_fr) %>%
+  distinct() %>%
+  rename(statprov_name_fr = name_fr)
+
+# countries <- rnaturalearth::ne_countries() %>%
+#   sf::st_drop_geometry() %>%
+#   filter(admin %in% c("Canada","United States of America")) %>%
+#   select(postal, name_fr)
+#
+# country_states <- countries %>% bind_rows(states)
+
 bcrs <- sf::read_sf("data/bcr_2025_lakes12.gpkg") %>%
   mutate(region_type = "bcr",
          region = paste0("BCR_",bcr_label),
+         geo.area = region,
          region_name_en = bcr_name_en,
          region_name_fr = bcr_name_fr) %>%
   sf::st_drop_geometry() %>%
-  select(region_type,region,region_name_en,region_name_fr) %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
 
 
 strats <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
   filter(statprov_name != "Newfoundland") %>%
+  left_join(states, by = c("statprov_code" = "postal")) %>%
+  rowwise() %>%
   mutate(country_name = ifelse(country_name == "United States",
                                "United States of America",
                                country_name),
+         country_name_fr = ifelse(country_name == "United States of America",
+                               "États-Unis",
+                               "Canada"),
          region_type = "stratum",
          region = paste0(country_code,"-",statprov_code,"-",bcr_label),
+         geo.area = region,
          region_name_en = paste0(country_name,"-",statprov_name,"-",bcr_name_en),
-         #region_name_fr = paste0(country_name,"-",statprov_name,"-",bcr_name_fr),
-         region_name_fr = "") %>%
+         region_name_fr = paste0(country_name_fr,"-",statprov_name_fr,"-",bcr_name_fr)) %>%
   sf::st_drop_geometry() %>%
-  select(region_type,region,region_name_en,region_name_fr) %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
 
 bcr_country <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+  left_join(states, by = c("statprov_code" = "postal")) %>%
+  rowwise() %>%
   mutate(country_name = ifelse(country_name == "United States",
                                "United States of America",
                                country_name),
+         country_name_fr = ifelse(country_name == "United States of America",
+                                  "États-Unis",
+                                  "Canada"),
          region_type = "bcr_by_country",
          region = paste0(country_name,"-","BCR_",bcr_label),
          region_name_en = paste0(country_name,"-",bcr_name_en),
-         #region_name_fr = paste0(country_name,"-",bcr_name_fr),
-         region_name_fr = "") %>%
+         region_name_fr = paste0(country_name_fr,"-",bcr_name_fr),
+         geo.area = ifelse(country_name == "United States of America",
+                           paste0("BCR_",bcr_label,"U"),
+                           paste0("BCR_",bcr_label,"C"))) %>%
   sf::st_drop_geometry() %>%
-  select(region_type,region,region_name_en,region_name_fr) %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
-countries <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+countries <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
+  rowwise() %>%
   mutate(country_name = ifelse(country_name == "United States",
                                "United States of America",
                                country_name),
+         country_name_fr = ifelse(country_name == "United States of America",
+                                  "États-Unis",
+                                  "Canada"),
          region_type = "country",
          region = paste0(country_name),
+         geo.area = region,
          region_name_en = paste0(country_name),
-         #region_name_fr = paste0(country_name),
-         region_name_fr = "") %>%
+         region_name_fr = paste0(country_name_fr)) %>%
   filter(country_code %in% c("US","CA")) %>%
   sf::st_drop_geometry() %>%
-  select(region_type,region,region_name_en,region_name_fr) %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
 
-prov_state <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+prov_state <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
+  left_join(states, by = c("statprov_code" = "postal")) %>%
+  rowwise() %>%
   mutate(country_name = ifelse(country_name == "United States",
                                "United States of America",
                                country_name),
+         country_name_fr = ifelse(country_name == "United States of America",
+                                  "États-Unis",
+                                  "Canada"),
          region_type = "prov_state",
          region = paste0(statprov_code),
+         geo.area = region,
          region_name_en = paste0(statprov_name),
-         #region_name_fr = paste0(statprov_name),
-         region_name_fr = "") %>%
+         region_name_fr = paste0(statprov_name_fr)) %>%
   filter(country_code %in% c("US","CA"),
          region_name_en != "Newfoundland") %>%
   sf::st_drop_geometry() %>%
-  select(region_type,region,region_name_en,region_name_fr) %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
 survey_w <- data.frame(region_type = "survey-wide",
                        region = "Survey-wide",
+                       geo.area = "Survey-wide",
                        region_name_en = "Survey-wide",
-                       region_name_fr = "")
+                       region_name_fr = "Zone complète de l'enquête")
 
 regions <- bind_rows(survey_w,
                      countries,
@@ -174,7 +311,20 @@ regions <- bind_rows(survey_w,
   inner_join(regions_w_trends,
              by = c("region_type","region"))
 
-write_excel_csv(regions,"website/list_of_regions.csv")
+write_excel_csv(regions,paste0("website/bbs_geoarea_",YYYY+1,".csv"))
+
+regs_repl <- regions %>%
+  select(region,geo.area,region_type)
+
+web <- web %>%
+  left_join(regs_repl, by = c("region","region_type"))
+
+regs <- unique(regions$geo.area)
+regs_web <- unique(web$geo.area)
+
+if(any(!regs %in% regs_web) | any(!regs_web %in% regs)){
+  stop("missing regions")
+}
 
 
 # miss_bbs_num <- names_match %>%
@@ -271,7 +421,7 @@ if(test_map_extra){
 clout = c("bbs_num",
           "species",
           "espece",
-          "region",
+          "geo.area",
           "trend_time",
           "start_year",
           "end_year",
@@ -331,32 +481,44 @@ readr::write_excel_csv(web, paste0("website/",YYYY," BBS trends for website w US
 # Indices for website -----------------------------------------------------
 
 
-
 webi_short <- indices %>%
+  inner_join(bbs_sp_repl,
+             by = c("bbs_num" = "BBS_Number")) %>%
+  mutate(species = English_Name,
+         espece = French_Name) %>%
+  select(-c(English_Name,French_Name))%>%
   mutate(region_type = as.character(region_type),
     region = ifelse(region_type == "bcr",
                          paste0("BCR_",region),
-                         region)) %>%
+                         region),
+    region = ifelse(region == "continent", "Survey-wide",region),
+    region_type = ifelse(region_type == "continent", "survey-wide",region_type)) %>%
+  left_join(regs_repl, by = c("region","region_type")) %>%
   filter(year > (YYYY-11),
          trend_time == "Short-term")
 
 webi <- indices %>%
-  mutate(region = ifelse(region_type == "bcr",
+  inner_join(bbs_sp_repl,
+             by = c("bbs_num" = "BBS_Number")) %>%
+  mutate(species = English_Name,
+         espece = French_Name) %>%
+  select(-c(English_Name,French_Name)) %>%
+  mutate(region_type = as.character(region_type),
+         region = ifelse(region_type == "bcr",
                          paste0("BCR_",region),
-                         region)) %>%
+                         region),
+         region = ifelse(region == "continent", "Survey-wide",region),
+         region_type = ifelse(region_type == "continent", "survey-wide",region_type)) %>%
+  left_join(regs_repl, by = c("region","region_type")) %>%
   filter(year > 1969,
          trend_time == "Long-term") %>%
   bind_rows(.,webi_short)
 
-webi <- webi %>%
-  filter(bbs_num %in% names_match$bbs_num) %>%
-  mutate(region = ifelse(region == "continent", "Survey-wide",region),
-         region_type = ifelse(region_type == "continent", "survey-wide",region_type))
 
 clouti =  c("bbs_num",
             "species",
             "espece",
-            "region",
+            "geo.area",
             "trend_time",
             "year",
             "index",
@@ -401,7 +563,7 @@ index_trend_test <- webi %>%
 
 readr::write_excel_csv(webi, paste0("website/",YYYY," BBS indices for website w US.csv"))
 
-
+table(webi$geo.area,useNA = "always")
 
 
 
