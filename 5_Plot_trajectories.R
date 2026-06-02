@@ -308,7 +308,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
     traj_out <- vector("list",3)
     names(traj_out) <- c("continent","Canada","United_States_of_America")
 
-    if(!file.exists(paste0(external_dir,"/Indices/Inds_",aou,".rds")) | re_run){
+    if(file.exists(paste0(external_dir,"/Indices/Inds_",aou,".rds"))){
 
       # if(file.exists(paste0(external_dir,"/Indices/Inds_",aou,".rds")) &
       #    (!file.exists(paste0(external_dir,"/Figures/temp_rds_storage/",aou,"_highlevel_simple_trajs.RDS")) | re_run)){

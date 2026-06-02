@@ -66,7 +66,7 @@ sp_list <- readRDS("sp_list_w_generations.rds") %>%
 
 
 
-re_collect <- TRUE
+re_collect <- FALSE
 # Compile all trends and indices ------------------------------------------------------
 
 if(re_collect){
@@ -109,9 +109,21 @@ saveRDS(indices_smooth,"output/indices_smooth_collected.rds")
 }else{
 
 
-  trends <- readRDS("output/trends_collected.rds")
-  indices <- readRDS("output/indices_collected.rds")
-  indices_smooth <- readRDS("output/indices_smooth_collected.rds")
+  trends <- readRDS("output/trends_collected.rds")%>%
+    mutate(region = ifelse(region == "continent",
+                           "Survey-wide",region),
+           region_type = ifelse(region_type == "continent",
+                                "survey-wide",region_type))
+  indices <- readRDS("output/indices_collected.rds")%>%
+    mutate(region = ifelse(region == "continent",
+                           "Survey-wide",region),
+           region_type = ifelse(region_type == "continent",
+                                "survey-wide",region_type))
+  indices_smooth <- readRDS("output/indices_smooth_collected.rds")%>%
+    mutate(region = ifelse(region == "continent",
+                           "Survey-wide",region),
+           region_type = ifelse(region_type == "continent",
+                                "survey-wide",region_type))
 
 }
 
@@ -186,7 +198,9 @@ ly_trends <- lastyear[,c("species","bbs_num","region","trend_time",
          CI_2023 = width_of_95_percent_credible_interval,
          reliab_cov_2023 = reliab.cov,
          coverage_2023 = coverage) %>%
-  filter(region %in% c("continent","Canada","United States of America")) %>%
+  mutate(region = ifelse(region == "continent",
+                         "Survey-wide",region)) |>
+  filter(region %in% c("Survey-wide","Canada","United States of America")) %>%
   select(-c(species))
 
 
@@ -283,7 +297,7 @@ dev.off()
 
 trends_comp_sel <- trends_comp %>%
   filter(diff_trend > 1 | diff_trend < -1,
-         region_type == "continent")
+         region_type == "survey-wide")
 
 
 comp_xy_sel <- ggplot(data = trends_comp_sel,
@@ -312,6 +326,133 @@ comp_xy_sel
 
 # Compile and organize trends and indices for SOCB ------------------------
 
+
+
+
+
+states <- rnaturalearth::ne_states(country = c("Canada","United States of America")) %>%
+  sf::st_drop_geometry() %>% select(postal,name_fr) %>%
+  distinct() %>%
+  rename(statprov_name_fr = name_fr)
+
+
+strats <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+  filter(statprov_name != "Newfoundland") %>%
+  left_join(states, by = c("statprov_code" = "postal")) %>%
+  rowwise() %>%
+  mutate(country_name = ifelse(country_name == "United States",
+                               "United States of America",
+                               country_name),
+         country_name_fr = ifelse(country_name == "United States of America",
+                                  "États-Unis",
+                                  "Canada"),
+         region_type = "stratum",
+         region = paste0(country_code,"-",statprov_code,"-",bcr_label),
+         geo.area = region,
+         region_name_en = paste0(country_name,"-",statprov_name,"-",bcr_name_en),
+         region_name_fr = paste0(country_name_fr,"-",statprov_name_fr,"-",bcr_name_fr)) %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+
+bcrs <- sf::read_sf("data/bcr_2025_lakes12.gpkg") %>%
+  mutate(region_type = "bcr",
+         region = paste0("BCR_",bcr_label),
+         geo.area = region,
+         region_name_en = bcr_name_en,
+         region_name_fr = bcr_name_fr) %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+
+
+
+bcr_country <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+  left_join(states, by = c("statprov_code" = "postal")) %>%
+  rowwise() %>%
+  mutate(country_name = ifelse(country_name == "United States",
+                               "United States of America",
+                               country_name),
+         country_name_fr = ifelse(country_name == "United States of America",
+                                  "États-Unis",
+                                  "Canada"),
+         region_type = "bcr_by_country",
+         region = paste0(country_name,"-","BCR_",bcr_label),
+         region_name_en = paste0(country_name,"-",bcr_name_en),
+         region_name_fr = paste0(country_name_fr,"-",bcr_name_fr),
+         geo.area = ifelse(country_name == "United States of America",
+                           paste0("BCR_",bcr_label,"U"),
+                           paste0("BCR_",bcr_label,"C"))) %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+countries <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
+  rowwise() %>%
+  mutate(country_name = ifelse(country_name == "United States",
+                               "United States of America",
+                               country_name),
+         country_name_fr = ifelse(country_name == "United States of America",
+                                  "États-Unis",
+                                  "Canada"),
+         region_type = "country",
+         region = paste0(country_name),
+         geo.area = ifelse(region == "United States of America",
+                           "UU","CC"),
+         region_name_en = paste0(country_name),
+         region_name_fr = paste0(country_name_fr)) %>%
+  filter(country_code %in% c("US","CA")) %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+
+
+prov_state <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
+  left_join(states, by = c("statprov_code" = "postal")) %>%
+  rowwise() %>%
+  mutate(country_name = ifelse(country_name == "United States",
+                               "United States of America",
+                               country_name),
+         country_name_fr = ifelse(country_name == "United States of America",
+                                  "États-Unis",
+                                  "Canada"),
+         region_type = "prov_state",
+         region = paste0(statprov_code),
+         geo.area = region,
+         region_name_en = paste0(statprov_name),
+         region_name_fr = paste0(statprov_name_fr)) %>%
+  filter(country_code %in% c("US","CA"),
+         region_name_en != "Newfoundland") %>%
+  sf::st_drop_geometry() %>%
+  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+  distinct()
+
+survey_w <- data.frame(region_type = "survey-wide",
+                       region = "Survey-wide",
+                       geo.area = "SW",
+                       region_name_en = "Survey-wide",
+                       region_name_fr = "Zone complète de l'enquête")
+
+regions <- bind_rows(survey_w,
+                     countries,
+                     prov_state,
+                     bcrs,
+                     bcr_country,
+                     strats) |>
+  select(-geo.area) |>
+  rename(region_en = region_name_en,
+         region_fr = region_name_fr)
+
+
+
+
+## translate columns with region, region_type, trend_time, precision, coverage backcast_reliability, reliability,
+## join tables for CWS website should provide translations
+## add these new french columns to the header sheets
+## DROP for_web
 # reconcile with template and Catherine's email
 
 
@@ -322,17 +463,11 @@ trends <- trends %>%
          prob_MI = prob_increase_33_percent - prob_increase_100_percent,
          prob_LI = prob_increase_100_percent,
          region_type = factor(region_type,
-                              levels = c("continent","country","prov_state","bcr","bcr_by_country","stratum"),
-                              ordered = TRUE)) %>%
-  left_join(.,core_link,by = c("bbs_num" = "aou"))%>%
-  relocate(region,region_type,species,espece,trend_time,start_year,end_year,
-           starts_with("trend"),
-           starts_with("percent"),
-           width_of_95_percent_credible_interval,
-           starts_with("prob_"),
-           rel_abundance, n_routes, mean_n_routes, n_strata_included, backcast_flag) %>%
-  arrange(naturecounts_sort_order,region_type,region,start_year)
-
+                              levels = c("survey-wide","country","prov_state","bcr","bcr_by_country","stratum"),
+                              ordered = TRUE),
+         region = ifelse(region_type == "bcr",
+                         paste0("BCR_",region),
+                         region))
 
 test_probs <- trends %>%
   mutate(prob_test = prob_LD+prob_MD+prob_LC+prob_MI+prob_LI)
@@ -340,13 +475,103 @@ test_probs <- trends %>%
 if(any(round(test_probs$prob_test,2) != 1)){warning("probabilites of change categories don't sum properly")}
 
 
+
+
+cat_translate <- function(x){
+  y <- as.character(x)
+  r1 <- which(y == "Medium")
+  y[r1] <- rep("Moyenne",length = length(r1))
+  r1 <- which(y == "High")
+  y[r1] <- rep("Élevée",length = length(r1))
+  r1 <- which(y == "Low")
+  y[r1] <- rep("Faible",length = length(r1))
+
+  r1 <- which(y == "Long-term")
+  y[r1] <- rep("a long term",length = length(r1))
+  r1 <- which(y == "Short-term")
+  y[r1] <- rep("a courte term",length = length(r1))
+  r1 <- which(y == "Three-generation")
+  y[r1] <- rep("trois générations",length = length(r1))
+
+  r1 <- which(y == "bcr")
+  y[r1] <- rep("rco",length = length(r1))
+  r1 <- which(y == "bcr_by_country")
+  y[r1] <- rep("rco_par_pays",length = length(r1))
+  r1 <- which(y == "survey-wide")
+  y[r1] <- rep("zone complète de l'enquête",length = length(r1))
+  r1 <- which(y == "country")
+  y[r1] <- rep("pays",length = length(r1))
+  r1 <- which(y == "prov_state")
+  y[r1] <- rep("prov_etat",length = length(r1))
+  r1 <- which(y == "stratum")
+  y[r1] <- rep("strate",length = length(r1))
+
+  r1 <- which(y == "smooth")
+  y[r1] <- rep("lisse",length = length(r1))
+
+  r1 <- which(y == "full")
+  y[r1] <- rep("complet",length = length(r1))
+
+  return(y)
+}
+
+trends_bil <- trends %>%
+  left_join(.,core_link,by = c("bbs_num" = "aou")) %>%
+  left_join(regions, by = c("region","region_type")) |>
+  mutate(type_region = cat_translate(region_type),
+         period = cat_translate(trend_time),
+         couverture = cat_translate(coverage),
+         precision_fr = cat_translate(precision),
+         poids_des_donnees_locales = cat_translate(backcast_reliab),
+         fiabilite = cat_translate(reliability),
+         strat_incl = paste0(strata_included,"; ",strata_excluded)) |>
+  relocate(region_en,region_fr,region_type,type_region,species,espece,trend_time,period,start_year,end_year,
+           starts_with("trend"),
+           starts_with("percent"),
+           width_of_95_percent_credible_interval,
+           starts_with("prob_"),
+           rel_abundance, n_routes, mean_n_routes, n_strata_included, backcast_flag,
+           precision,precision_fr,coverage,couverture,backcast_reliab,poids_des_donnees_locales,
+           reliability, fiabilite) %>%
+  arrange(naturecounts_sort_order,region_type,region,start_year) |>
+  rename(from_de = start_year,
+         to_a = end_year,
+         prob_LD_DI = prob_LD,
+         prob_MD_DM = prob_MD,
+         prob_LC_PdC = prob_LC,
+         prob_MI_AM = prob_MI,
+         prob_LI_AI = prob_LI,
+         rel_ab = rel_abundance,
+         rel_ab_obs = obs_rel_abundance,
+         n_site = n_routes,
+         mean_n_site_moyenne = mean_n_routes,
+         n_strat_incl = n_strata_included,
+         sequence_naturecounts = naturecounts_sort_order,
+         width_CI_largeur_IC = width_of_95_percent_credible_interval,
+         local_data_donnees_locales = backcast_flag) |>
+  rename_with(.fn = ~gsub("trend","trend_tendence",.x),
+              .cols = starts_with("trend")) |>
+  rename_with(.fn = ~gsub("percent_change","percent_ch_pourcentage",.x),
+              .cols = starts_with("percent_change")) |>
+  rename_with(.fn = ~gsub("prob_decrease","prob_decrease_diminution",.x),
+              .cols = starts_with("prob_decrease"))|>
+  rename_with(.fn = ~gsub("prob_increase","prob_increase_augmentation",.x),
+              .cols = starts_with("prob_increase")) |>
+  rename(trend_time = trend_tendence_time) |>
+  select(-c(strata_included,strata_excluded,region,for_web,
+            bbs_num))
+
+
+
+
 # Indices reorder ---------------------------------------------------------
 
 
 indices_smooth <- indices_smooth %>%
-  left_join(.,core_link,by = c("bbs_num" = "aou")) %>%
+  left_join(.,core_link,by = c("bbs_num" = "aou"))|>
+  left_join(regions, by = c("region","region_type")) %>%
   mutate(region_type = factor(region_type,
-                              levels = c("continent","country","prov_state","bcr","bcr_by_country","stratum"),
+                              levels = c("survey-wide","country","prov_state","bcr","bcr_by_country","stratum"),
                               ordered = TRUE),
          trend_time = factor(trend_time,
                              levels = c("Long-term","Three-generation","Short-term"),
@@ -357,10 +582,37 @@ indices_smooth <- indices_smooth %>%
            obs_mean, backcast_flag)%>%
     arrange(naturecounts_sort_order,region_type,region,trend_time,year)
 
+indices_smooth_bil <- indices_smooth  |>
+  mutate(type_region = cat_translate(region_type),
+         period = cat_translate(trend_time),
+         type_ind = cat_translate(indices_type),
+         strat_incl = paste0(strata_included,"; ",strata_excluded)) |>
+  relocate(region_en,region_fr,region_type,type_region,species,espece,trend_time,period,year,
+           starts_with("index"),
+           obs_mean, n_routes, n_routes_total, n_non_zero, backcast_flag) %>%
+  arrange(naturecounts_sort_order,region_type,region,year) |>
+  rename(year_an = year,
+         rel_ab_obs = obs_mean,
+         ind_type = indices_type,
+         n_site = n_routes,
+         n_site_total = n_routes_total,
+         n_non_zero_pas_zero = n_non_zero,
+         local_data_donnees_locales = backcast_flag) |>
+  rename_with(.fn = ~gsub("index","ind",.x),
+              .cols = starts_with("index"))|>
+  select(-c(strata_included,strata_excluded,region,for_web,
+            bbs_num))
+
+
+
+
+
+
 indices <- indices %>%
   left_join(.,core_link,by = c("bbs_num" = "aou")) %>%
+  left_join(regions, by = c("region","region_type")) %>%
   mutate(region_type = factor(region_type,
-                              levels = c("continent","country","prov_state","bcr","bcr_by_country","stratum"),
+                              levels = c("survey-wide","country","prov_state","bcr","bcr_by_country","stratum"),
                               ordered = TRUE),
          trend_time = factor(trend_time,
                              levels = c("Long-term","Three-generation","Short-term"),
@@ -371,7 +623,26 @@ indices <- indices %>%
            obs_mean, backcast_flag)%>%
   arrange(naturecounts_sort_order,region_type,region,trend_time,year)
 
-
+indices_bil <- indices|>
+  mutate(type_region = cat_translate(region_type),
+         period = cat_translate(trend_time),
+         type_ind = cat_translate(indices_type),
+         strat_incl = paste0(strata_included,"; ",strata_excluded)) |>
+  relocate(region_en,region_fr,region_type,type_region,species,espece,trend_time,period,year,
+           starts_with("index"),
+           obs_mean, n_routes, n_routes_total, n_non_zero, backcast_flag) %>%
+  arrange(naturecounts_sort_order,region_type,region,year) |>
+  rename(year_an = year,
+         rel_ab_obs = obs_mean,
+         ind_type = indices_type,
+         n_site = n_routes,
+         n_site_total = n_routes_total,
+         n_non_zero_pas_zero = n_non_zero,
+         local_data_donnees_locales = backcast_flag) |>
+  rename_with(.fn = ~gsub("index","ind",.x),
+              .cols = starts_with("index"))|>
+  select(-c(strata_included,strata_excluded,region,for_web,
+            bbs_num))
 
 # csv files with trends and indices for Google Drive ----------------------
 
@@ -383,59 +654,66 @@ saveRDS(trends,paste0(external_dir,"/Website/All_BBS_Trends_",YYYY,".rds"))
 # indices_smooth <- readRDS(paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_",YYYY,".rds"))
 # indices <- readRDS(paste0(external_dir,"/Website/All_BBS_Full_Indices_",YYYY,".rds"))
 #
-# tst <- indices_smooth %>% filter(region == "continent", trend_time == "Long-term") %>% group_by(species) %>% summarise(n_test = n())
+# tst <- indices_smooth %>% filter(region == "survey-wide", trend_time == "Long-term") %>% group_by(species) %>% summarise(n_test = n())
 
-readr::write_excel_csv(indices,paste0(external_dir,"/Website/All_BBS_Full_Indices_",YYYY,".csv"))
-readr::write_excel_csv(indices_smooth,paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_",YYYY,".csv"))
-readr::write_excel_csv(trends,paste0(external_dir,"/Website/All_BBS_Trends_",YYYY,".csv"))
+readr::write_excel_csv(indices_bil,paste0(external_dir,"/Website/All_BBS_Full_Indices_",YYYY,".csv"))
+readr::write_excel_csv(indices_smooth_bil,paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_",YYYY,".csv"))
+readr::write_excel_csv(trends_bil,paste0(external_dir,"/Website/All_BBS_Trends_",YYYY,".csv"))
 
-inds_select <- indices %>%
-  filter(region_type %in% c("continent","country"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_continent_country_",YYYY,".csv"))
 
-inds_select <- indices %>%
+
+
+inds_select <- indices_bil %>%
+  filter(region_type %in% c("survey-wide","country"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_survey-wide_country_",YYYY,".csv"))
+
+inds_select <- indices_bil %>%
   filter(region_type %in% c("prov_state"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_prov_state_",YYYY,".csv"))
 
 
-inds_select <- indices %>%
+inds_select <- indices_bil %>%
   filter(region_type %in% c("bcr"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_bcr_",YYYY,".csv"))
 
-inds_select <- indices %>%
+inds_select <- indices_bil %>%
   filter(region_type %in% c("bcr_by_country"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_bcr_by_country_",YYYY,".csv"))
 
 
-inds_select <- indices_smooth %>%
-  filter(region_type %in% c("continent","country"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_continent_country_",YYYY,".csv"))
+inds_select <- indices_smooth_bil %>%
+  filter(region_type %in% c("survey-wide","country"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_survey-wide_country_",YYYY,".csv"))
 
-inds_select <- indices_smooth %>%
+inds_select <- indices_smooth_bil %>%
   filter(region_type %in% c("prov_state"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_prov_state_",YYYY,".csv"))
 
 
-inds_select <- indices_smooth %>%
+inds_select <- indices_smooth_bil %>%
   filter(region_type %in% c("bcr"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_bcr_",YYYY,".csv"))
 
-inds_select <- indices_smooth %>%
+inds_select <- indices_smooth_bil %>%
   filter(region_type %in% c("bcr_by_country"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_bcr_by_country_",YYYY,".csv"))
 
 
 
 
-trends_select <- trends %>%
-  filter(region_type %in% c("continent","country","prov_state"))
-readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_continent_country_prov_state_",YYYY,".csv"))
-trends_select <- trends %>%
+trends_select <- trends_bil %>%
+  filter(region_type %in% c("survey-wide","country","prov_state"))
+readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_survey-wide_country_prov_state_",YYYY,".csv"))
+trends_select <- trends_bil %>%
   filter(region_type %in% c("bcr","bcr_by_country"))
 readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_bcr_bcr_by_country_",YYYY,".csv"))
-trends_select <- trends %>%
+trends_select <- trends_bil %>%
   filter(region_type %in% c("stratum"))
 readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_strata_",YYYY,".csv"))
+
+
+
+
 
 
 sp_no_coverage <- trends %>%
@@ -472,14 +750,14 @@ socb_areas <- read_csv("data/SOCB_regions.csv") %>%
 
 #
 # trends_out <- trends %>%
-#   filter((for_web == TRUE | region %in% c("continent","United States of America")))
+#   filter((for_web == TRUE | region %in% c("survey-wide","United States of America")))
 
 trends_out2 <- trends  %>%
   mutate(years = paste(start_year,end_year,sep = "-"),
          results_code = "BBS",
          season = "breeding",
          version = YYYY,
-         area_code = ifelse(region == "continent","Continental",region),
+         area_code = ifelse(region == "survey-wide","Survey-wide",region),
          area_code = gsub(area_code,pattern = "United States of America",
                           replacement = "USA"),
          area_code = ifelse(region_type == "bcr",paste0("BCR_",region),area_code),
@@ -576,14 +854,14 @@ readr::write_excel_csv(trends_socb,
 # SOCB extra trends -------------------------------------------------------
 #
 # trends_out <- trends %>%
-#   filter((for_web == FALSE & !(region %in% c("continent","United States of America"))))
+#   filter((for_web == FALSE & !(region %in% c("survey-wide","United States of America"))))
 #
 # trends_out2 <- trends_out  %>%
 #   mutate(years = paste(start_year,end_year,sep = "-"),
 #          results_code = "BBS",
 #          season = "breeding",
 #          version = YYYY,
-#          area_code = ifelse(region == "continent","Continental",region),
+#          area_code = ifelse(region == "survey-wide","survey-wideal",region),
 #          area_code = gsub(area_code,pattern = "United States of America",
 #                           replacement = "USA"),
 #          area_code = ifelse(region_type == "bcr",paste0("BCR_",region),area_code),
@@ -683,7 +961,7 @@ smooth_join <- indices_smooth %>%
   rename(smooth_index = index)
 
 indices_socb <- indices %>%
-  #filter((for_web == TRUE | region %in% c("continent","United States of America"))) %>%
+  #filter((for_web == TRUE | region %in% c("survey-wide","United States of America"))) %>%
   inner_join(.,smooth_join,
              by = c("species",
                     "region",
@@ -695,7 +973,7 @@ indices_socb <- indices %>%
          results_code = "BBS",
          season = "breeding",
          version = YYYY,
-         area_code = ifelse(region == "continent","Continental",region),
+         area_code = ifelse(region == "survey-wide","Survey-wide",region),
          area_code = gsub(area_code,pattern = "United States of America",
                           replacement = "USA"),
          area_code = ifelse(region_type == "bcr",paste0("BCR_",region),area_code),
@@ -762,7 +1040,7 @@ readr::write_excel_csv(indices_socb,
 
 #
 # indices_socb <- indices %>%
-#   filter((for_web == FALSE & !(region %in% c("continent","United States of America")))) %>%
+#   filter((for_web == FALSE & !(region %in% c("survey-wide","United States of America")))) %>%
 #   inner_join(.,smooth_join,
 #              by = c("species",
 #                     "region",
@@ -774,7 +1052,7 @@ readr::write_excel_csv(indices_socb,
 #          results_code = "BBS",
 #          season = "breeding",
 #          version = YYYY,
-#          area_code = ifelse(region == "continent","Continental",region),
+#          area_code = ifelse(region == "survey-wide","survey-wideal",region),
 #          area_code = gsub(area_code,pattern = "United States of America",
 #                           replacement = "USA"),
 #          area_code = ifelse(region_type == "bcr",paste0("BCR_",region),area_code),

@@ -147,7 +147,7 @@ fr_fail <- BBS_AVIANCORE %>%
   filter(!test_fr)
 
 BBS_AVIANCORE <- BBS_AVIANCORE %>%
-  select(-c(sp,es,test_en,test_fr))
+  select(-c(sp,es,test_en,test_fr,Full_Species))
 
 write_excel_csv(BBS_AVIANCORE,paste0("website/bbs_aviancore_",YYYY+1,".csv"))
 
@@ -266,13 +266,15 @@ countries <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
                                   "Canada"),
          region_type = "country",
          region = paste0(country_name),
-         geo.area = region,
+         geo.area = ifelse(region == "United States of America",
+                           "UU","CC"),
          region_name_en = paste0(country_name),
          region_name_fr = paste0(country_name_fr)) %>%
   filter(country_code %in% c("US","CA")) %>%
   sf::st_drop_geometry() %>%
   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
+
 
 
 prov_state <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
@@ -297,33 +299,147 @@ prov_state <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
 
 survey_w <- data.frame(region_type = "survey-wide",
                        region = "Survey-wide",
-                       geo.area = "Survey-wide",
+                       geo.area = "SW",
                        region_name_en = "Survey-wide",
                        region_name_fr = "Zone complète de l'enquête")
 
+regional_prefixes_sorts <- readxl::read_excel("data/State_prefixes.xlsx")
+
 regions <- bind_rows(survey_w,
                      countries,
-                     prov_state,
-                     bcrs,
-                     bcr_country,
-                     strats) %>%
+                     prov_state) %>%
+  left_join(regions_w_trends,
+            by = c("region","region_type")) %>%
+  distinct()
+
+regions_link <- regional_prefixes_sorts  %>%
+  mutate(geo.area = State_code) %>%
+  left_join(regions,
+            by = c("geo.area")) %>%
+  mutate(sortE = sort,
+         sortF = sort) %>%
+  rename(provID = sort,
+         shortCode = State_code,
+         descriptionE = region_name_en,
+         descriptionF = region_name_fr,
+         prefixF = prefix) %>%
+  select(provID,
+           shortCode,
+           descriptionE,
+           descriptionF,
+           sortE,
+           sortF,
+           prefixF,
+         geo.area,
+         region_type,
+         region) |>
+  arrange(provID)
+
+regions <- regions_link %>%
+  select(-c(geo.area,region_type,region))
+write_excel_csv(regions,paste0("website/bbs_province_",YYYY+1,".csv"))
+
+
+bcr_sorts <- readxl::read_excel("data/BCR_prefixes.xlsx")
+
+sub_0 <- function(x){
+  dig <- paste0(0,str_extract(x,
+                     "[[:digit:]]"))
+  new <- str_replace(x,
+              pattern = "[[:digit:]]",
+              replacement = dig)
+}
+bcr_regions <- bind_rows(bcrs,
+                     bcr_country) %>%
   distinct() %>%
   inner_join(regions_w_trends,
-             by = c("region_type","region"))
+             by = c("region_type","region")) %>%
+  mutate(shortCode = ifelse(str_detect(geo.area,
+                                       pattern = "_[[:digit:]]{1}$|_[[:digit:]]{1}[[:alpha:]]{1}"),
+                            sub_0(geo.area),
+                            geo.area),
+         shortCode = str_replace(shortCode,
+                                 "_",
+                                 ""))
 
-write_excel_csv(regions,paste0("website/bbs_geoarea_",YYYY+1,".csv"))
+bcr_regions_link <- bcr_sorts %>%
+  left_join(bcr_regions,
+            by = c("shortCode")) %>%
+  select(bcrID,
+         shortCode,
+         bcrE,
+         bcrF,
+         bcrNameE,
+         bcrNameF,
+         sortE,
+         sortF,
+         prefixF,
+         geo.area,
+         region_type,
+         region) |>
+  arrange(bcrNameE) |>
+  ungroup() |>
+  mutate(sortE = row_number(bcrNameE))  |>
+  arrange(bcrNameF) |>
+  ungroup() |>
+  mutate(sortF = row_number(bcrNameF)) %>%
+  arrange(bcrID)
+
+bcr_regions <- bcr_regions_link %>%
+  select(-c(geo.area,region_type,region))
+
+write_excel_csv(bcr_regions,paste0("website/bbs_bcr_",YYYY+1,".csv"))
+
+
+
+
+
+
+strata_sorts <- read_csv("data/bbs_asr_lookups_20260514.csv") |>
+  select(-c(9:10)) |>
+  mutate(shortCode = asrID)
+
+
+strat_regions_link <- strats %>%
+  distinct() %>%
+  inner_join(regions_w_trends,
+             by = c("region_type","region")) |>
+  select(-c(region_name_en,region_name_fr)) |>
+  mutate(asrID = geo.area) |>
+  full_join(strata_sorts,
+            by = c("asrID")) |>
+  arrange(asrNameE) |>
+  ungroup() |>
+  mutate(sortE = row_number(asrNameE))  |>
+  arrange(asrNameF) |>
+  ungroup() |>
+  mutate(sortF = row_number(asrNameF))
+
+
+strat_regions <- strat_regions_link |>
+  select(-c(geo.area,region_type,region))
+
+
+write_excel_csv(strat_regions,paste0("website/bbs_asr_",YYYY+1,".csv"))
+
+
+regions <- bind_rows(regions_link,
+                     bcr_regions_link,
+                     strat_regions_link)
+
+saveRDS(regions,"required_data/regions_link_translate.rds")
 
 regs_repl <- regions %>%
-  select(region,geo.area,region_type)
+  select(region,shortCode,region_type)
 
 web <- web %>%
   left_join(regs_repl, by = c("region","region_type"))
 
-regs <- unique(regions$geo.area)
-regs_web <- unique(web$geo.area)
+regs <- unique(regions$region)
+regs_web <- unique(web$region)
 
-if(any(!regs %in% regs_web) | any(!regs_web %in% regs)){
-  stop("missing regions")
+if( any(!regs_web %in% regs)){
+  stop("missing regions from the regional tables for website")
 }
 
 
@@ -368,32 +484,63 @@ if(any(!regs %in% regs_web) | any(!regs_web %in% regs)){
 
 if(webmaps){
 
-
+if(!dir.exists(paste0("website/WebMaps/"))){
+  dir.create(paste0("website/WebMaps/"))
+}
 #loading base maps for the website plots
 canmap <- bbsBayes2::load_map("bbs")
 
 
 ## looping through species to create the maps in folder webmaps
 sp_loop <- unique(web$bbs_num)
+
+n_files <- 0
+j = 1
+dir.create(paste0("website/WebMaps/",j))
+
 for(sp in sp_loop){
+
+  dfta <- web %>%
+    filter(bbs_num == sp)
+
+  if(n_files + nrow(dfta) > 9999){
+    j <- j+1
+    n_files <- 0
+    dir.create(paste0("website/WebMaps/",j))
+    dir_map_tmp <- paste0("website/WebMaps/",j,"/")
+  }else{
+    dir_map_tmp <- paste0("website/WebMaps/",j,"/")
+    n_files <- n_files+nrow(dfta)
+  }
+
+
   dft <- web %>%
     filter(bbs_num == sp,
            trend_time == "Long-term")
 
-
+if(!all(file.exists(paste0(paste0(dir_map_tmp,dft$mapfile))))){
   generate_web_maps(dft,
                     canmap = canmap,
-                    basemap = basemap)
+                    basemap = NULL,
+                    n_cores = 6)
+}
+
   dft <- web %>%
     filter(bbs_num == sp,
            trend_time == "Short-term")
+
+if(!all(file.exists(paste0(paste0(dir_map_tmp,dft$mapfile))))){
   generate_web_maps(dft,
                     canmap = canmap,
-                    basemap = basemap)
-
+                    basemap = NULL,
+                    n_cores = 6)
+}
   print(round(which(sp_loop == sp)/length(sp_loop),2))
 }
 ## maps have Canadian regions only and show the regions included in each trend
+
+
+
 
 map_dup_test <- any(duplicated(web$mapfile))
 
@@ -418,10 +565,49 @@ if(test_map_extra){
 
 }#end webmaps
 
+
+# temporary reorder maps into smaller folders
+
+library(fs)
+sp_loop <- unique(web$bbs_num)
+
+n_files <- 0
+j = 1
+dir.create(paste0("website/WebMaps/",j))
+
+for(sp in sp_loop){
+
+  dfta <- web %>%
+    filter(bbs_num == sp)
+
+  if(n_files + nrow(dfta) > 9999){
+    j <- j+1
+    n_files <- nrow(dfta)
+    dir.create(paste0("website/WebMaps/",j))
+    dir_map_tmp <- paste0("website/WebMaps/",j,"/")
+  }else{
+    dir_map_tmp <- paste0("website/WebMaps/",j,"/")
+    n_files <- n_files+nrow(dfta)
+  }
+
+  files_cut <- paste0("website/WebMaps/",dfta$mapfile)
+  files_paste <- paste0(dir_map_tmp,dfta$mapfile)
+
+
+file_move(files_cut,files_paste)
+
+print(paste(n_files,round(which(sp_loop == sp)/length(sp_loop),2)))
+}
+
+
+
+# Export final csv files --------------------------------------------------
+
+
 clout = c("bbs_num",
           "species",
           "espece",
-          "geo.area",
+          "region",
           "trend_time",
           "start_year",
           "end_year",
@@ -446,7 +632,8 @@ clout = c("bbs_num",
           "n_routes",
           "strata_included",
           "strata_excluded",
-          "mapfile")
+          "mapfile",
+          "shortCode")
 
 clnms = c("sp","species","espece","geo.area","trendtype",
           "startyear","endyear","trend",
@@ -456,7 +643,7 @@ clnms = c("sp","species","espece","geo.area","trendtype",
           "pd25.0","pi0.33","pi33.100","pi100",
           "percent.change","percent.change.llimit",
           "percent.change.ulimit","nroutesduringtrend",
-          "strata.inc","st.excl.long","mapfile")
+          "strata.inc","st.excl.long","mapfile","shortCode")
 
 if(any(!clout %in% names(web))){
   print(clout[which(!clout %in% names(web))])
@@ -518,15 +705,16 @@ webi <- indices %>%
 clouti =  c("bbs_num",
             "species",
             "espece",
-            "geo.area",
+            "region",
             "trend_time",
             "year",
             "index",
             "index_q_0.05",
-            "index_q_0.95")
+            "index_q_0.95",
+            "shortCode")
 clnmsi = c("sp","species","espece","geo.area","trendtype",
            "year","an.index",
-           "llimit","ulimit")
+           "llimit","ulimit","shortCode")
 
 
 if(any(!clouti %in% names(webi))){

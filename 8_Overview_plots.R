@@ -83,10 +83,21 @@ ly_trends <- lastyear[,c("species","bbs_num","region","trend_time",
 species_to_run <- sp_list %>%
   arrange(naturecounts_sort_order)
 
+
+
+
+
+use_last_year <- FALSE
+
+if(use_last_year){
 pdf(file = paste0("Figures/BBS_High_level_summary_",YYYY,".pdf"),
     height = 9,
     width = 17)
-
+}else{
+  pdf(file = paste0("Figures/BBS_trends_summary_",YYYY,".pdf"),
+      height = 9,
+      width = 17)
+}
 for(jj in (1:nrow(species_to_run))){
 
 
@@ -115,7 +126,7 @@ for(jj in (1:nrow(species_to_run))){
     filter(bbs_num == aou) %>%
     mutate(version = "Last year")
 
-  if(nrow(trends_ly) > 0){
+  if(nrow(trends_ly) > 0 & use_last_year){
   trends_1 <- readRDS(paste0(external_dir,"/Trends/",aou,"_trends.rds")) %>%
     filter(region %in% c("continent","Canada","United States of America")) %>%
     mutate(aou = aou,
@@ -132,13 +143,26 @@ tplot <- ggplot(data = trends_1)+
                       colour = version),
                   position = position_dodge(width = 0.5))+
   facet_wrap(vars(trend_time),
-             scales = "free_x")+
-  scale_colour_viridis_d(direction = -1,
-                         name = paste("Trends",YYYY,"\n  and",YYYY-1))+
-  coord_flip()+
-  geom_hline(yintercept = 0)+
-  theme_bw()
+             scales = "free_x")
 
+if(use_last_year){
+  tplot <- tplot +
+    coord_flip()+
+    geom_hline(yintercept = 0)+
+    theme_bw()+
+    ylab("Trends %/year")+
+    xlab("")+
+    scale_colour_viridis_d(direction = -1,
+                           name = paste("Trends",YYYY,"\n  and",YYYY-1))
+}else{
+  tplot <- tplot +
+    coord_flip()+
+    geom_hline(yintercept = 0)+
+    ylab("Trends %/year")+
+    xlab("")+
+    theme_bw()+
+    theme(legend.position = "none")
+}
 
   tmaps <- readRDS(paste0(external_dir,"/Figures/temp_rds_storage/",aou,"_maps.RDS"))
 
@@ -159,7 +183,7 @@ tplot <- ggplot(data = trends_1)+
                         axis_title_size = 10,
                         axis_text_size = 10)
 
-
+if(use_last_year){
   lastyear_inds_sp <- lastyear_inds %>%
     filter(bbs_num == aou,
            trend_time == "Long-term")
@@ -167,7 +191,11 @@ tplot <- ggplot(data = trends_1)+
   lastyear_inds_smooth_sp <- lastyear_inds_smooth %>%
     filter(bbs_num == aou,
            trend_time == "Long-term")
+}else{
+  lastyear_inds_sp <- NULL
+  lastyear_inds_smooth_sp <- NULL
 
+}
   trajs <- vector("list",3)
   names(trajs) <- c("continent","Canada","United_States_of_America")
 
@@ -204,19 +232,24 @@ tplot <- ggplot(data = trends_1)+
 
 
 
-
+if(use_last_year){
       ly_inds <- lastyear_inds_sp %>%
         filter(region == rr)
       ly_inds_smooth <- lastyear_inds_smooth_sp %>%
         filter(region == rr)
 
+
       if(j == "continent"){
         ly_inds <- lastyear_inds_sp %>%
           filter(region == "continent")
       }
-
-      if(nrow(ly_inds) > 0){
-        tmpPlot <- t1plot +
+}else{
+  ly_inds <- NULL
+  ly_inds_smooth <- NULL
+}
+      if(use_last_year){
+        if(nrow(ly_inds) > 0){
+    tmpPlot <- t1plot +
           geom_line(data = ly_inds,
                     aes(x = year,
                         y = index_q_0.05),
@@ -234,10 +267,12 @@ tplot <- ggplot(data = trends_1)+
       }else{
         trajs[[j]] <- t1plot
       }
+      }else{
+        trajs[[j]] <- t1plot
+      }
 
 
-  }
-
+} # end regional loop
 
   design <- "
 135
