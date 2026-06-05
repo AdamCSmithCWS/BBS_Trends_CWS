@@ -650,66 +650,81 @@ saveRDS(indices,paste0(external_dir,"/Website/All_BBS_Full_Indices_",YYYY,".rds"
 saveRDS(indices_smooth,paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_",YYYY,".rds"))
 saveRDS(trends,paste0(external_dir,"/Website/All_BBS_Trends_",YYYY,".rds"))
 
+
+
+saveRDS(indices_bil,paste0(external_dir,"/Website/All_BBS_Full_Indices_bil_",YYYY,".rds"))
+saveRDS(indices_smooth_bil,paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_bil_",YYYY,".rds"))
+saveRDS(trends_bil,paste0(external_dir,"/Website/All_BBS_Trends_bil_",YYYY,".rds"))
+
 # trends <- readRDS(paste0(external_dir,"/Website/All_BBS_Trends_",YYYY,".rds"))
 # indices_smooth <- readRDS(paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_",YYYY,".rds"))
 # indices <- readRDS(paste0(external_dir,"/Website/All_BBS_Full_Indices_",YYYY,".rds"))
 #
 # tst <- indices_smooth %>% filter(region == "survey-wide", trend_time == "Long-term") %>% group_by(species) %>% summarise(n_test = n())
 
-readr::write_excel_csv(indices_bil,paste0(external_dir,"/Website/All_BBS_Full_Indices_",YYYY,".csv"))
-readr::write_excel_csv(indices_smooth_bil,paste0(external_dir,"/Website/All_BBS_Smoothed_Indices_",YYYY,".csv"))
-readr::write_excel_csv(trends_bil,paste0(external_dir,"/Website/All_BBS_Trends_",YYYY,".csv"))
+readr::write_excel_csv(indices_bil,paste0(external_dir,"/Website/All_Toutes_BBS_Full_Indices_Complets_",YYYY,".csv"))
+readr::write_excel_csv(indices_smooth_bil,paste0(external_dir,"/Website/All_Toutes_BBS_Smoothed_Indices_Lisses_",YYYY,".csv"))
+readr::write_excel_csv(trends_bil,paste0(external_dir,"/Website/All_Toutes_Tendance_BBS_Trends_",YYYY,".csv"))
 
 
 
 
 inds_select <- indices_bil %>%
   filter(region_type %in% c("survey-wide","country"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_survey-wide_country_",YYYY,".csv"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_survey-wide_zone_complete_country_pays_",YYYY,".csv"))
 
 inds_select <- indices_bil %>%
   filter(region_type %in% c("prov_state"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_prov_state_",YYYY,".csv"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_prov_state_etat_",YYYY,".csv"))
 
 
 inds_select <- indices_bil %>%
   filter(region_type %in% c("bcr"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_bcr_",YYYY,".csv"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_bcr_rco_",YYYY,".csv"))
 
 inds_select <- indices_bil %>%
   filter(region_type %in% c("bcr_by_country"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_bcr_by_country_",YYYY,".csv"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_bcr_by_country_rco_par_pays_",YYYY,".csv"))
 
-
-inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("survey-wide","country"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_survey-wide_country_",YYYY,".csv"))
-
-inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("prov_state"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_prov_state_",YYYY,".csv"))
-
-
-inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("bcr"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_bcr_",YYYY,".csv"))
-
-inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("bcr_by_country"))
-readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_bcr_by_country_",YYYY,".csv"))
-
-
-
-
-trends_select <- trends_bil %>%
-  filter(region_type %in% c("survey-wide","country","prov_state"))
-readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_survey-wide_country_prov_state_",YYYY,".csv"))
-trends_select <- trends_bil %>%
-  filter(region_type %in% c("bcr","bcr_by_country"))
-readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_bcr_bcr_by_country_",YYYY,".csv"))
-trends_select <- trends_bil %>%
+inds_select <- indices_bil %>%
   filter(region_type %in% c("stratum"))
-readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_strata_",YYYY,".csv"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_strata_strates_",YYYY,".csv"))
+
+
+inds_select <- indices_smooth_bil %>%
+  filter(region_type %in% c("survey-wide","country"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_survey-wide_zone_complete_country_pays_",YYYY,".csv"))
+
+inds_select <- indices_smooth_bil %>%
+  filter(region_type %in% c("prov_state"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_prov_state_etat_",YYYY,".csv"))
+
+
+inds_select <- indices_smooth_bil %>%
+  filter(region_type %in% c("bcr"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_bcr_rco_",YYYY,".csv"))
+
+inds_select <- indices_smooth_bil %>%
+  filter(region_type %in% c("bcr_by_country"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_bcr_by_country_rco_par_pays_",YYYY,".csv"))
+
+
+inds_select <- indices_smooth_bil %>%
+  filter(region_type %in% c("stratum"))
+readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_strata_strates_",YYYY,".csv"))
+
+
+
+#
+# trends_select <- trends_bil %>%
+#   filter(region_type %in% c("survey-wide","country","prov_state"))
+# readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_survey-wide_country_prov_state_",YYYY,".csv"))
+# trends_select <- trends_bil %>%
+#   filter(region_type %in% c("bcr","bcr_by_country"))
+# readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_bcr_bcr_by_country_",YYYY,".csv"))
+# trends_select <- trends_bil %>%
+#   filter(region_type %in% c("stratum"))
+# readr::write_excel_csv(trends_select,paste0(external_dir,"/Website/BBS_Trends_strata_",YYYY,".csv"))
 
 
 

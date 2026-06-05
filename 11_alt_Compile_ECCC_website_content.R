@@ -503,7 +503,7 @@ for(sp in sp_loop){
   dfta <- web %>%
     filter(bbs_num == sp)
 
-  if(n_files + nrow(dfta) > 9999){
+  if(n_files + nrow(dfta) > 4999){
     j <- j+1
     n_files <- 0
     dir.create(paste0("website/WebMaps/",j))
@@ -512,7 +512,6 @@ for(sp in sp_loop){
     dir_map_tmp <- paste0("website/WebMaps/",j,"/")
     n_files <- n_files+nrow(dfta)
   }
-
 
   dft <- web %>%
     filter(bbs_num == sp,
