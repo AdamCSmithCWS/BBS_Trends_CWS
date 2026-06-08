@@ -1,6 +1,7 @@
 # CWS BBS trend analyses
 
 
+[![DOI](https://zenodo.org/badge/1121176400.svg)](https://doi.org/10.5281/zenodo.20561464)
 
 The scripts here represent the complete code archive necessary to reproduce the Canadian Wildlife Services annual analyses of population status and trends from the North American Breeding Bird Survey.
 

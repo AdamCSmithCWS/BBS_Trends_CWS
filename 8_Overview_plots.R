@@ -21,11 +21,11 @@ external_dir <- "D:/BBS_Trends_CWS"
 cat_translate <- function(x){
   y <- as.character(x)
   r1 <- which(y == "Medium")
-  y[r1] <- rep("Moyenne",length = length(r1))
+  y[r1] <- rep("moyenne",length = length(r1))
   r1 <- which(y == "High")
-  y[r1] <- rep("Élevée",length = length(r1))
+  y[r1] <- rep("élevée",length = length(r1))
   r1 <- which(y == "Low")
-  y[r1] <- rep("Faible",length = length(r1))
+  y[r1] <- rep("faible",length = length(r1))
 
   r1 <- which(y == "Long-term")
   y[r1] <- rep("a long term",length = length(r1))
@@ -39,7 +39,7 @@ cat_translate <- function(x){
   r1 <- which(y == "bcr_by_country")
   y[r1] <- rep("rco_par_pays",length = length(r1))
   r1 <- which(y == "survey-wide")
-  y[r1] <- rep("zone complète de l'enquête",length = length(r1))
+  y[r1] <- rep("zone complète de le relevé",length = length(r1))
   r1 <- which(y == "country")
   y[r1] <- rep("pays",length = length(r1))
   r1 <- which(y == "prov_state")
@@ -122,6 +122,9 @@ species_to_run <- sp_list %>%
   arrange(naturecounts_sort_order)
 
 
+
+
+# English overview --------------------------------------------------------
 
 
 
@@ -226,6 +229,12 @@ if(use_last_year){
                         title_size = 12,
                         axis_title_size = 10,
                         axis_text_size = 10)
+
+  for(i in 1:length(tmaps)){
+    tmaps[[i]] <- tmaps[[i]]+
+      ggplot2::guides(fill = ggplot2::guide_legend(title = "Trend\n%/year"))
+  }
+
 
 if(use_last_year){
   lastyear_inds_sp <- lastyear_inds %>%
@@ -333,6 +342,14 @@ if(use_last_year){
 
 } # end regional loop
 
+
+  tmaps[[1]] <- tmaps[[1]]+
+    labs(title = paste("Long-term trend",fy,"-",YYYY))
+  tmaps[[2]] <- tmaps[[2]]+
+    labs(title = paste("Short-term trend",YYYY-10,"-",YYYY))
+
+
+
   design <- "
 135
 246
@@ -340,20 +357,32 @@ if(use_last_year){
 
   tt_sel <- trends_1 %>%
     filter(trend_time == "Long-term", version == "This year",
-           region == "Survey-wide")
-  main_title <- paste(species,"Survey-wide long-term trend has",tt_sel$reliability,"overall reliability",
-                      "; coverage",tt_sel$reliab.cov*100,"% ; ", tt_sel$precision, "precision ; ",
-                      tt_sel$backcast_reliab,"local data ")
+           region == "Survey-wide") |>
+    mutate(reliability = str_to_lower(reliability),
+           precision = str_to_lower(precision),
+           backcast_reliab = str_to_lower(backcast_reliab))
+  main_title <- paste0(species," survey-wide Breeding Bird Survey long-term trend has ",
+                       tt_sel$reliability," overall reliability, ",
+                      " coverage ",tt_sel$reliab.cov*100,"%, ",
+                      tt_sel$precision, " precision, ",
+                      tt_sel$backcast_reliab," local data ")
 
   if(is.null(trajs[["Canada"]])){
     tt_sel <- trends_1 %>%
       filter(trend_time == "Long-term", version == "This year",
-             region %in% c("United States of America"))
-    main_caption <- paste("US long-term trend has",tt_sel$reliability,"overall reliability",
-                          "; coverage",tt_sel$reliab.cov*100,"% of the species' range ;", tt_sel$precision, "precision ; ",
-                          tt_sel$backcast_reliab,"local data  ; ", tt_sel$n_routes,"routes total and ",
-                          tt_sel$mean_n_routes,"on average, each year; ","local data available for",tt_sel$backcast_flag*100,
-                          "% of the years and regions included")
+             region %in% c("United States of America"))|>
+      mutate(reliability = str_to_lower(reliability),
+             precision = str_to_lower(precision),
+             backcast_reliab = str_to_lower(backcast_reliab))
+    main_caption <- paste0("US long-term trend has ",tt_sel$reliability,
+                           " overall reliability, ",
+                          "coverage for ",tt_sel$reliab.cov*100,
+                          "% of the species' range, ",
+                          tt_sel$precision, " precision, ",
+                          tt_sel$backcast_reliab," local data",
+                          " (local data available for ",tt_sel$backcast_flag*100,
+                          "% of the years and regions), ", tt_sel$n_routes," routes total and ",
+                          tt_sel$mean_n_routes," on average, each year.")
 
     layt <- trajs[[1]] + trajs[[3]] + plot_spacer() +
       tplot + tmaps[[1]] + tmaps[[2]] +
@@ -370,21 +399,34 @@ if(use_last_year){
 
     tt_sel <- trends_1 %>%
       filter(trend_time == "Long-term", version == "This year",
-             region %in% c("Canada"))
-    can_title <- paste("Canada long-term trend has",tt_sel$reliability,"overall reliability",
-                       "; coverage",tt_sel$reliab.cov*100,"% of the species' range ; ", tt_sel$precision, "precision ; ",
-                       tt_sel$backcast_reliab,"local data ; ", tt_sel$n_routes,"routes total and",
-                       tt_sel$mean_n_routes,"on average, each year; ","local data available for",tt_sel$backcast_flag*100,
-                       "% of the years and regions included")
+             region %in% c("Canada"))|>
+      mutate(reliability = str_to_lower(reliability),
+             precision = str_to_lower(precision),
+             backcast_reliab = str_to_lower(backcast_reliab))
+    can_title <- paste0("Canada long-term trend has",tt_sel$reliability,
+                       " overall reliability, ",
+                       "coverage for ",tt_sel$reliab.cov*100,
+                       "% of the species' range, ",
+                       tt_sel$precision, " precision, ",
+                       tt_sel$backcast_reliab," local data",
+                       " (local data available for ",tt_sel$backcast_flag*100,
+                       "% of the years and regions), ", tt_sel$n_routes," routes total and ",
+                       tt_sel$mean_n_routes," on average, each year.")
 
     tt_sel <- trends_1 %>%
       filter(trend_time == "Long-term", version == "This year",
-             region %in% c("United States of America"))
-    us_title <- paste("US long-term trend has",tt_sel$reliability,"overall reliability",
-                      "; coverage",tt_sel$reliab.cov*100,"% of the species' range ; ", tt_sel$precision, "precision ; ",
-                      tt_sel$backcast_reliab,"local data  ; ", tt_sel$n_routes,"routes total and ",
-                      tt_sel$mean_n_routes,"on average, each year; ","local data available for",tt_sel$backcast_flag*100,
-                      "% of the years and regions included")
+             region %in% c("United States of America"))|>
+      mutate(reliability = str_to_lower(reliability),
+             precision = str_to_lower(precision),
+             backcast_reliab = str_to_lower(backcast_reliab))
+    us_title <- paste0("US long-term trend has",tt_sel$reliability, " overall reliability, ",
+                      "coverage for ",tt_sel$reliab.cov*100,
+                      "% of the species' range, ",
+                      tt_sel$precision, " precision, ",
+                      tt_sel$backcast_reliab," local data",
+                      " (local data available for ",tt_sel$backcast_flag*100,
+                      "% of the years and regions), ", tt_sel$n_routes," routes total and ",
+                      tt_sel$mean_n_routes," on average, each year.")
     main_caption <- paste0(can_title,"\n",us_title)
 
     layt <- trajs[[1]] + trajs[[3]] + trajs[[2]] +
@@ -470,19 +512,19 @@ for(jj in c(1:nrow(species_to_run))){
 
     trends_1 <- trends_1 |>
       mutate(trend_time = ifelse(trend_time == "Three-generation",
-                                 "Trois générations",
+                                 "trois générations",
                                  trend_time),
              trend_time = ifelse(trend_time == "Long-term",
-                                 "Long terme",
+                                 "long terme",
                                  trend_time),
              trend_time = ifelse(trend_time == "Short-term",
-                                 "Court terme",
+                                 "court terme",
                                  trend_time),
              region = ifelse(region == "United States of America",
                              "États-Unis d'Amérique",
                              region),
              region = ifelse(region == "continent",
-                             "Zone complète de l'enquête",
+                             "zone complète de le relevé",
                              region))|>
       mutate(reliability = cat_translate(reliability),
              precision = cat_translate(precision),
@@ -502,7 +544,7 @@ for(jj in c(1:nrow(species_to_run))){
         coord_flip()+
         geom_hline(yintercept = 0)+
         theme_bw()+
-        ylab("Tendances %/an")+
+        ylab("Tendances % par an")+
         xlab("")+
         scale_colour_viridis_d(direction = -1,
                                name = paste("Tendances",YYYY,"\n  et",YYYY-1))
@@ -510,7 +552,7 @@ for(jj in c(1:nrow(species_to_run))){
       tplot <- tplot +
         coord_flip()+
         geom_hline(yintercept = 0)+
-        ylab("Tendances %/an")+
+        ylab("Tendances % par an")+
         xlab("")+
         theme_bw()+
         theme(legend.position = "none")
@@ -534,6 +576,13 @@ for(jj in c(1:nrow(species_to_run))){
                               title_size = 12,
                               axis_title_size = 10,
                               axis_text_size = 10)
+
+
+
+    for(i in 1:length(tmaps)){
+      tmaps[[i]] <- tmaps[[i]]+
+      ggplot2::guides(fill = ggplot2::guide_legend(title = "Tendance\n% par an"))
+    }
 
     if(use_last_year){
       lastyear_inds_sp <- lastyear_inds %>%
@@ -561,7 +610,7 @@ for(jj in c(1:nrow(species_to_run))){
                   j)
 
       rr <- ifelse(j == "continent",
-                   "Zone complète de l'enquête",
+                   "zone complète de le relevé",
                    rr)
 
 
@@ -641,26 +690,35 @@ for(jj in c(1:nrow(species_to_run))){
 "
 
     tmaps_alt1 <- tmaps[[1]]+
-      labs(title = "Tendance à Long terme")
+      labs(title = paste("Tendance à long terme",fy,"-",YYYY))
     tmaps_alt2 <- tmaps[[2]]+
-      labs(title = "Tendance à Court terme")
+      labs(title = paste("Tendance à court terme",YYYY-10,"-",YYYY))
 
     tt_sel <- trends_1 %>%
-      filter(trend_time == "Long terme", version == "This year",
-             region == "Zone complète de l'enquête")
-    main_title <- paste("La tendance à long terme de Zone complète de l'enquête",espece,"présente une fiabilité globale",tt_sel$reliability,
-                        "; couverture de ",tt_sel$reliab.cov*100,"% ; precision ", tt_sel$precision,"; poids des données locales ",
+      filter(trend_time == "long terme", version == "This year",
+             region == "zone complète de le relevé")
+    main_title <- paste0("La tendance à long terme de zone complète de le Relevé des oiseaux nicheurs pour l'esèpce ",
+                         espece," présente une fiabilité globale ",
+                         tt_sel$reliability,
+                        ", une couverture de ",tt_sel$reliab.cov*100,
+                        "%, une precision ", tt_sel$precision,
+                        ", et un poids des données locales ",
                         tt_sel$backcast_reliab)
 
     if(is.null(trajs[["Canada"]])){
       tt_sel <- trends_1 %>%
-        filter(trend_time == "Long terme", version == "This year",
+        filter(trend_time == "long terme", version == "This year",
                region %in% c("États-Unis d'Amérique"))
-      main_caption <- paste("La tendance à long terme de États-Unis d'Amérique présente une fiabilité globale",tt_sel$reliability,
-                            "; couverture de ",tt_sel$reliab.cov*100,"% ; precision ", tt_sel$precision,"; poids des données locales ",
-                            tt_sel$backcast_reliab,"; ",tt_sel$n_routes,"parcours au total et ",
-                            tt_sel$mean_n_routes,"en moyenne par an; ","et données locales de",tt_sel$backcast_flag*100,
-                            "% des regions et ans.")
+      main_caption <- paste0("La tendance à long terme pour l'États-Unis présente une fiabilité globale ",
+                             tt_sel$reliability,
+                            ", une couverture de ",tt_sel$reliab.cov*100,
+                            "%, une precision ", tt_sel$precision,
+                            ", et un poids des données locales ",
+                            tt_sel$backcast_reliab,". Les données locales sont disponible pour ",
+                            tt_sel$backcast_flag*100,
+                            "% des regions et ans. La tendance comprend un total de",
+                            tt_sel$n_routes," parcours et ",
+                            tt_sel$mean_n_routes," en moyenne par an.")
 
       layt <- trajs[[1]] + trajs[[3]] + plot_spacer() +
         tplot + tmaps_alt1 + tmaps_alt2 +
@@ -669,30 +727,42 @@ for(jj in c(1:nrow(species_to_run))){
                     widths = 1)+
         plot_annotation(title = main_title,
                         caption = main_caption,
-                        theme = theme(plot.caption = element_text(size = 10),
-                                      plot.title = element_text(size = 12)))
+                        theme = theme(plot.caption = element_text(size = 8),
+                                      plot.title = element_text(size = 11)))
 
 
     }else{
 
       tt_sel <- trends_1 %>%
-        filter(trend_time == "Long terme", version == "This year",
+        filter(trend_time == "long terme", version == "This year",
                region %in% c("Canada"))
-      can_title <- paste("La tendance à long terme de Canada présente une fiabilité globale",tt_sel$reliability,
-                         "; couverture de ",tt_sel$reliab.cov*100,"% ; precision", tt_sel$precision,"; poids des données locales ",
-                         tt_sel$backcast_reliab,"; ",tt_sel$n_routes,"parcours au total et ",
-                         tt_sel$mean_n_routes,"en moyenne par an; ","et données locales de",tt_sel$backcast_flag*100,
-                         "% des regions et ans.")
+      can_title <- paste0("La tendance à long terme pour le Canada présente une fiabilité globale ",
+                         tt_sel$reliability,
+                         ", une couverture de ",tt_sel$reliab.cov*100,
+                         "%, une precision ", tt_sel$precision,
+                         ", et un poids des données locales ",
+                         tt_sel$backcast_reliab,
+                         ". Les données locales sont disponible pour ",
+                         tt_sel$backcast_flag*100,
+                         " % des regions et ans. La tendance comprend un total de ",
+                         tt_sel$n_routes,"parcours et ",
+                         tt_sel$mean_n_routes," en moyenne par an.")
 
       tt_sel <- trends_1 %>%
-        filter(trend_time == "Long terme", version == "This year",
+        filter(trend_time == "long terme", version == "This year",
                region %in% c("États-Unis d'Amérique"))
 
-      us_title <- paste("La tendance à long terme de États-Unis d'Amérique présente une fiabilité globale",tt_sel$reliability,
-                        "; couverture de ",tt_sel$reliab.cov*100,"% ; precision", tt_sel$precision,"; poids des données locales ",
-                        tt_sel$backcast_reliab,"; ",tt_sel$n_routes,"parcours au total et ",
-                        tt_sel$mean_n_routes,"en moyenne par an; ","et données locales de",tt_sel$backcast_flag*100,
-                        "% des regions et ans.")
+      us_title <- paste0("La tendance à long terme pour l'États-Unis présente une fiabilité globale ",
+                         tt_sel$reliability,
+                         ", une couverture de ",tt_sel$reliab.cov*100,
+                         "%, une precision ", tt_sel$precision,
+                         ", et un poids des données locales ",
+                         tt_sel$backcast_reliab,
+                         ". Les données locales sont disponible pour ",
+                         tt_sel$backcast_flag*100,
+                         "% des regions et ans. La tendance comprend un total de ",
+                         tt_sel$n_routes," parcours et ",
+                         tt_sel$mean_n_routes," en moyenne par an.")
       main_caption <- paste0(can_title,"\n",us_title)
 
       layt <- trajs[[1]] + trajs[[3]] + trajs[[2]] +
@@ -702,8 +772,8 @@ for(jj in c(1:nrow(species_to_run))){
                     widths = 1) +
         plot_annotation(title = main_title,
                         caption = main_caption,
-                        theme = theme(plot.caption = element_text(size = 10),
-                                      plot.title = element_text(size = 12)))
+                        theme = theme(plot.caption = element_text(size = 8),
+                                      plot.title = element_text(size = 11)))
     }
     print(layt)
 

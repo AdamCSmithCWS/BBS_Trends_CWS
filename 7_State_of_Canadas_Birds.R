@@ -434,7 +434,7 @@ survey_w <- data.frame(region_type = "survey-wide",
                        region = "Survey-wide",
                        geo.area = "SW",
                        region_name_en = "Survey-wide",
-                       region_name_fr = "Zone complète de l'enquête")
+                       region_name_fr = "Zone complète de le relevé")
 
 regions <- bind_rows(survey_w,
                      countries,
@@ -498,7 +498,7 @@ cat_translate <- function(x){
   r1 <- which(y == "bcr_by_country")
   y[r1] <- rep("rco_par_pays",length = length(r1))
   r1 <- which(y == "survey-wide")
-  y[r1] <- rep("zone complète de l'enquête",length = length(r1))
+  y[r1] <- rep("zone complète de le relevé",length = length(r1))
   r1 <- which(y == "country")
   y[r1] <- rep("pays",length = length(r1))
   r1 <- which(y == "prov_state")
