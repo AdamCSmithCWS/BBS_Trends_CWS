@@ -170,7 +170,9 @@ saveRDS(indices_smooth,"output/indices_smooth_collected.rds")
 
 avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
   filter(Full_Species__Espèce_complète == "Yes - Oui") %>%
-  select(Species_ID_Espèce, BBS_Number__Numéro_BBS, Sort_Order__Ordre_de_tri) %>%
+  select(Species_ID_Espèce,
+         Alpha_Code_FR__Code_Alpha_FR,
+         BBS_Number__Numéro_BBS, Sort_Order__Ordre_de_tri) %>%
   rename_with(.,.fn = ~paste0(.x,"_core")) %>%
   distinct() %>%
   mutate(aou = as.integer(BBS_Number__Numéro_BBS_core))
@@ -515,24 +517,30 @@ cat_translate <- function(x){
   return(y)
 }
 
+# reorder re-name and translate columns for data catalogue --------------------------------------
+
+
 trends_bil <- trends %>%
   left_join(.,core_link,by = c("bbs_num" = "aou")) %>%
   left_join(regions, by = c("region","region_type")) |>
-  mutate(type_region = cat_translate(region_type),
-         period = cat_translate(trend_time),
-         couverture = cat_translate(coverage),
+  mutate(type_region_fr = cat_translate(region_type),
+         period_de_tendence_fr = cat_translate(trend_time),
+         couverture_fr = cat_translate(coverage),
          precision_fr = cat_translate(precision),
-         poids_des_donnees_locales = cat_translate(backcast_reliab),
-         fiabilite = cat_translate(reliability),
-         strat_incl = paste0(strata_included,"; ",strata_excluded)) |>
-  relocate(region_en,region_fr,region_type,type_region,species,espece,trend_time,period,start_year,end_year,
+         poids_des_donnees_locales_fr = cat_translate(backcast_reliab),
+         fiabilite_fr = cat_translate(reliability),
+         strat_incl = paste0(strata_included,"; ",strata_excluded),
+         period = trend_time) |>
+  select(-trend_time) |>
+  relocate(region_en,region_fr,region_type,type_region_fr,species,espece,period,period_de_tendence_fr,
+           start_year,end_year,
            starts_with("trend"),
            starts_with("percent"),
-           width_of_95_percent_credible_interval,
            starts_with("prob_"),
-           rel_abundance, n_routes, mean_n_routes, n_strata_included, backcast_flag,
-           precision,precision_fr,coverage,couverture,backcast_reliab,poids_des_donnees_locales,
-           reliability, fiabilite) %>%
+           rel_abundance, obs_rel_abundance, n_routes, mean_n_routes, n_strata_included, backcast_flag,
+           width_of_95_percent_credible_interval,
+           precision,precision_fr,coverage,couverture_fr,backcast_reliab,poids_des_donnees_locales_fr,
+           reliability, fiabilite_fr) %>%
   arrange(naturecounts_sort_order,region_type,region,start_year) |>
   rename(from_de = start_year,
          to_a = end_year,
@@ -541,14 +549,20 @@ trends_bil <- trends %>%
          prob_LC_PdC = prob_LC,
          prob_MI_AM = prob_MI,
          prob_LI_AI = prob_LI,
-         rel_ab = rel_abundance,
-         rel_ab_obs = obs_rel_abundance,
+         rel_ab_rel = rel_abundance,
+         rel_ab_rel_obs = obs_rel_abundance,
          n_site = n_routes,
          mean_n_site_moyenne = mean_n_routes,
          n_strat_incl = n_strata_included,
          sequence_naturecounts = naturecounts_sort_order,
          width_CI_largeur_IC = width_of_95_percent_credible_interval,
-         local_data_donnees_locales = backcast_flag) |>
+         local_data_donnees_locales = backcast_flag,
+         region_type_en = region_type,
+         precision_en = precision,
+         coverage_en = coverage,
+         local_data_en = backcast_reliab,
+         reliability_en = reliability,
+         p_cov = reliab.cov) |>
   rename_with(.fn = ~gsub("trend","trend_tendence",.x),
               .cols = starts_with("trend")) |>
   rename_with(.fn = ~gsub("percent_change","percent_ch_pourcentage",.x),
@@ -557,7 +571,11 @@ trends_bil <- trends %>%
               .cols = starts_with("prob_decrease"))|>
   rename_with(.fn = ~gsub("prob_increase","prob_increase_augmentation",.x),
               .cols = starts_with("prob_increase")) |>
-  rename(trend_time = trend_tendence_time) |>
+  rename(trend_period_en = period,
+         Species_ID_en = Species_ID_Espèce_core,
+         ID_Espece_fr = Alpha_Code_FR__Code_Alpha_FR_core,
+         BBS_Number__Numero_BBS = BBS_Number__Numéro_BBS_core,
+         Sort_Order__Ordre_de_tri = Sort_Order__Ordre_de_tri_core) |>
   select(-c(strata_included,strata_excluded,region,for_web,
             bbs_num))
 
@@ -583,17 +601,20 @@ indices_smooth <- indices_smooth %>%
     arrange(naturecounts_sort_order,region_type,region,trend_time,year)
 
 indices_smooth_bil <- indices_smooth  |>
-  mutate(type_region = cat_translate(region_type),
-         period = cat_translate(trend_time),
-         type_ind = cat_translate(indices_type),
-         strat_incl = paste0(strata_included,"; ",strata_excluded)) |>
-  relocate(region_en,region_fr,region_type,type_region,species,espece,trend_time,period,year,
+  mutate(type_region_fr = cat_translate(region_type),
+         period_de_tendence_fr = cat_translate(trend_time),
+         type_ind_fr = cat_translate(indices_type),
+         strat_incl = paste0(strata_included,"; ",strata_excluded),
+         period = trend_time) |>
+  select(-trend_time) |>
+  relocate(region_en,region_fr,region_type,type_region_fr,species,espece,period,period_de_tendence_fr,year,
            starts_with("index"),
-           obs_mean, n_routes, n_routes_total, n_non_zero, backcast_flag) %>%
+           obs_mean, n_routes, n_routes_total, n_non_zero, backcast_flag,
+           indices_type,type_ind_fr) %>%
   arrange(naturecounts_sort_order,region_type,region,year) |>
   rename(year_an = year,
-         rel_ab_obs = obs_mean,
-         ind_type = indices_type,
+         rel_ab_rel_obs = obs_mean,
+         ind_type_en = indices_type,
          n_site = n_routes,
          n_site_total = n_routes_total,
          n_non_zero_pas_zero = n_non_zero,
@@ -601,7 +622,13 @@ indices_smooth_bil <- indices_smooth  |>
   rename_with(.fn = ~gsub("index","ind",.x),
               .cols = starts_with("index"))|>
   select(-c(strata_included,strata_excluded,region,for_web,
-            bbs_num))
+            bbs_num))|>
+  rename(trend_period_en = period,
+         Species_ID_en = Species_ID_Espèce_core,
+         ID_Espece_fr = Alpha_Code_FR__Code_Alpha_FR_core,
+         BBS_Number__Numero_BBS = BBS_Number__Numéro_BBS_core,
+         Sort_Order__Ordre_de_tri = Sort_Order__Ordre_de_tri_core,
+         region_type_en = region_type)
 
 
 
@@ -624,17 +651,20 @@ indices <- indices %>%
   arrange(naturecounts_sort_order,region_type,region,trend_time,year)
 
 indices_bil <- indices|>
-  mutate(type_region = cat_translate(region_type),
-         period = cat_translate(trend_time),
-         type_ind = cat_translate(indices_type),
-         strat_incl = paste0(strata_included,"; ",strata_excluded)) |>
-  relocate(region_en,region_fr,region_type,type_region,species,espece,trend_time,period,year,
+  mutate(type_region_fr = cat_translate(region_type),
+         period_de_tendence_fr = cat_translate(trend_time),
+         type_ind_fr = cat_translate(indices_type),
+         strat_incl = paste0(strata_included,"; ",strata_excluded),
+         period = trend_time) |>
+  select(-trend_time) |>
+  relocate(region_en,region_fr,region_type,type_region_fr,species,espece,period,period_de_tendence_fr,year,
            starts_with("index"),
-           obs_mean, n_routes, n_routes_total, n_non_zero, backcast_flag) %>%
+           obs_mean, n_routes, n_routes_total, n_non_zero, backcast_flag,
+           indices_type,type_ind_fr) %>%
   arrange(naturecounts_sort_order,region_type,region,year) |>
   rename(year_an = year,
-         rel_ab_obs = obs_mean,
-         ind_type = indices_type,
+         rel_ab_rel_obs = obs_mean,
+         ind_type_en = indices_type,
          n_site = n_routes,
          n_site_total = n_routes_total,
          n_non_zero_pas_zero = n_non_zero,
@@ -642,7 +672,21 @@ indices_bil <- indices|>
   rename_with(.fn = ~gsub("index","ind",.x),
               .cols = starts_with("index"))|>
   select(-c(strata_included,strata_excluded,region,for_web,
-            bbs_num))
+            bbs_num))|>
+  rename(trend_period_en = period,
+         Species_ID_en = Species_ID_Espèce_core,
+         ID_Espece_fr = Alpha_Code_FR__Code_Alpha_FR_core,
+         BBS_Number__Numero_BBS = BBS_Number__Numéro_BBS_core,
+         Sort_Order__Ordre_de_tri = Sort_Order__Ordre_de_tri_core,
+         region_type_en = region_type)
+
+#
+#
+
+
+
+
+
 
 # csv files with trends and indices for Google Drive ----------------------
 
@@ -670,47 +714,47 @@ readr::write_excel_csv(trends_bil,paste0(external_dir,"/Website/All_Toutes_Tenda
 
 
 inds_select <- indices_bil %>%
-  filter(region_type %in% c("survey-wide","country"))
+  filter(region_type_en %in% c("survey-wide","country"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_survey-wide_zone_complete_country_pays_",YYYY,".csv"))
 
 inds_select <- indices_bil %>%
-  filter(region_type %in% c("prov_state"))
+  filter(region_type_en %in% c("prov_state"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_prov_state_etat_",YYYY,".csv"))
 
 
 inds_select <- indices_bil %>%
-  filter(region_type %in% c("bcr"))
+  filter(region_type_en %in% c("bcr"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_bcr_rco_",YYYY,".csv"))
 
 inds_select <- indices_bil %>%
-  filter(region_type %in% c("bcr_by_country"))
+  filter(region_type_en %in% c("bcr_by_country"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_bcr_by_country_rco_par_pays_",YYYY,".csv"))
 
 inds_select <- indices_bil %>%
-  filter(region_type %in% c("stratum"))
+  filter(region_type_en %in% c("stratum"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Full_Indices_Complets_strata_strates_",YYYY,".csv"))
 
 
 inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("survey-wide","country"))
+  filter(region_type_en %in% c("survey-wide","country"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_survey-wide_zone_complete_country_pays_",YYYY,".csv"))
 
 inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("prov_state"))
+  filter(region_type_en %in% c("prov_state"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_prov_state_etat_",YYYY,".csv"))
 
 
 inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("bcr"))
+  filter(region_type_en %in% c("bcr"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_bcr_rco_",YYYY,".csv"))
 
 inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("bcr_by_country"))
+  filter(region_type_en %in% c("bcr_by_country"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_bcr_by_country_rco_par_pays_",YYYY,".csv"))
 
 
 inds_select <- indices_smooth_bil %>%
-  filter(region_type %in% c("stratum"))
+  filter(region_type_en %in% c("stratum"))
 readr::write_excel_csv(inds_select,paste0(external_dir,"/Website/BBS_Smoothed_Indices_Lisses_strata_strates_",YYYY,".csv"))
 
 

@@ -27,9 +27,10 @@ indices_smooth <- readRDS(paste0("Website/All_BBS_Smoothed_Indices_",YYYY,".rds"
 web <- trends %>%
   filter(trend_time != "Three-generation",
          !(region == "BCR7" & region_type == "prov_state")) %>%
-  mutate(region = ifelse(region_type == "bcr",
-                         paste0("BCR_",region),
-                         region),
+  mutate(
+    # region = ifelse(region_type == "bcr",
+    #                      paste0("BCR_",region),
+    #                      region),
          region = ifelse(region == "continent", "Survey-wide",region),
          region_type = as.character(region_type),
          region_type = ifelse(region_type == "continent", "survey-wide",region_type),
@@ -301,7 +302,7 @@ survey_w <- data.frame(region_type = "survey-wide",
                        region = "Survey-wide",
                        geo.area = "SW",
                        region_name_en = "Survey-wide",
-                       region_name_fr = "Zone complète de l'enquête")
+                       region_name_fr = "Zone complète du relevé")
 
 regional_prefixes_sorts <- readxl::read_excel("data/State_prefixes.xlsx")
 
@@ -439,6 +440,7 @@ regs <- unique(regions$region)
 regs_web <- unique(web$region)
 
 if( any(!regs_web %in% regs)){
+  paste("missing",regs_web[which(!regs_web %in% regs)])
   stop("missing regions from the regional tables for website")
 }
 
@@ -566,37 +568,37 @@ if(test_map_extra){
 
 
 # temporary reorder maps into smaller folders
-
-library(fs)
-sp_loop <- unique(web$bbs_num)
-
-n_files <- 0
-j = 1
-dir.create(paste0("website/WebMaps/",j))
-
-for(sp in sp_loop){
-
-  dfta <- web %>%
-    filter(bbs_num == sp)
-
-  if(n_files + nrow(dfta) > 9999){
-    j <- j+1
-    n_files <- nrow(dfta)
-    dir.create(paste0("website/WebMaps/",j))
-    dir_map_tmp <- paste0("website/WebMaps/",j,"/")
-  }else{
-    dir_map_tmp <- paste0("website/WebMaps/",j,"/")
-    n_files <- n_files+nrow(dfta)
-  }
-
-  files_cut <- paste0("website/WebMaps/",dfta$mapfile)
-  files_paste <- paste0(dir_map_tmp,dfta$mapfile)
-
-
-file_move(files_cut,files_paste)
-
-print(paste(n_files,round(which(sp_loop == sp)/length(sp_loop),2)))
-}
+#
+# library(fs)
+# sp_loop <- unique(web$bbs_num)
+#
+# n_files <- 0
+# j = 1
+# dir.create(paste0("website/WebMaps/",j))
+#
+# for(sp in sp_loop){
+#
+#   dfta <- web %>%
+#     filter(bbs_num == sp)
+#
+#   if(n_files + nrow(dfta) > 9999){
+#     j <- j+1
+#     n_files <- nrow(dfta)
+#     dir.create(paste0("website/WebMaps/",j))
+#     dir_map_tmp <- paste0("website/WebMaps/",j,"/")
+#   }else{
+#     dir_map_tmp <- paste0("website/WebMaps/",j,"/")
+#     n_files <- n_files+nrow(dfta)
+#   }
+#
+#   files_cut <- paste0("website/WebMaps/",dfta$mapfile)
+#   files_paste <- paste0(dir_map_tmp,dfta$mapfile)
+#
+#
+# file_move(files_cut,files_paste)
+#
+# print(paste(n_files,round(which(sp_loop == sp)/length(sp_loop),2)))
+# }
 
 
 
