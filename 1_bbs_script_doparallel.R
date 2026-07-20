@@ -188,7 +188,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
    strat <- "bbs"
 
    s <- stratify(by = strat,
-                 release = 2025,
+                 release = 2026,
               species = sp,
               quiet = TRUE,
               distance_to_strata = 4000) %>%
@@ -203,7 +203,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
      s <- stratify(by = strat,
                    strata_custom = strat_alt,
-                   release = 2025,
+                   release = 2026,
                    species = sp,
                    quiet = TRUE,
                    distance_to_strata = 4000)  %>%
