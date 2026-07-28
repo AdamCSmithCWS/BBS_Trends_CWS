@@ -2,6 +2,26 @@
 ## generate list of species with simple data summaries
 ## identify which species to run and sort them into parallel-run groups (column "vm")
 
+if(packageVersion("bbsBayes2") != "1.2026.2"){
+install.packages("bbsBayes2",
+                 repos = c(bbsbayes = 'https://bbsbayes.r-universe.dev',
+                           CRAN = 'https://cloud.r-project.org'))
+
+
+
+  pckgs <- c("cmdstanr",
+             "sf",
+             "tidyverse",
+             "doParallel",
+             "foreach")
+
+
+  install.packages(pckgs)
+
+  }
+
+
+
 library(bbsBayes2)
 library(tidyverse)
 

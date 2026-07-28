@@ -1,0 +1,61 @@
+---
+title: "apptainer for GPSC"
+format: html
+editor: visual
+---
+
+## Building an apptainer container to run BBS in GPSC
+
+Build (needs root/sudo, or `--fakeroot` if configured):
+
+```{bash}
+sudo apptainer build r-bbsbayes2.sif r-bbsbayes2_cmdstan2_39_b.def 
+```
+
+or without sudo, if your system allows fakeroot builds:
+
+```{bash}
+apptainer build --fakeroot r-bbsbayes2.sif r-bbsbayes2_cmdstan2_39.def 
+```
+
+**Use it:**
+
+```{bash}
+apptainer exec r-bbsbayes2.sif R                     # interactive R apptainer exec 
+r-bbsbayes2.sif Rscript my_script.R                 # run a script 
+
+apptainer shell r-bbsbayes2.sif                      # shell inside container 
+```
+
+A few notes on what the def file does and why:
+
+- 
+
+- **Base image**: `ubuntu:24.04` (pulls the latest 24.04.x point release, which will resolve to 24.04.4 or newer at build time).
+
+- 
+
+- **System libraries**: includes the GDAL/GEOS/PROJ/udunits stack needed by `sf`/`terra`, which `bbsBayes2` depends on for spatial stratifications, plus build tools (`build-essential`, `gfortran`, `cmake`) needed to compile CmdStan and R packages from source.
+
+- 
+
+- **cmdstanr**: installed from the official Stan R-universe repo, then used to install CmdStan itself (pinned to version 2.39.0) into `/opt/cmdstan`. The path is registered both in `Rprofile.site` and `/etc/profile.d`, so `CMDSTAN` is set automatically no matter how R is invoked.
+
+- 
+
+- **bbsBayes2**: installed from the bbsBayes R-universe, which is the maintainers' recommended source (it's not on CRAN).
+
+- 
+
+- **%test** section verifies both packages load and reports CmdStan/bbsBayes2 versions — this runs automatically if you build with `apptainer build --build-arg` verification or manually via `apptainer test r-bbsbayes2.sif`.
+
+- 
+
+One thing worth flagging: the CmdStan compile step in `%post` can take 10–20 minutes and needs a few GB of disk/RAM during the build. If you want a specific CmdStan version other than 2.39.0, just change the `CMDSTAN_VERSION` variable near the top of `%post` (and the matching value in `%environment`).
+
+## Open a windows file explorer at the home drive for WSL
+
+```{bash}
+explorer.exe .
+
+```
