@@ -20,11 +20,14 @@ library(doParallel)
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 # external_dir <- "F:/CWS_2023_BBS_Analyses"
 
-output_dir <- "D:/BBS_Trends_CWS/output"
+output_dir <- "e:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- "D:/BBS_Trends_CWS"
+external_dir <- "e:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
+if(!dir.exists(paste0(external_dir,"/Indices"))){
+  dir.create(paste0(external_dir,"/Indices"))
+}
 
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 
@@ -46,8 +49,8 @@ sp_gam <- NULL # optional list of species where GAM model is used, instead of GA
 #  sp_drop <- readRDS("species_rerun_converge_fail_2024-12-11.rds")
 # # # list of species for which the gam model was run because gamye would not converge
 # # # includes American Goshawk, Eastern Screech-Owl, and Sharp-shinned Hawk
-  sp_gam <- readRDS("species_rerun_converge_fail_2026-03-26.rds")
-  sp_gam <- sp_gam[-which(sp_gam == "Pied-billed Grebe")]
+  # sp_gam <- readRDS("species_rerun_converge_fail_2026-03-26.rds")
+  # sp_gam <- sp_gam[-which(sp_gam == "Pied-billed Grebe")]
 # # sp_rerun <- readRDS("species_rerun_converge_fail_2024-11-13.rds")
 #  sp_rerun <- c("Long-tailed Duck","Northern Shrike","Willow Ptarmigan", "Herring Gull",
 #                 "Common Loon",
@@ -67,7 +70,7 @@ cluster <- makeCluster(n_cores, type = "PSOCK")
 registerDoParallel(cluster)
 
 order_random <- sample(1:nrow(sp_list),nrow(sp_list))
-order_random <- which(sp_list$english %in% sp_gam)
+#order_random <- which(sp_list$english %in% sp_gam)
 
 test <- foreach(i = order_random,
                 .packages = c("bbsBayes2",
@@ -111,9 +114,9 @@ test <- foreach(i = order_random,
       }
 
 
-if("geom" %in% names(fit$meta_strata)){
-  fit$meta_strata <- sf::st_drop_geometry(fit$meta_strata)
-}
+# if("geom" %in% names(fit$meta_strata)){
+#   fit$meta_strata <- sf::st_drop_geometry(fit$meta_strata)
+# }
 
       ind <- generate_indices(fit,
                               alternate_n = "n",
@@ -141,7 +144,7 @@ if("geom" %in% names(fit$meta_strata)){
 
     }
 
-print(round(i/nrow(sp_list),2))
+#print(round(i/nrow(sp_list),2))
   }
 
 

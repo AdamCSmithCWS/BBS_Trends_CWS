@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=bbs_gamye
 #SBATCH --account=eccc_oth
-#SBATCH --array=1-3                 # one task per species (1-indexed line numbers in aou_list.txt)
+#SBATCH --array=1-9                 # one task per species (1-indexed line numbers in aou_list.txt)
 #SBATCH --cpus-per-task=4            # matches chains=4 / parallel_chains=4 in the R script
-#SBATCH --mem-per-cpu=2G                  # adjust based on largest species dataset
-#SBATCH --time=01:00:00              # adjust based on expected runtime per species
+#SBATCH --mem-per-cpu=8G                  # adjust based on largest species dataset
+#SBATCH --time=24:00:00              # adjust based on expected runtime per species
 #SBATCH --partition=standard
 #SBATCH --output=/home/acs001/BBS_Trends_CWS/logs/bbs_%A_%a.out
 #SBATCH --error=/home/acs001/BBS_Trends_CWS/logs/bbs_%A_%a.err
@@ -17,6 +17,18 @@ mkdir -p /home/acs001/BBS_Trends_CWS/logs
 # make sure output dir exists (harmless if it already does)
 mkdir -p /gpfs/fs7/eccc/esrp/cws/acs001/BBS_Trends_CWS/output
 
+
+#controls where R sessions create temporary files to ensure large data species can run
+# make sure the temporary directory exists
+mkdir -p /gpfs/fs7/eccc/esrp/cws/acs001/BBS_Trends_CWS/output/temp
+# create local .Renviron file to control tmpdir etc.
+cat >> ~/.Renviron << 'EOF'
+TMPDIR=/gpfs/fs7/eccc/esrp/cws/acs001/BBS_Trends_CWS/output/temp
+TMP=/gpfs/fs7/eccc/esrp/cws/acs001/BBS_Trends_CWS/output/temp
+TEMP=/gpfs/fs7/eccc/esrp/cws/acs001/BBS_Trends_CWS/output/temp
+EOF
+
+
 # load apptainer (adjust module name/version to match your cluster's module system)
 # module load apptainer
 
@@ -26,7 +38,6 @@ RSCRIPT_PATH="/home/acs001/BBS_Trends_CWS/gpsc_model_fit.R"
 
 # path to the file listing all aou codes, one per line
 AOU_LIST="/home/acs001/BBS_Trends_CWS/aou_list.txt"
-#out_loc = "/gpfs/fs7/eccc/esrp/cws/acs001/BBS_Trends_CWS/output"
 
 # pull the aou code corresponding to this array task
 aou=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "${AOU_LIST}")

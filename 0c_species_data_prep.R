@@ -6,6 +6,8 @@
 library(bbsBayes2)
 library(tidyverse)
 
+output_dir <- "e://BBS_Trends_CWS/output"
+
 
 sp_list <- readRDS("species_list.rds")
 strat <- "bbs"
@@ -60,7 +62,7 @@ for(i in 1:nrow(sp_list)){
 
   if(any(s$meta_strata$strata_name %in% strats_3)){
 
-    strat_alt <- load_map(strat) %>%
+    strat_alt <- load_map(strat) |>
       filter(!strata_name %in% strats_3)
 
     s <- stratify(by = strat,
@@ -68,7 +70,7 @@ for(i in 1:nrow(sp_list)){
                   release = 2026,
                   species = sp,
                   quiet = TRUE,
-                  distance_to_strata = 4000)  %>%
+                  distance_to_strata = 4000)  |>
       prepare_data(min_max_route_years = 2,
                    quiet = TRUE,
                    min_year = fy)
@@ -79,7 +81,7 @@ for(i in 1:nrow(sp_list)){
     warning(paste("Only 1 stratum for",sp,"skipping to next species"))
     next
   }
-
+# data suitable for running models in the GPSC
   saveRDS(s,file = paste0("prepared_data/",aou,"_data.rds"))
 
   if(nrow(s$meta_strata) > 2){ #spatial models are irrelevant with < 3 strata
@@ -90,7 +92,7 @@ for(i in 1:nrow(sp_list)){
     #print(bbs_dat_sp$spatial_data$map)
 
     saveRDS(bbs_dat_sp,paste0("raw_data/spatial_neighbours_",aou,".rds"))
-    bbs_dat <- bbs_dat_sp %>%
+    bbs_dat <- bbs_dat_sp |>
       prepare_model(.,
                     model = "gamye",
                     model_variant = "spatial")
@@ -108,8 +110,18 @@ for(i in 1:nrow(sp_list)){
 }
 
 
-## write text file with just aous for bash script in gpsc
- aous <- sp_list[204:210,"aou"]
+ completed <- list.files(output_dir) |>
+   str_extract(pattern = "(?<=_)[[:digit:]]{2,6}")
+ #completed <- as.integer(completed[-which(is.na(completed))])
+
+ ## write text file with just aous for bash script in gpsc
+ # aous <- sp_list[c((nrow(sp_list)-202):(nrow(sp_list)-101)),"aou"]
+
+ #aous <- sp_list[c((nrow(sp_list)-302):(nrow(sp_list)-203)),"aou"]
+ aous <- sp_list[,"aou"]
+
+ aous <- aous[-which(aous$aou %in% completed),]
+
  write_tsv(aous, "aou_list.txt",
            col_names = FALSE)
 

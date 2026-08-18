@@ -23,12 +23,10 @@ library(bbsBayes2)
 library(tidyverse)
 library(ebirdst)
 library(sf)
-#ebirdst::set_ebirdst_access_key("t9el4omae1c3",overwrite = TRUE)
+library(naturecounts)
 
-output_dir <- "D:/BBS_Trends_CWS/output"
-#output_dir <- "output"
-external_dir <- "D:/BBS_Trends_CWS"
-# output_dir <- "F:/CWS_2022_BBS_Analyses/output"
+external_dir <- "e:/BBS_Trends_CWS"
+output_dir <- "e:/BBS_Trends_CWS/output"
 
 db <- load_map("latlong") %>%
   rename(grid_cell_name = strata_name,
@@ -36,7 +34,7 @@ db <- load_map("latlong") %>%
 
 qual_ebird <- ebirdst_runs
 
-ly <- max(bbsBayes2::load_bbs_data(release = 2025)$route$year)
+ly <- max(bbsBayes2::load_bbs_data(release = 2026)$route$year)
 
 
 
@@ -191,6 +189,13 @@ saveRDS(sp_list_gen,"sp_list_w_generations.rds")
 
 }
 
+missing_gen <- sp_list_gen |>
+  filter(is.na(GenLength))
+
+if(nrow(missing_gen) > 0){
+  stop(paste("Generation length info is missing for",nrow(missing_gen),"species"))
+}
+
 # Coverage loops ----------------------------------------------------------
 library(foreach)
 library(doParallel)
@@ -209,7 +214,7 @@ sp_list_gen <- readRDS("sp_list_w_generations.rds")
 re_do_botw <- FALSE
 
 if(re_do_botw){
-botw_all <- readRDS("data/BOTW_valid.rds")
+botw_all <- readRDS("data/BOTW_valid.rds") # if needed this is found here: C:\Users\SmithAC\OneDrive - EC-EC\BBS\BOTW_ranges
 
 continent_alt <- continent %>%
   sf::st_transform(crs = sf::st_crs(botw_all))
@@ -233,13 +238,13 @@ botw_seas <- readRDS("data/botw_seas.rds")
 
 
 
-n_cores = 6
+n_cores = 4
 #n_cores <- floor(parallel::detectCores()/4)-1
 
 cluster <- makeCluster(n_cores, type = "PSOCK")
 registerDoParallel(cluster)
 
-re_run <- TRUE
+re_run <- FALSE
 
 test <- foreach(i = rev(1:nrow(sp_list_gen)),
               .packages = c("bbsBayes2",
@@ -255,16 +260,16 @@ test <- foreach(i = rev(1:nrow(sp_list_gen)),
   sp_sel <- unname(unlist(sp_list_gen[i,"english"]))
   aou <- as.integer(sp_list_gen[i,"aou"])
 
-  if(all(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
+  if(all(file.exists(paste0("coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
     #sp_list_gen[i,"eBird_range_data"] <- "Used"
     next
     }
 
-  if(!file.exists(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))){
+  if(!file.exists(paste0("Raw_data/Raw_",aou,".rds"))){
     #sp_list_gen[i,"eBird_range_data"] <- "not modeled"
     next
   }
-  raw <- readRDS(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
+  raw <- readRDS(paste0("Raw_data/Raw_",aou,".rds"))
   strat <- "bbs"
 
   # filter(n_routes_w_obs > 19,
@@ -407,9 +412,9 @@ if(!grepl(pattern = "*\\(",
   #               quiet = TRUE) %>%
   #   prepare_data(min_max_route_years = 2,
   #                quiet = TRUE)
-  saveRDS(range_info,paste0(external_dir,"/coverage/range_map_coverage_",aou,".rds"))
+  saveRDS(range_info,paste0("coverage/range_map_coverage_",aou,".rds"))
 
-  if(all(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
+  if(all(file.exists(paste0("coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
     #sp_list_gen[i,"eBird_range_data"] <- "Used"
     next
   }
@@ -448,7 +453,7 @@ sp_coverage <- overlay_range_data(range = range_info,
                                   crs_site_coordinates = 4326,
                                   add_survey_sites_to_range = TRUE)
 
-saveRDS(sp_coverage,paste0(external_dir,"/coverage/coverage_maps_",ttime,"_",aou,".rds"))
+saveRDS(sp_coverage,paste0("coverage/coverage_maps_",ttime,"_",aou,".rds"))
 # cumulative_coverage_map <- basp_coverage$cumulative_coverage_map
 # overall_coverage_estimate <- basp_coverage$cumulative_coverage_estimate
 #
@@ -489,7 +494,7 @@ tmp_coverage <- regional_summary(sp_coverage,
 
 # cover_save <- list(annual_coverage = ann_coverage,
 #                    cumulative_coverage = cumulative_coverage)
-saveRDS(cumulative_coverage,paste0(external_dir,"/coverage/coverage_",ttime,"_",aou,".rds"))
+saveRDS(cumulative_coverage,paste0("coverage/coverage_",ttime,"_",aou,".rds"))
 #
 
 
@@ -548,19 +553,19 @@ for(i in rev(1:nrow(sp_list_gen))){
 
 three_g <- max(c(10,round(as.numeric(sp_list_gen[i,"GenLength"])*3)))
 
-if(!any(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds")))){
+if(!any(file.exists(paste0("coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds")))){
   next
 }
-range_maps <- readRDS(paste0(external_dir,"/coverage/range_map_coverage_",aou,".rds"))
+range_maps <- readRDS(paste0("coverage/range_map_coverage_",aou,".rds"))
 range_map <- range_maps$range_map
 # coverage by trend-period ----------------------------------------------
-if(!file.exists(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))){
+if(!file.exists(paste0("Raw_data/Raw_",aou,".rds"))){
   next
 }
-raw <- readRDS(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
+raw <- readRDS(paste0("Raw_data/Raw_",aou,".rds"))
 
 
-pdf(paste0(external_dir,"/coverage_maps/coverage_maps_",species_f_bil,".pdf"))
+pdf(paste0("coverage_maps/coverage_maps_",species_f_bil,".pdf"))
 
 for(ttime in c("Long-term","Short-term","Three-generation")){
 
@@ -571,10 +576,10 @@ for(ttime in c("Long-term","Short-term","Three-generation")){
     fy <- ly-three_g
   }
 
-  if(!file.exists(paste0(external_dir,"/coverage/coverage_maps_",ttime,"_",aou,".rds"))){
+  if(!file.exists(paste0("coverage/coverage_maps_",ttime,"_",aou,".rds"))){
     next
   }
-    sp_coverage <- readRDS(paste0(external_dir,"/coverage/coverage_maps_",ttime,"_",aou,".rds"))
+    sp_coverage <- readRDS(paste0("coverage/coverage_maps_",ttime,"_",aou,".rds"))
 
   if(aou %in% c(4661,4660)){ #Alder and Willow Flycatcher
     fy <- max(c(fy,1978)) #5 years after the split
