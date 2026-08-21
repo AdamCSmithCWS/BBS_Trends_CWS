@@ -11,16 +11,16 @@ library(foreach)
 library(doParallel)
 library(patchwork)
 
-YYYY <- 2024
+YYYY <- 2025
 short_time <- 10
 
 #setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
 
 
-output_dir <- "D:/BBS_Trends_CWS/output"
+output_dir <- "f:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- "D:/BBS_Trends_CWS"
+external_dir <- "f:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
@@ -106,7 +106,6 @@ test <- foreach(i = rev(c(1:nrow(sp_list))),
 
 
     if(file.exists(paste0(external_dir,"/Indices/Inds_",aou,".rds")) &
-       file.exists(paste0(external_dir,"/Figures/temp_rds_storage/",aou,"_highlevel_simple_trajs.RDS")) &
        (!file.exists(paste0(external_dir,"/Trends/Rolling_trends/",aou,"_rolling_trends.rds")) | re_run)){
 
 

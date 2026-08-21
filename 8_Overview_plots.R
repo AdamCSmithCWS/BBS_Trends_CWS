@@ -13,9 +13,9 @@ library(ggrepel)
 library(foreach)
 library(doParallel)
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
-output_dir <- "D:/BBS_Trends_CWS/output"
+output_dir <- "f:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- "D:/BBS_Trends_CWS"
+external_dir <- "f:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 
 cat_translate <- function(x){

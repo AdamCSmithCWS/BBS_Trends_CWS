@@ -10,21 +10,21 @@ library(foreach)
 library(doParallel)
 library(patchwork)
 
-YYYY <- 2024
+YYYY <- 2025
 short_time <- 10
 #
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 # external_dir <- "F:/CWS_2023_BBS_Analyses"
-output_dir <- "D:/BBS_Trends_CWS/output"
+output_dir <- "f:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- "D:/BBS_Trends_CWS"
+external_dir <- "f:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 #setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
 
 # output_dir <- "output"
-n_cores = 6
+n_cores = 8
 re_run <- TRUE
 
 sp_list <- readRDS("sp_list_w_generations.rds") %>%

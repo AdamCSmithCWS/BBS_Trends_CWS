@@ -14,7 +14,7 @@ library(foreach)
 library(doParallel)
 library(patchwork)
 
-YYYY <- 2024
+YYYY <- 2025
 short_time <- 10
 
 #setwd("D:/BBS_Trends_CWS/")
@@ -27,13 +27,13 @@ source("functions/reliability.R")
 # output_dir <- "output"
 # external_dir <- getwd()
 
-output_dir <- "D:/BBS_Trends_CWS/output"
+output_dir <- "f:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- "D:/BBS_Trends_CWS"
+external_dir <- "f:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
-n_cores <- 8
+n_cores <- 12
 re_run <- TRUE
 
 # species list that also includes generation length
@@ -42,8 +42,8 @@ re_run <- TRUE
 
 sp_list <- readRDS("sp_list_w_generations.rds") %>%
   filter(model == TRUE)
-sp_list <- sp_list %>%
-  filter(english %in% sp_re_fit)
+# sp_list <- sp_list %>%
+#   filter(english %in% sp_re_fit)
 
 # sp_rerun <- c("Northern Shrike","Willow Ptarmigan", "Herring Gull",
 #               "Common Loon",

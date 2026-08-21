@@ -10,12 +10,12 @@
 ## Also, loads the generation times for each species from the R package naturecounts
 ## for use in defining the time-period for the species-specific three-generation
 ## trends
-
+# eB:hb80l3do81ct   NC:YAuJpdBXsnnre7k
 
 # if (!requireNamespace("remotes", quietly = TRUE)) {
 #   install.packages("remotes")
 # }
-# remotes::install_github("AdamCSmithCWS/SurveyCoverage@dev")
+# remotes::install_github("AdamCSmithCWS/SurveyCoverage")
 
 
 library(SurveyCoverage)
@@ -25,8 +25,8 @@ library(ebirdst)
 library(sf)
 library(naturecounts)
 
-external_dir <- "e:/BBS_Trends_CWS"
-output_dir <- "e:/BBS_Trends_CWS/output"
+external_dir <- "f:/BBS_Trends_CWS"
+output_dir <- "f:/BBS_Trends_CWS/output"
 
 db <- load_map("latlong") %>%
   rename(grid_cell_name = strata_name,
@@ -111,8 +111,8 @@ for(i in 1:nrow(nc_lump_link)){
   sp_list[j,"naturecounts_species_id"] <- cd_rep
 }
 
-redo_generations <- TRUE
-re_naturecounts <- TRUE
+redo_generations <- FALSE
+re_naturecounts <- FALSE
 if(re_naturecounts){
 gen_years_all <- naturecounts::nc_query_table(table = "SpeciesLifeHistory") %>%
   filter(subcategDescr == "Average generation length (years)")
@@ -187,6 +187,9 @@ gtmp <- mean(gensj$value,na.rm = TRUE)
 }
 saveRDS(sp_list_gen,"sp_list_w_generations.rds")
 
+}else{
+  sp_list_gen <- readRDS("sp_list_w_generations.rds")
+
 }
 
 missing_gen <- sp_list_gen |>
@@ -200,7 +203,6 @@ if(nrow(missing_gen) > 0){
 library(foreach)
 library(doParallel)
 
-sp_list_gen <- readRDS("sp_list_w_generations.rds")
 
 # sp_rerun <- c("Northern Shrike","Willow Ptarmigan", "Herring Gull",
 #               "Common Loon",
@@ -238,7 +240,7 @@ botw_seas <- readRDS("data/botw_seas.rds")
 
 
 
-n_cores = 4
+n_cores = 6
 #n_cores <- floor(parallel::detectCores()/4)-1
 
 cluster <- makeCluster(n_cores, type = "PSOCK")
