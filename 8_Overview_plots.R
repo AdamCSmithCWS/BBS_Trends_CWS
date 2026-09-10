@@ -2,7 +2,7 @@
 
 
 ###  - State of Canada's Birds
-YYYY <- 2024
+YYYY <- 2025
 
 webmaps <- FALSE # set to true if needing to create all map images for ECCC website
 
@@ -13,9 +13,9 @@ library(ggrepel)
 library(foreach)
 library(doParallel)
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
-output_dir <- "f:/BBS_Trends_CWS/output"
+output_dir <- "e:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- "f:/BBS_Trends_CWS"
+external_dir <- "e:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 
 cat_translate <- function(x){
@@ -108,25 +108,34 @@ lastyear_inds <- read_csv(paste0("data/All_BBS_Full_indices_",YYYY-1,".csv"))
 lastyear_inds_smooth <- read_csv(paste0("data/All_BBS_Smoothed_Indices_",YYYY-1,".csv"))
 
 
-ly_trends <- lastyear[,c("species","bbs_num","region","trend_time",
-                         "n_strata_included","n_routes",
-                         "trend",
-                         "trend_q_0.05","trend_q_0.95",
-                         "width_of_95_percent_credible_interval")] %>%
-  filter(region %in% c("continent","Canada","United States of America")) %>%
+ly_trends <- lastyear[,c("species","BBS_Number__Numéro_BBS_core","region_en","trend_time",
+                         "n_strat_incl","n_site",
+                         "trend_tendence",
+                         "trend_tendence_q_0.05","trend_tendence_q_0.95",
+                         "width_CI_largeur_IC")] %>%
+  filter(region_en %in% c("Survey-wide","Canada","United States of America")) %>%
   select(-c(species))
 
+
+# new_headers <- c("bbs_num","region","trend_time",
+#   "n_strata_included","n_routes",
+#   "trend",
+#   "trend_q_0.05","trend_q_0.95",
+#   "width_of_95_percent_credible_interval")
 
 
 species_to_run <- sp_list %>%
   arrange(naturecounts_sort_order)
-
-
+#
+# names(ly_trends) <- new_headers
 
 
 # English overview --------------------------------------------------------
 
+alt_strat_map <- load_map("bbs") |>
+  rmapshaper::ms_simplify(keep = 0.1,keep_shapes = TRUE)
 
+ci_comp <- NULL
 
 use_last_year <- FALSE
 
@@ -164,8 +173,12 @@ for(jj in (1:nrow(species_to_run))){
                         replacement = "_")
 
   trends_ly <- ly_trends %>%
-    filter(bbs_num == aou) %>%
-    mutate(version = "Last year")
+    filter(BBS_Number__Numéro_BBS_core == aou) %>%
+    mutate(version = "Last year") |>
+    rename(region = region_en,
+           trend = trend_tendence,
+           trend_q_0.05 = trend_tendence_q_0.05,
+           trend_q_0.95 = trend_tendence_q_0.95)
 
   if(nrow(trends_ly) > 0 & use_last_year){
   trends_1 <- readRDS(paste0(external_dir,"/Trends/",aou,"_trends.rds")) %>%
@@ -192,6 +205,8 @@ tplot <- ggplot(data = trends_1)+
   facet_wrap(vars(trend_time),
              scales = "free_x")
 
+
+
 if(use_last_year){
   tplot <- tplot +
     coord_flip()+
@@ -201,6 +216,21 @@ if(use_last_year){
     xlab("")+
     scale_colour_viridis_d(direction = -1,
                            name = paste("Trends",YYYY,"\n  and",YYYY-1))
+
+  if(nrow(trends_ly) > 0){
+  ci_comp_temp <- trends_1 |>
+    filter(trend_time == "Long-term") |>
+    mutate(ci = trend_q_0.95-trend_q_0.05) |>
+    select(region,version,ci) |>
+    pivot_wider(id_cols = region,
+                names_from = version,
+                values_from = ci) |>
+    mutate(ci_diff = (`This year`-`Last year`)/`Last year`,
+           species = species,
+           aou = aou)
+
+ ci_comp <- bind_rows(ci_comp,ci_comp_temp)
+}
 }else{
   tplot <- tplot +
     coord_flip()+
@@ -230,19 +260,42 @@ if(use_last_year){
                         axis_title_size = 10,
                         axis_text_size = 10)
 
-  for(i in 1:length(tmaps)){
-    tmaps[[i]] <- tmaps[[i]]+
-      ggplot2::guides(fill = ggplot2::guide_legend(title = "Trend\n%/year"))
-  }
+
+  first_year_long <- fy
+  first_year_short <- YYYY-10
+
+  start_years <- c(first_year_long,first_year_short)
+  names(start_years) <- c("Long-term","Short-term")
+
+  for(j in names(start_years)){
+    ssy <- start_years[j]
+  trends_tmp <- generate_trends(inds,
+                                min_year = ssy,
+                                quantiles = c(0.025, 0.05, 0.10, 0.25, 0.75, 0.9, 0.95, 0.975),
+                                prob_decrease = c(0,25,30,50),
+                                prob_increase = c(0,33,100),
+                                hpdi = TRUE)
+
+
+  tmaps[[j]] <- plot_map(trends_tmp,
+                        strata_custom = alt_strat_map,
+                        title = FALSE) +
+    labs(title = j)+
+    ggplot2::guides(fill = ggplot2::guide_legend(title = "Trend\n%/year"))
+  }# end j start_years
+
+
+
+
 
 
 if(use_last_year){
   lastyear_inds_sp <- lastyear_inds %>%
-    filter(bbs_num == aou,
+    filter(BBS_Number__Numéro_BBS_core == aou,
            trend_time == "Long-term")
 
   lastyear_inds_smooth_sp <- lastyear_inds_smooth %>%
-    filter(bbs_num == aou,
+    filter(BBS_Number__Numéro_BBS_core == aou,
            trend_time == "Long-term")
 }else{
   lastyear_inds_sp <- NULL
@@ -293,24 +346,20 @@ if(use_last_year){
 
 if(use_last_year){
       ly_inds <- lastyear_inds_sp |>
-        mutate(region = ifelse(region == "continent",
-                               "Survey-wide",
-                               region)) %>%
+        mutate(region = region_en) |>
         filter(region == rr)
       ly_inds_smooth <- lastyear_inds_smooth_sp|>
-        mutate(region = ifelse(region == "continent",
-                               "Survey-wide",
-                               region)) %>%
+        mutate(region = region_en) |>
         filter(region == rr)
 
 
-      if(j == "continent"){
-        ly_inds <- lastyear_inds_sp %>%
-          filter(region == "continent")|>
-          mutate(region = ifelse(region == "continent",
-                                 "Survey-wide",
-                                 region))
-      }
+      # if(j == "continent"){
+      #   ly_inds <- lastyear_inds_sp %>%
+      #     filter(region_en == "continent")|>
+      #     mutate(region = ifelse(region_en == "continent",
+      #                            "Survey-wide",
+      #                            region_en))
+      # }
 }else{
   ly_inds <- NULL
   ly_inds_smooth <- NULL
@@ -319,16 +368,16 @@ if(use_last_year){
         if(nrow(ly_inds) > 0){
     tmpPlot <- t1plot +
           geom_line(data = ly_inds,
-                    aes(x = year,
-                        y = index_q_0.05),
+                    aes(x = year_an,
+                        y = ind_q_0.05),
                     colour = "darkgreen",alpha = 0.3, linetype = 6)+
           geom_line(data = ly_inds,
-                    aes(x = year,
-                        y = index_q_0.95),
+                    aes(x = year_an,
+                        y = ind_q_0.95),
                     colour = "darkgreen",alpha = 0.3, linetype = 6)+
           geom_line(data = ly_inds_smooth,
-                    aes(x = year,
-                        y = index),
+                    aes(x = year_an,
+                        y = ind),
                     colour = "darkgreen",alpha = 0.4, linetype = 6)
 
         trajs[[j]] <- tmpPlot
@@ -403,7 +452,7 @@ if(use_last_year){
       mutate(reliability = str_to_lower(reliability),
              precision = str_to_lower(precision),
              backcast_reliab = str_to_lower(backcast_reliab))
-    can_title <- paste0("Canada long-term trend has",tt_sel$reliability,
+    can_title <- paste0("Canada long-term trend has ",tt_sel$reliability,
                        " overall reliability, ",
                        "coverage for ",tt_sel$reliab.cov*100,
                        "% of the species' range, ",
@@ -419,7 +468,7 @@ if(use_last_year){
       mutate(reliability = str_to_lower(reliability),
              precision = str_to_lower(precision),
              backcast_reliab = str_to_lower(backcast_reliab))
-    us_title <- paste0("US long-term trend has",tt_sel$reliability, " overall reliability, ",
+    us_title <- paste0("US long-term trend has ",tt_sel$reliability, " overall reliability, ",
                       "coverage for ",tt_sel$reliab.cov*100,
                       "% of the species' range, ",
                       tt_sel$precision, " precision, ",
@@ -452,7 +501,24 @@ dev.off()
 
 
 
-
+#saveRDS(ci_comp,paste0("CI_comparison_",YYYY,".rds"))
+#
+# ci_comp <- readRDS(paste0("CI_comparison_",YYYY,".rds"))
+#
+# ci_comp_sum <- ci_comp |>
+#   mutate(ci_flag = ifelse(ci_diff > 0.2,
+#                           TRUE,FALSE))
+#
+# tmp <- ci_comp_sum |>
+#   filter(ci_flag)
+#
+#
+# aous <- tmp[,"aou"]
+#
+#
+# write_tsv(aous, "aou_list.txt",
+#           col_names = FALSE)
+#
 
 
 # French overview file ----------------------------------------------------
@@ -494,8 +560,12 @@ for(jj in c(1:nrow(species_to_run))){
                           replacement = "_")
 
     trends_ly <- ly_trends %>%
-      filter(bbs_num == aou) %>%
-      mutate(version = "Last year")
+      filter(BBS_Number__Numéro_BBS_core == aou) %>%
+    mutate(version = "Last year") |>
+    rename(region = region_en,
+           trend = trend_tendence,
+           trend_q_0.05 = trend_tendence_q_0.05,
+           trend_q_0.95 = trend_tendence_q_0.95)
 
     if(nrow(trends_ly) > 0 & use_last_year){
       trends_1 <- readRDS(paste0(external_dir,"/Trends/",aou,"_trends.rds")) %>%
@@ -548,6 +618,8 @@ for(jj in c(1:nrow(species_to_run))){
         xlab("")+
         scale_colour_viridis_d(direction = -1,
                                name = paste("Tendances",YYYY,"\n  et",YYYY-1))
+
+
     }else{
       tplot <- tplot +
         coord_flip()+
@@ -579,18 +651,43 @@ for(jj in c(1:nrow(species_to_run))){
 
 
 
-    for(i in 1:length(tmaps)){
-      tmaps[[i]] <- tmaps[[i]]+
-      ggplot2::guides(fill = ggplot2::guide_legend(title = "Tendance\n% par an"))
-    }
+
+    first_year_long <- fy
+    first_year_short <- YYYY-10
+
+    start_years <- c(first_year_long,first_year_short)
+    names(start_years) <- c("Long-term","Short-term")
+
+    for(j in names(start_years)){
+      ssy <- start_years[j]
+      trends_tmp <- generate_trends(inds,
+                                    min_year = ssy,
+                                    quantiles = c(0.025, 0.05, 0.10, 0.25, 0.75, 0.9, 0.95, 0.975),
+                                    prob_decrease = c(0,25,30,50),
+                                    prob_increase = c(0,33,100),
+                                    hpdi = TRUE)
+
+
+      tmaps[[j]] <- plot_map(trends_tmp,
+                             strata_custom = alt_strat_map,
+                             title = FALSE) +
+        labs(title = j)+
+        ggplot2::guides(fill = ggplot2::guide_legend(title = "Tendance\n% par an"))
+    }# end j start_years
+
+
+    # for(i in 1:length(tmaps)){
+    #   tmaps[[i]] <- tmaps[[i]]+
+    #   ggplot2::guides(fill = ggplot2::guide_legend(title = "Tendance\n% par an"))
+    # }
 
     if(use_last_year){
       lastyear_inds_sp <- lastyear_inds %>%
-        filter(bbs_num == aou,
+        filter(BBS_Number__Numéro_BBS_core == aou,
                trend_time == "Long-term")
 
       lastyear_inds_smooth_sp <- lastyear_inds_smooth %>%
-        filter(bbs_num == aou,
+        filter(BBS_Number__Numéro_BBS_core == aou,
                trend_time == "Long-term")
     }else{
       lastyear_inds_sp <- NULL
@@ -644,15 +741,17 @@ for(jj in c(1:nrow(species_to_run))){
 
       if(use_last_year){
         ly_inds <- lastyear_inds_sp %>%
+          mutate(region = region_en) |>
           filter(region == rr2)
         ly_inds_smooth <- lastyear_inds_smooth_sp %>%
+          mutate(region = region_en) |>
           filter(region == rr2)
 
 
-        if(j == "continent"){
-          ly_inds <- lastyear_inds_sp %>%
-            filter(region == "continent")
-        }
+        # if(j == "continent"){
+        #   ly_inds <- lastyear_inds_sp %>%
+        #     filter(region == "continent")
+        # }
       }else{
         ly_inds <- NULL
         ly_inds_smooth <- NULL
@@ -662,15 +761,15 @@ for(jj in c(1:nrow(species_to_run))){
           tmpPlot <- t1plot +
             geom_line(data = ly_inds,
                       aes(x = year,
-                          y = index_q_0.05),
+                          y = ind_q_0.05),
                       colour = "darkgreen",alpha = 0.3, linetype = 6)+
             geom_line(data = ly_inds,
                       aes(x = year,
-                          y = index_q_0.95),
+                          y = ind_q_0.95),
                       colour = "darkgreen",alpha = 0.3, linetype = 6)+
             geom_line(data = ly_inds_smooth,
                       aes(x = year,
-                          y = index),
+                          y = ind),
                       colour = "darkgreen",alpha = 0.4, linetype = 6)
 
           trajs[[j]] <- tmpPlot

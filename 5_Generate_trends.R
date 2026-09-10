@@ -27,13 +27,13 @@ source("functions/reliability.R")
 # output_dir <- "output"
 # external_dir <- getwd()
 
-output_dir <- "f:/BBS_Trends_CWS/output"
+output_dir <- "e:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- "f:/BBS_Trends_CWS"
+external_dir <- "e:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
-n_cores <- 12
+n_cores <- 6
 re_run <- TRUE
 
 # species list that also includes generation length

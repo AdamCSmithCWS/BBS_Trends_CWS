@@ -12,6 +12,7 @@ library(tidyverse)
 library(foreach)
 library(doParallel)
 
+YYYY <- 2025
 
 #setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
@@ -38,9 +39,24 @@ re_run <- TRUE # if TRUE will recalculate and overwrite previous saved indices f
 
 sp_list <- readRDS("sp_list_w_generations.rds") %>%
   filter(model == TRUE)
-# sp_re_fit <- c(4120,5600,7610,6140,4123,3370)
+# sp_re_fit <- c(6750)
 # sp_list <- sp_list %>%
 #   filter(aou %in% sp_re_fit)
+#
+
+# if rerunning a selection of poorly esitmated species
+# ci_comp <- readRDS(paste0("CI_comparison_",YYYY,".rds"))
+#
+# ci_comp_sum <- ci_comp |>
+#   mutate(ci_flag = ifelse(ci_diff > 0.2,
+#                           TRUE,FALSE))
+#
+# tmp <- ci_comp_sum |>
+#   filter(ci_flag)
+#
+#
+# sp_list <- sp_list |>
+#   filter(aou %in% tmp$aou)
 #
 
 sp_drop <- NULL

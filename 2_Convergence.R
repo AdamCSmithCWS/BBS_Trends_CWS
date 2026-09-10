@@ -204,6 +204,7 @@ if(nrow(sp_not_run_but_should) > 0){
 
 sp_re_run_converge <- sp_not_run_but_should |>
   filter(re_converge)
+
 if(nrow(sp_re_run_converge) > 0){
   warning(paste("rerunning convergence summary for",nrow(sp_re_run_converge),"species"))
 
@@ -341,7 +342,8 @@ saveRDS(species_re_run_combined,
         file = paste0("species_rerun_converge_fail_",as_date(Sys.Date()),".rds"))
 
 
-aous <- sp_list[which(sp_list$english %in% species_re_run_combined),"aou"]
+aous <- sp_list[which(sp_list$english %in% species_re_run_combined),"aou"] |>
+  distinct()
 
 write_tsv(aous, "aou_list.txt",
           col_names = FALSE)

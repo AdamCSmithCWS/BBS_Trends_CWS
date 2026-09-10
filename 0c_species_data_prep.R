@@ -116,11 +116,28 @@ for(i in 1:nrow(sp_list)){
 
  ## write text file with just aous for bash script in gpsc
  # aous <- sp_list[c((nrow(sp_list)-202):(nrow(sp_list)-101)),"aou"]
+ for(i in 1:nrow(sp_list)){
+
+
+
+   sp <- as.character(sp_list[i,"english"])
+   aou <- as.integer(sp_list[i,"aou"])
+if(file.exists(paste0("prepared_data/",aou,"_data.rds"))){
+s <- readRDS(paste0("prepared_data/",aou,"_data.rds"))
+
+   if(nrow(s$meta_strata) == 2){
+     sp_list[i,"rerun"] <- TRUE
+   }
+}
+
+ }
+
 
  #aous <- sp_list[c((nrow(sp_list)-302):(nrow(sp_list)-203)),"aou"]
- aous <- sp_list[,"aou"]
+ aous <- sp_list[which(sp_list$rerun),"aou"]
 
- aous <- aous[-which(aous$aou %in% completed),]
+ aous <- aous[-which(aous$aou %in% completed),] |>
+   distinct()
 
  write_tsv(aous, "aou_list.txt",
            col_names = FALSE)

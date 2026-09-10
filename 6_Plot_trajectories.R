@@ -15,9 +15,9 @@ short_time <- 10
 #
 # output_dir <- "F:/CWS_2023_BBS_Analyses/output"
 # external_dir <- "F:/CWS_2023_BBS_Analyses"
-output_dir <- "f:/BBS_Trends_CWS/output"
+output_dir <- "e:/BBS_Trends_CWS/output"
 #output_dir <- "output"
-external_dir <- "f:/BBS_Trends_CWS"
+external_dir <- "e:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 #setwd("C:/Users/SmithAC/Documents/GitHub/CWS_2023_BBS_Analyses")
@@ -44,8 +44,16 @@ regs_to_estimate <- c("continent","country","prov_state","bcr","stratum","bcr_by
 lastyear = read_csv(paste0("data/All_BBS_trends_",YYYY-1,".csv"))
 
 
-lastyear_inds <- read_csv(paste0("data/All_BBS_Full_indices_",YYYY-1,".csv"))
-lastyear_inds_smooth <- read_csv(paste0("data/All_BBS_Smoothed_Indices_",YYYY-1,".csv"))
+lastyear_inds <- read_csv(paste0("data/All_BBS_Full_indices_",YYYY-1,".csv")) |>
+  rename(bbs_num = BBS_Number__Numéro_BBS_core,
+         region = region_en,
+         year = year_an) |>
+  rename_with(.fn = ~str_replace(.x,"ind","index"))
+lastyear_inds_smooth <- read_csv(paste0("data/All_BBS_Smoothed_Indices_",YYYY-1,".csv"))|>
+  rename(bbs_num = BBS_Number__Numéro_BBS_core,
+         region = region_en,
+         year = year_an) |>
+  rename_with(.fn = ~str_replace(.x,"ind","index"))
 
 
 # build cluster -----------------------------------------------------------
@@ -194,7 +202,7 @@ test <- foreach(i = rev(1:nrow(sp_list)),
 
           if(j == "continent"){
             ly_inds <- lastyear_inds_sp %>%
-              filter(region == "continent")
+              filter(region == "Survey-wide")
           }
           if(j == "CA"){
             ly_inds <- lastyear_inds_sp %>%

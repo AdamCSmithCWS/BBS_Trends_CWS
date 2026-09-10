@@ -13,10 +13,13 @@ out_loc <- "/gpfs/fs7/eccc/esrp/cws/acs001/BBS_Trends_CWS/output"
 s <- readRDS(paste0("/home/acs001/BBS_Trends_CWS/prepared_data/",aou,"_data.rds"))
 
 # if there are enough strata to make the spatial model useful
-if(nrow(s$meta_strata) > 2){ #spatial models are irrelevant with < 3 strata
+if(nrow(s$meta_strata) > 1){ #spatial models are irrelevant with < 3 strata
+  # bbs_dat_sp <- prepare_spatial(s,
+  #                               strata_map = load_map(strat),
+  #                               queen = TRUE)
   bbs_dat_sp <- prepare_spatial(s,
                                 strata_map = load_map(strat),
-                                queen = TRUE)
+                                voronoi = TRUE)
 
   #print(bbs_dat_sp$spatial_data$map)
 
@@ -41,8 +44,8 @@ m <- run_model(bbs_dat,
                refresh = 0,
                adapt_delta = 0.9,
                iter_warmup = 2000,
-               iter_sampling = 6000,
-               thin = 6,
+               iter_sampling = 4000,
+               thin = 4,
                output_basename = out_name,
                output_dir = out_loc,
                save_model = FALSE)
@@ -137,5 +140,20 @@ raw_data <- m$raw_data
 saveRDS(raw_data,paste0(out_loc,"/Raw_data/Raw_",aou,".rds"))
 
 
-
+# ## temp delete or comment out before running
+#
+# aous <- read_tsv("aou_list.txt",
+#                  col_names = "aou")
+# aous2 <- NULL
+# for(aou in aous$aou){
+#
+#   if(file.exists(paste0("output/fit_",aou,".rds"))){
+#    next
+#   }else{
+#     aous2 <- c(aous2,aou)
+#   }
+#
+#
+#
+# }
 
