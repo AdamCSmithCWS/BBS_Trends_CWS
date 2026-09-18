@@ -3,7 +3,7 @@
 ### Google Drive and for upload into the NatureCounts database to support
 ###  - State of Canada's Birds, etc.
 ###
-YYYY <- 2024
+YYYY <- 2025
 
 
 ##################
@@ -19,8 +19,8 @@ library(ggrepel)
 library(readxl)
 #setwd("C:/GitHub/CWS_2023_BBS_Analyses")
 
-external_dir <- "d:/BBS_Trends_CWS"
-output_dir <- "d:/BBS_Trends_CWS/output"
+external_dir <- "e:/BBS_Trends_CWS"
+output_dir <- "e:/BBS_Trends_CWS/output"
 
 source("functions/mapping.R")
 source("functions/loess_func.R")
@@ -66,7 +66,7 @@ sp_list <- readRDS("sp_list_w_generations.rds") %>%
 
 
 
-re_collect <- FALSE
+re_collect <- TRUE
 # Compile all trends and indices ------------------------------------------------------
 
 if(re_collect){
@@ -102,6 +102,22 @@ for(i in 1:nrow(sp_list)){
 
 }
 
+trends <- trends %>%
+  mutate(region = ifelse(region == "continent",
+                         "Survey-wide",region),
+         region_type = ifelse(region_type == "continent",
+                              "survey-wide",region_type))
+indices <- indices %>%
+  mutate(region = ifelse(region == "continent",
+                         "Survey-wide",region),
+         region_type = ifelse(region_type == "continent",
+                              "survey-wide",region_type))
+indices_smooth <- indices_smooth %>%
+  mutate(region = ifelse(region == "continent",
+                         "Survey-wide",region),
+         region_type = ifelse(region_type == "continent",
+                              "survey-wide",region_type))
+
 saveRDS(trends,"output/trends_collected.rds")
 saveRDS(indices,"output/indices_collected.rds")
 saveRDS(indices_smooth,"output/indices_smooth_collected.rds")
@@ -109,21 +125,9 @@ saveRDS(indices_smooth,"output/indices_smooth_collected.rds")
 }else{
 
 
-  trends <- readRDS("output/trends_collected.rds")%>%
-    mutate(region = ifelse(region == "continent",
-                           "Survey-wide",region),
-           region_type = ifelse(region_type == "continent",
-                                "survey-wide",region_type))
-  indices <- readRDS("output/indices_collected.rds")%>%
-    mutate(region = ifelse(region == "continent",
-                           "Survey-wide",region),
-           region_type = ifelse(region_type == "continent",
-                                "survey-wide",region_type))
-  indices_smooth <- readRDS("output/indices_smooth_collected.rds")%>%
-    mutate(region = ifelse(region == "continent",
-                           "Survey-wide",region),
-           region_type = ifelse(region_type == "continent",
-                                "survey-wide",region_type))
+  trends <- readRDS("output/trends_collected.rds")
+  indices <- readRDS("output/indices_collected.rds")
+  indices_smooth <- readRDS("output/indices_smooth_collected.rds")
 
 }
 
@@ -184,22 +188,24 @@ core_link <- sp_list %>%
 
 
 
-lastyear = read_csv("data/All_BBS_trends_2023.csv")
+lastyear = read_csv("data/All_BBS_trends_2024.csv")
 
-ly_trends <- lastyear[,c("species","bbs_num","region","trend_time",
-                         "n_strata_included","n_routes",
-                         "trend",
-                         "trend_q_0.05","trend_q_0.95",
-                         "width_of_95_percent_credible_interval",
+ly_trends <- lastyear[,c("species","BBS_Number__Numéro_BBS_core","region_en","trend_time",
+                         "n_strat_incl","n_site",
+                         "trend_tendence",
+                         "trend_tendence_q_0.05","trend_tendence_q_0.95",
+                         "width_CI_largeur_IC",
                          "reliab.cov","coverage")] %>%
-  rename(trend_2023 = trend,
-         trend_q_0.05_2023 = trend_q_0.05,
-         trend_q_0.95_2023 = trend_q_0.95,
-         number_of_strata_2023 = n_strata_included,
-         number_of_routes_2023 = n_routes,
-         CI_2023 = width_of_95_percent_credible_interval,
+  rename(trend_2023 = trend_tendence,
+         trend_q_0.05_2023 = trend_tendence_q_0.05,
+         trend_q_0.95_2023 = trend_tendence_q_0.95,
+         number_of_strata_2023 = n_strat_incl,
+         number_of_routes_2023 = n_site,
+         CI_2023 = width_CI_largeur_IC,
          reliab_cov_2023 = reliab.cov,
-         coverage_2023 = coverage) %>%
+         coverage_2023 = coverage,
+         region = region_en,
+         bbs_num = BBS_Number__Numéro_BBS_core) %>%
   mutate(region = ifelse(region == "continent",
                          "Survey-wide",region)) |>
   filter(region %in% c("Survey-wide","Canada","United States of America")) %>%
@@ -338,27 +344,78 @@ states <- rnaturalearth::ne_states(country = c("Canada","United States of Americ
   rename(statprov_name_fr = name_fr)
 
 
-strats <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
-  filter(statprov_name != "Newfoundland") %>%
-  left_join(states, by = c("statprov_code" = "postal")) %>%
-  rowwise() %>%
-  mutate(country_name = ifelse(country_name == "United States",
+strats <- sf::read_sf("data/bcr2026_statprov.gpkg") |>
+  filter(!is_lake,
+         !is.na(COUNTRY),
+         COUNTRY %in% c("CAN","USA","MEX"), #  removing France, and Hawaii
+         STATEABB != "US-HI") |>
+  mutate(country_code = ifelse(COUNTRY == "USA",
+                               "US",
+                               COUNTRY),
+         country_code = ifelse(COUNTRY == "CAN",
+                               "CA",
+                               country_code),
+         country_code = ifelse(COUNTRY == "MEX",
+                               "MX",
+                               country_code),
+         prov_state = str_extract(STATEABB,
+                                  "(?<=-)\\w+"),
+         region = paste0(country_code,"-",prov_state,"-",bcr_label),
+         country_name = ifelse(COUNTRY == "USA",
                                "United States of America",
+                               NA),
+         country_name = ifelse(COUNTRY == "CAN",
+                               "Canada",
                                country_name),
-         country_name_fr = ifelse(country_name == "United States of America",
+         country_name = ifelse(COUNTRY == "MEX",
+                               "Mexico",
+                               country_name),
+         country_name_fr = ifelse(COUNTRY == "USA",
                                   "États-Unis",
-                                  "Canada"),
+                               NA),
+         country_name_fr = ifelse(COUNTRY == "CAN",
+                               "Canada",
+                               country_name_fr),
+         country_name_fr = ifelse(COUNTRY == "MEX",
+                               "Mexique",
+                               country_name_fr),
          region_type = "stratum",
-         region = paste0(country_code,"-",statprov_code,"-",bcr_label),
          geo.area = region,
-         region_name_en = paste0(country_name,"-",statprov_name,"-",bcr_name_en),
-         region_name_fr = paste0(country_name_fr,"-",statprov_name_fr,"-",bcr_name_fr)) %>%
-  sf::st_drop_geometry() %>%
-  select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+         region_name_en = paste0(country_name,"-",NAME_En,"-",bcr_name_en),
+         region_name_fr = paste0(country_name_fr,"-",NAME_Fr,"-",bcr_name_fr)) |>
+  select(region_type,geo.area,region,region_name_en,region_name_fr)|>
+  sf::st_drop_geometry() |>
   distinct()
 
 
-bcrs <- sf::read_sf("data/bcr_2025_lakes12.gpkg") %>%
+
+  #
+  #
+  #
+  # filter(statprov_name != "Newfoundland") %>%
+  # left_join(states, by = c("statprov_code" = "postal")) %>%
+  # rowwise() %>%
+  # mutate(country_name = ifelse(country_name == "United States",
+  #                              "United States of America",
+  #                              country_name),
+  #        country_name_fr = ifelse(country_name == "United States of America",
+  #                                 "États-Unis",
+  #                                 "Canada"),
+  #        region_type = "stratum",
+  #        region = paste0(country_code,"-",statprov_code,"-",bcr_label),
+  #        geo.area = region,
+  #        region_name_en = paste0(country_name,"-",statprov_name,"-",bcr_name_en),
+  #        region_name_fr = paste0(country_name_fr,"-",statprov_name_fr,"-",bcr_name_fr)) %>%
+  # sf::st_drop_geometry() %>%
+  # select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+  # distinct()
+  #
+
+bcrs <- sf::read_sf("data/bcr2026_statprov.gpkg") |>
+  filter(!is_lake,
+         !is.na(COUNTRY),
+         COUNTRY %in% c("CAN","USA","MEX"), #  removing France, and Hawaii
+         STATEABB != "US-HI") |>
   mutate(region_type = "bcr",
          region = paste0("BCR_",bcr_label),
          geo.area = region,
@@ -371,16 +428,30 @@ bcrs <- sf::read_sf("data/bcr_2025_lakes12.gpkg") %>%
 
 
 
-bcr_country <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
-  left_join(states, by = c("statprov_code" = "postal")) %>%
-  rowwise() %>%
-  mutate(country_name = ifelse(country_name == "United States",
+bcr_country <- sf::read_sf("data/bcr2026_statprov.gpkg") |>
+  filter(!is_lake,
+         !is.na(COUNTRY),
+         COUNTRY %in% c("CAN","USA","MEX"), #  removing France, and Hawaii
+         STATEABB != "US-HI") |>
+  mutate(region_type = "bcr_by_country",
+         country_name = ifelse(COUNTRY == "USA",
                                "United States of America",
+                               NA),
+         country_name = ifelse(COUNTRY == "CAN",
+                               "Canada",
                                country_name),
-         country_name_fr = ifelse(country_name == "United States of America",
+         country_name = ifelse(COUNTRY == "MEX",
+                               "Mexico",
+                               country_name),
+         country_name_fr = ifelse(COUNTRY == "USA",
                                   "États-Unis",
-                                  "Canada"),
-         region_type = "bcr_by_country",
+                                  NA),
+         country_name_fr = ifelse(COUNTRY == "CAN",
+                                  "Canada",
+                                  country_name_fr),
+         country_name_fr = ifelse(COUNTRY == "MEX",
+                                  "Mexique",
+                                  country_name_fr),
          region = paste0(country_name,"-","BCR_",bcr_label),
          region_name_en = paste0(country_name,"-",bcr_name_en),
          region_name_fr = paste0(country_name_fr,"-",bcr_name_fr),
@@ -391,46 +462,119 @@ bcr_country <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
-countries <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
-  rowwise() %>%
-  mutate(country_name = ifelse(country_name == "United States",
+
+
+#
+# bcr_country <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+#   left_join(states, by = c("statprov_code" = "postal")) %>%
+#   rowwise() %>%
+#   mutate(country_name = ifelse(country_name == "United States",
+#                                "United States of America",
+#                                country_name),
+#          country_name_fr = ifelse(country_name == "United States of America",
+#                                   "États-Unis",
+#                                   "Canada"),
+#          region_type = "bcr_by_country",
+#          region = paste0(country_name,"-","BCR_",bcr_label),
+#          region_name_en = paste0(country_name,"-",bcr_name_en),
+#          region_name_fr = paste0(country_name_fr,"-",bcr_name_fr),
+#          geo.area = ifelse(country_name == "United States of America",
+#                            paste0("BCR_",bcr_label,"U"),
+#                            paste0("BCR_",bcr_label,"C"))) %>%
+#   sf::st_drop_geometry() %>%
+#   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+#   distinct()
+
+countries <-  sf::read_sf("data/bcr2026_statprov.gpkg") |>
+  filter(!is_lake,
+         !is.na(COUNTRY),
+         COUNTRY %in% c("CAN","USA","MEX"), #  removing France, and Hawaii
+         STATEABB != "US-HI") |>
+  mutate(country_name = ifelse(COUNTRY == "USA",
                                "United States of America",
+                               NA),
+         country_name = ifelse(COUNTRY == "CAN",
+                               "Canada",
                                country_name),
-         country_name_fr = ifelse(country_name == "United States of America",
+         country_name = ifelse(COUNTRY == "MEX",
+                               "Mexico",
+                               country_name),
+         country_name_fr = ifelse(COUNTRY == "USA",
                                   "États-Unis",
-                                  "Canada"),
+                                  NA),
+         country_name_fr = ifelse(COUNTRY == "CAN",
+                                  "Canada",
+                                  country_name_fr),
+         country_name_fr = ifelse(COUNTRY == "MEX",
+                                  "Mexique",
+                                  country_name_fr),
          region_type = "country",
          region = paste0(country_name),
          geo.area = ifelse(region == "United States of America",
                            "UU","CC"),
          region_name_en = paste0(country_name),
          region_name_fr = paste0(country_name_fr)) %>%
-  filter(country_code %in% c("US","CA")) %>%
+  filter(COUNTRY %in% c("USA","CAN")) %>%
   sf::st_drop_geometry() %>%
   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
 
 
-prov_state <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
-  left_join(states, by = c("statprov_code" = "postal")) %>%
-  rowwise() %>%
-  mutate(country_name = ifelse(country_name == "United States",
+prov_state <-  sf::read_sf("data/bcr2026_statprov.gpkg") |>
+  filter(!is_lake,
+         !is.na(COUNTRY),
+         COUNTRY %in% c("CAN","USA"), #  removing France, and Hawaii
+         STATEABB != "US-HI") |>
+  mutate(country_code = ifelse(COUNTRY == "USA",
+                               "US",
+                               COUNTRY),
+         country_code = ifelse(COUNTRY == "CAN",
+                               "CA",
+                               country_code),
+         prov_state = str_extract(STATEABB,
+                                  "(?<=-)\\w+"),
+         country_name = ifelse(COUNTRY == "USA",
                                "United States of America",
+                               NA),
+         country_name = ifelse(COUNTRY == "CAN",
+                               "Canada",
                                country_name),
-         country_name_fr = ifelse(country_name == "United States of America",
+         country_name_fr = ifelse(COUNTRY == "USA",
                                   "États-Unis",
-                                  "Canada"),
+                                  NA),
+         country_name_fr = ifelse(COUNTRY == "CAN",
+                                  "Canada",
+                                  country_name_fr),
          region_type = "prov_state",
-         region = paste0(statprov_code),
+         region = paste0(prov_state),
          geo.area = region,
-         region_name_en = paste0(statprov_name),
-         region_name_fr = paste0(statprov_name_fr)) %>%
-  filter(country_code %in% c("US","CA"),
-         region_name_en != "Newfoundland") %>%
+         region_name_en = paste0(NAME_En),
+         region_name_fr = paste0(NAME_Fr)) %>%
   sf::st_drop_geometry() %>%
   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
+
+
+  # sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
+  # left_join(states, by = c("statprov_code" = "postal")) %>%
+  # rowwise() %>%
+  # mutate(country_name = ifelse(country_name == "United States",
+  #                              "United States of America",
+  #                              country_name),
+  #        country_name_fr = ifelse(country_name == "United States of America",
+  #                                 "États-Unis",
+  #                                 "Canada"),
+  #        region_type = "prov_state",
+  #        region = paste0(statprov_code),
+  #        geo.area = region,
+  #        region_name_en = paste0(statprov_name),
+  #        region_name_fr = paste0(statprov_name_fr)) %>%
+  # filter(country_code %in% c("US","CA"),
+  #        region_name_en != "Newfoundland") %>%
+  # sf::st_drop_geometry() %>%
+  # select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
+  # distinct()
 
 survey_w <- data.frame(region_type = "survey-wide",
                        region = "Survey-wide",
@@ -789,11 +933,19 @@ sp_no_coverage <- trends %>%
 saveRDS(sp_no_coverage,"species_coverage_summary.rds")
 
 
+sp_no_cov_atall <- sp_no_coverage |>
+  filter(is.infinite(p_missing_coverage))
 
 
+sp_no_coverage_details <- trends %>%
+  mutate(w_cov = ifelse(is.na(reliab.cov),FALSE,TRUE)) |>
+  filter(!w_cov,
+         !species %in% sp_no_cov_atall$species)
+
+table(sp_no_coverage_details$region_type)
 
 
-
+sp_no_coverage_ly <- readRDS("species_coverage_summary.rds")
 
 
 

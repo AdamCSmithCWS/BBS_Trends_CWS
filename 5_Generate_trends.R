@@ -161,13 +161,13 @@ test <- foreach(i = rev(1:nrow(sp_list)),
         cov_sp_y <- readRDS(paste0(external_dir,"/coverage/coverage_",j,"_",aou,".rds")) %>%
           mutate(summary_region = ifelse(region_type == "bcr",
                                          gsub(summary_region,
-                                              pattern = "BCR",
+                                              pattern = "bcr",
                                               replacement = ""),
                                          summary_region),
                  reliab.cov = proportion_of_region) %>%
           select(summary_region,reliab.cov,region_type)
 
-}
+                                              }
 
 
         trends_tmp <- generate_trends(inds,

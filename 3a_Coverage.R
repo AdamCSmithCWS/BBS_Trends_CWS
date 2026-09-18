@@ -262,7 +262,7 @@ test <- foreach(i = rev(1:nrow(sp_list_gen)),
   sp_sel <- unname(unlist(sp_list_gen[i,"english"]))
   aou <- as.integer(sp_list_gen[i,"aou"])
 
-  if(all(file.exists(paste0("coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
+  if(all(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
     #sp_list_gen[i,"eBird_range_data"] <- "Used"
     next
     }
@@ -414,9 +414,9 @@ if(!grepl(pattern = "*\\(",
   #               quiet = TRUE) %>%
   #   prepare_data(min_max_route_years = 2,
   #                quiet = TRUE)
-  saveRDS(range_info,paste0("coverage/range_map_coverage_",aou,".rds"))
+  saveRDS(range_info,paste0(external_dir,"/coverage/range_map_coverage_",aou,".rds"))
 
-  if(all(file.exists(paste0("coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
+  if(all(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds"))) & !re_run){
     #sp_list_gen[i,"eBird_range_data"] <- "Used"
     next
   }
@@ -455,7 +455,7 @@ sp_coverage <- overlay_range_data(range = range_info,
                                   crs_site_coordinates = 4326,
                                   add_survey_sites_to_range = TRUE)
 
-saveRDS(sp_coverage,paste0("coverage/coverage_maps_",ttime,"_",aou,".rds"))
+saveRDS(sp_coverage,paste0(external_dir,"/coverage/coverage_maps_",ttime,"_",aou,".rds"))
 # cumulative_coverage_map <- basp_coverage$cumulative_coverage_map
 # overall_coverage_estimate <- basp_coverage$cumulative_coverage_estimate
 #
@@ -496,7 +496,7 @@ tmp_coverage <- regional_summary(sp_coverage,
 
 # cover_save <- list(annual_coverage = ann_coverage,
 #                    cumulative_coverage = cumulative_coverage)
-saveRDS(cumulative_coverage,paste0("coverage/coverage_",ttime,"_",aou,".rds"))
+saveRDS(cumulative_coverage,paste0(external_dir,"/coverage/coverage_",ttime,"_",aou,".rds"))
 #
 
 
@@ -555,10 +555,10 @@ for(i in rev(1:nrow(sp_list_gen))){
 
 three_g <- max(c(10,round(as.numeric(sp_list_gen[i,"GenLength"])*3)))
 
-if(!any(file.exists(paste0("coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds")))){
+if(!any(file.exists(paste0(external_dir,"/coverage/coverage_maps_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds")))){
   next
 }
-range_maps <- readRDS(paste0("coverage/range_map_coverage_",aou,".rds"))
+range_maps <- readRDS(paste0(external_dir,"/coverage/range_map_coverage_",aou,".rds"))
 range_map <- range_maps$range_map
 # coverage by trend-period ----------------------------------------------
 if(!file.exists(paste0("Raw_data/Raw_",aou,".rds"))){
@@ -567,7 +567,7 @@ if(!file.exists(paste0("Raw_data/Raw_",aou,".rds"))){
 raw <- readRDS(paste0("Raw_data/Raw_",aou,".rds"))
 
 
-pdf(paste0("coverage_maps/coverage_maps_",species_f_bil,".pdf"))
+pdf(paste0(external_dir,"/coverage_maps/coverage_maps_",species_f_bil,".pdf"))
 
 for(ttime in c("Long-term","Short-term","Three-generation")){
 
@@ -578,10 +578,10 @@ for(ttime in c("Long-term","Short-term","Three-generation")){
     fy <- ly-three_g
   }
 
-  if(!file.exists(paste0("coverage/coverage_maps_",ttime,"_",aou,".rds"))){
+  if(!file.exists(paste0(external_dir,"/coverage/coverage_maps_",ttime,"_",aou,".rds"))){
     next
   }
-    sp_coverage <- readRDS(paste0("coverage/coverage_maps_",ttime,"_",aou,".rds"))
+    sp_coverage <- readRDS(paste0(external_dir,"/coverage/coverage_maps_",ttime,"_",aou,".rds"))
 
   if(aou %in% c(4661,4660)){ #Alder and Willow Flycatcher
     fy <- max(c(fy,1978)) #5 years after the split

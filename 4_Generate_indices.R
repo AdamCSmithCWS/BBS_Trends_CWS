@@ -167,3 +167,34 @@ test <- foreach(i = order_random,
 parallel::stopCluster(cluster)
 
 
+
+w_fit <- 0
+w_dat <- 0
+w_cov <- 0
+for(i in 1:nrow(sp_list)){
+  aou <- as.integer(sp_list[i,"aou"])
+
+  if(!file.exists(paste0(output_dir,"/fit_",aou,".rds")) ){
+    next
+  }
+
+  w_fit <- w_fit+1
+
+  if(!file.exists(paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))){
+
+
+    fit <- readRDS(paste0(output_dir,"/fit_",aou,".rds"))
+
+    raw_data <- fit$raw_data
+
+    saveRDS(raw_data,paste0(external_dir,"/Raw_data/Raw_",aou,".rds"))
+  }
+  w_dat <- w_dat+1
+
+  if(all(file.exists(paste0(external_dir,"/coverage/coverage_",c("Long-term","Short-term","Three-generation"),"_",aou,".rds")))){
+    w_cov <- w_cov+1
+  }
+
+
+
+}
