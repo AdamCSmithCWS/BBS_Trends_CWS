@@ -25,8 +25,8 @@ library(ebirdst)
 library(sf)
 library(naturecounts)
 
-external_dir <- "f:/BBS_Trends_CWS"
-output_dir <- "f:/BBS_Trends_CWS/output"
+external_dir <- "e:/BBS_Trends_CWS"
+output_dir <- "e:/BBS_Trends_CWS/output"
 
 db <- load_map("latlong") %>%
   rename(grid_cell_name = strata_name,

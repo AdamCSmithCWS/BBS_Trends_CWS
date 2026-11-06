@@ -1,7 +1,7 @@
 
 ## compile trend and index files for
 ### 1 - website
-YYYY <- 2024
+YYYY <- 2025
 
 webmaps <- FALSE # set to true if needing to create all map images for ECCC website
 
@@ -25,8 +25,7 @@ indices_smooth <- readRDS(paste0("Website/All_BBS_Smoothed_Indices_",YYYY,".rds"
 
 
 web <- trends %>%
-  filter(trend_time != "Three-generation",
-         !(region == "BCR7" & region_type == "prov_state")) %>%
+  filter(trend_time != "Three-generation") %>%
   mutate(
     # region = ifelse(region_type == "bcr",
     #                      paste0("BCR_",region),
@@ -49,8 +48,7 @@ web <- trends %>%
 # web_species <- read.csv("required_data/BBS_AvianCore.csv")
 
 avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
-   filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES",
-                                   "CORE","HORE")) %>%
+  filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES","HORE")) %>%
   select(Species_ID_Espèce, BBS_Number__Numéro_BBS, Sort_Order__Ordre_de_tri) %>%
   rename_with(.,.fn = ~paste0(.x,"_core")) %>%
   distinct() %>%
@@ -62,8 +60,7 @@ avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
 
 
 avian_core_table <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
-  filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES",
-                                   "CORE","HORE")) %>%
+  filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES","HORE")) %>%
   select(Species_ID_Espèce, Full_Species__Espèce_complète, BBS_Number__Numéro_BBS,
          English_Name__Nom_Anglais,French_Name__Nom_Français,
          Scientific_Name__Nom_Scientifique, Sort_Order__Ordre_de_tri,
@@ -148,6 +145,7 @@ fr_fail <- BBS_AVIANCORE %>%
   filter(!test_fr)
 
 BBS_AVIANCORE <- BBS_AVIANCORE %>%
+  filter(!English_Name == "Redpoll (Common/Hoary)") |>
   select(-c(sp,es,test_en,test_fr,Full_Species))
 
 write_excel_csv(BBS_AVIANCORE,paste0("website/bbs_aviancore_",YYYY+1,".csv"))
@@ -205,8 +203,10 @@ states <- rnaturalearth::ne_states(country = c("Canada","United States of Americ
 #
 # country_states <- countries %>% bind_rows(states)
 
-bcrs <- sf::read_sf("data/bcr_2025_lakes12.gpkg") %>%
-  mutate(region_type = "bcr",
+bcrs <- sf::read_sf("data/bcr2026_statprov.gpkg") %>%
+  filter(COUNTRY %in% c("USA","CAN"), # dropping Mexico
+         bcr != "67") |> # dropping Hawaii
+    mutate(region_type = "bcr",
          region = paste0("BCR_",bcr_label),
          geo.area = region,
          region_name_en = bcr_name_en,
@@ -217,32 +217,37 @@ bcrs <- sf::read_sf("data/bcr_2025_lakes12.gpkg") %>%
 
 
 
-strats <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
-  filter(statprov_name != "Newfoundland") %>%
+strats <- sf::read_sf("data/bcr2026_statprov.gpkg")  %>%
+  filter(COUNTRY %in% c("USA","CAN"), # dropping Mexico
+         bcr != "67") |> # dropping Hawaii
+  mutate(statprov_code = str_sub(STATEABB,4,5)) |>
   left_join(states, by = c("statprov_code" = "postal")) %>%
   rowwise() %>%
-  mutate(country_name = ifelse(country_name == "United States",
+  mutate(country_name = ifelse(COUNTRY == "USA",
                                "United States of America",
-                               country_name),
+                               "Canada"),
          country_name_fr = ifelse(country_name == "United States of America",
                                "États-Unis",
                                "Canada"),
          region_type = "stratum",
-         region = paste0(country_code,"-",statprov_code,"-",bcr_label),
+         region = paste0(STATEABB,"-",bcr_label),
          geo.area = region,
-         region_name_en = paste0(country_name,"-",statprov_name,"-",bcr_name_en),
-         region_name_fr = paste0(country_name_fr,"-",statprov_name_fr,"-",bcr_name_fr)) %>%
+         region_name_en = paste0(country_name,"-",NAME_Es,"-",bcr_name_en),
+         region_name_fr = paste0(country_name_fr,"-",NAME_Fr,"-",bcr_name_fr)) %>%
   sf::st_drop_geometry() %>%
   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
 
-bcr_country <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
+bcr_country <- sf::read_sf("data/bcr2026_statprov.gpkg")   %>%
+  filter(COUNTRY %in% c("USA","CAN"), # dropping Mexico
+         bcr != "67") |> # dropping Hawaii
+  mutate(statprov_code = str_sub(STATEABB,4,5)) |>
   left_join(states, by = c("statprov_code" = "postal")) %>%
   rowwise() %>%
-  mutate(country_name = ifelse(country_name == "United States",
+  mutate(country_name = ifelse(COUNTRY == "USA",
                                "United States of America",
-                               country_name),
+                               "Canada"),
          country_name_fr = ifelse(country_name == "United States of America",
                                   "États-Unis",
                                   "Canada"),
@@ -257,11 +262,13 @@ bcr_country <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg") %>%
   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
-countries <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
+countries <- sf::read_sf("data/bcr2026_statprov.gpkg")  %>%
+  filter(COUNTRY %in% c("USA","CAN"), # dropping Mexico
+         bcr != "67") |> # dropping Hawaii
   rowwise() %>%
-  mutate(country_name = ifelse(country_name == "United States",
+  mutate(country_name = ifelse(COUNTRY == "USA",
                                "United States of America",
-                               country_name),
+                               "Canada"),
          country_name_fr = ifelse(country_name == "United States of America",
                                   "États-Unis",
                                   "Canada"),
@@ -271,29 +278,29 @@ countries <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
                            "UU","CC"),
          region_name_en = paste0(country_name),
          region_name_fr = paste0(country_name_fr)) %>%
-  filter(country_code %in% c("US","CA")) %>%
   sf::st_drop_geometry() %>%
   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
 
 
 
-prov_state <- sf::read_sf("data/bcr_2025_lakes12_statprov3.gpkg")  %>%
+prov_state <- sf::read_sf("data/bcr2026_statprov.gpkg")  %>%
+  filter(COUNTRY %in% c("USA","CAN"), # dropping Mexico
+         bcr != "67") |> # dropping Hawaii
+  mutate(statprov_code = str_sub(STATEABB,4,5)) |>
   left_join(states, by = c("statprov_code" = "postal")) %>%
   rowwise() %>%
-  mutate(country_name = ifelse(country_name == "United States",
+  mutate(country_name = ifelse(COUNTRY == "USA",
                                "United States of America",
-                               country_name),
+                               "Canada"),
          country_name_fr = ifelse(country_name == "United States of America",
                                   "États-Unis",
                                   "Canada"),
          region_type = "prov_state",
          region = paste0(statprov_code),
          geo.area = region,
-         region_name_en = paste0(statprov_name),
-         region_name_fr = paste0(statprov_name_fr)) %>%
-  filter(country_code %in% c("US","CA"),
-         region_name_en != "Newfoundland") %>%
+         region_name_en = paste0(NAME_En),
+         region_name_fr = paste0(NAME_Fr)) %>%
   sf::st_drop_geometry() %>%
   select(region_type,geo.area,region,region_name_en,region_name_fr) %>%
   distinct()
@@ -341,7 +348,26 @@ regions <- regions_link %>%
 write_excel_csv(regions,paste0("website/bbs_province_",YYYY+1,".csv"))
 
 
-bcr_sorts <- readxl::read_excel("data/BCR_prefixes.xlsx")
+repl_temp_bcr <- function(x){
+  temp_bcrs <- data.frame(temp_name = c("3C","3N","3S","6N","6S","7W","7H","7E","8W","8E","7O","8O"),
+                          bcr = as.character(c(c(68:77),73,76)))
+  y <- x
+  for(i in 1:length(x)){
+    if(any(!is.na(str_match(pattern = temp_bcrs$temp_name,string = x[i])))){
+      ww <- str_extract(pattern = temp_bcrs$temp_name,string = x[i])
+      ww <- ww[!is.na(ww)]
+      bc <- temp_bcrs[which(temp_bcrs$temp_name == ww),"bcr"]
+      y[i] <- str_replace(x[i],pattern = ww,replacement = bc)
+    }
+
+  }
+  return(y)
+}
+
+
+bcr_sorts <- readxl::read_excel("data/BCR_prefixes.xlsx") |>
+  mutate(across(.cols = c(shortCode,bcrE,bcrF),
+                .fns = ~repl_temp_bcr(.x)))
 
 sub_0 <- function(x){
   dig <- paste0(0,str_extract(x,
@@ -350,13 +376,16 @@ sub_0 <- function(x){
               pattern = "[[:digit:]]",
               replacement = dig)
 }
+
+
 bcr_regions <- bind_rows(bcrs,
                      bcr_country) %>%
   distinct() %>%
   inner_join(regions_w_trends,
              by = c("region_type","region")) %>%
-  mutate(shortCode = ifelse(str_detect(geo.area,
-                                       pattern = "_[[:digit:]]{1}$|_[[:digit:]]{1}[[:alpha:]]{1}"),
+  mutate(
+    shortCode = ifelse(str_detect(geo.area,
+                                       pattern = "^\\D*\\d\\D*$"),
                             sub_0(geo.area),
                             geo.area),
          shortCode = str_replace(shortCode,
@@ -394,11 +423,28 @@ write_excel_csv(bcr_regions,paste0("website/bbs_bcr_",YYYY+1,".csv"))
 
 
 
-
+#    # c(3C = 68, 3N = 69, 3S = 70, 6N = 71, 6S = 72, 7W = 73, 7H = 74, 7E = 75, 8W = 76, 8E = 77)
+#
+# repl_temp_bcr <- function(x){
+#   temp_bcrs <- data.frame(temp_name = c("3C","3N","3S","6N","6S","7W","7H","7E","8W","8E","7O","8O"),
+#                           bcr = as.character(c(c(68:77),73,76)))
+#   y <- x
+#   for(i in 1:length(x)){
+#     if(any(!is.na(str_match(pattern = temp_bcrs$temp_name,string = x[i])))){
+#       ww <- str_extract(pattern = temp_bcrs$temp_name,string = x[i])
+#       ww <- ww[!is.na(ww)]
+#       bc <- temp_bcrs[which(temp_bcrs$temp_name == ww),"bcr"]
+#       y[i] <- str_replace(x[i],pattern = ww,replacement = bc)
+#     }
+#
+#   }
+#   return(y)
+# }
 
 strata_sorts <- read_csv("data/bbs_asr_lookups_20260514.csv") |>
   select(-c(9:10)) |>
-  mutate(shortCode = asrID)
+  mutate(across(.cols = c(asrID,code,asrNameE,asrNameF),
+                .fns = ~repl_temp_bcr(.x)))
 
 
 strat_regions_link <- strats %>%

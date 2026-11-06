@@ -66,7 +66,7 @@ sp_list <- readRDS("sp_list_w_generations.rds") %>%
 
 
 
-re_collect <- TRUE
+re_collect <- FALSE
 # Compile all trends and indices ------------------------------------------------------
 
 if(re_collect){
@@ -173,7 +173,7 @@ saveRDS(indices_smooth,"output/indices_smooth_collected.rds")
 # Compare to last year's trends -------------------------------------------
 
 avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
-  filter(Full_Species__Espèce_complète == "Yes - Oui") %>%
+   filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES","HORE")) %>%
   select(Species_ID_Espèce,
          Alpha_Code_FR__Code_Alpha_FR,
          BBS_Number__Numéro_BBS, Sort_Order__Ordre_de_tri) %>%
@@ -196,14 +196,14 @@ ly_trends <- lastyear[,c("species","BBS_Number__Numéro_BBS_core","region_en","t
                          "trend_tendence_q_0.05","trend_tendence_q_0.95",
                          "width_CI_largeur_IC",
                          "reliab.cov","coverage")] %>%
-  rename(trend_2023 = trend_tendence,
-         trend_q_0.05_2023 = trend_tendence_q_0.05,
-         trend_q_0.95_2023 = trend_tendence_q_0.95,
-         number_of_strata_2023 = n_strat_incl,
-         number_of_routes_2023 = n_site,
-         CI_2023 = width_CI_largeur_IC,
-         reliab_cov_2023 = reliab.cov,
-         coverage_2023 = coverage,
+  rename(trend_2024 = trend_tendence,
+         trend_q_0.05_2024 = trend_tendence_q_0.05,
+         trend_q_0.95_2024 = trend_tendence_q_0.95,
+         number_of_strata_2024 = n_strat_incl,
+         number_of_routes_2024 = n_site,
+         CI_2024 = width_CI_largeur_IC,
+         reliab_cov_2024 = reliab.cov,
+         coverage_2024 = coverage,
          region = region_en,
          bbs_num = BBS_Number__Numéro_BBS_core) %>%
   mutate(region = ifelse(region == "continent",
@@ -219,13 +219,13 @@ trends_comp <- trends %>%
                     "region",
                     "trend_time")) %>%
   left_join(.,core_link,by = c("bbs_num" = "aou")) %>%
-  mutate(diff_trend = trend - trend_2023,
-         diff_coverage = reliab.cov - reliab_cov_2023) %>%
+  mutate(diff_trend = trend - trend_2024,
+         diff_coverage = reliab.cov - reliab_cov_2024) %>%
   rename(CI = width_of_95_percent_credible_interval)
 
 
 comp_xy <- ggplot(data = trends_comp,
-                  aes(x = trend_2023,
+                  aes(x = trend_2024,
                       y = trend,
                       alpha = 1/CI))+
   geom_point()+
@@ -251,7 +251,7 @@ sp_labs <- trends_comp_can %>%
   filter(non_overlap)
 
 comp_xy <- ggplot(data = trends_comp_can,
-                  aes(x = trend_2023,
+                  aes(x = trend_2024,
                       y = trend,
                       alpha = 1/CI,
                       colour = non_overlap))+
@@ -261,8 +261,8 @@ comp_xy <- ggplot(data = trends_comp_can,
                     colour = non_overlap),
                 alpha = 0.2,
                 width = 0)+
-  geom_errorbar(aes(xmin = trend_q_0.05_2023,
-                    xmax = trend_q_0.95_2023,
+  geom_errorbar(aes(xmin = trend_q_0.05_2024,
+                    xmax = trend_q_0.95_2024,
                     colour = non_overlap),
                 alpha = 0.2,
                 width = 0)+
@@ -274,15 +274,60 @@ comp_xy <- ggplot(data = trends_comp_can,
   coord_cartesian(xlim = c(-8,8),
                   ylim = c(-8,8))+
   theme_bw()+
+  labs(title = "Long-term trends")+
+  xlab("Last year's estimate")+
+  ylab("This year's estimate")+
   scale_colour_viridis_d(end = 0.8, direction = -1)
 print(comp_xy)
+
+
+trends_comp_can <- trends_comp %>%
+  filter(region == "Canada",
+         trend_time == "Short-term") %>%
+  mutate(non_overlap = ifelse((diff_trend > (trend-trend_q_0.05)) |
+                                (diff_trend < (trend-trend_q_0.95)),
+                              TRUE,FALSE))
+sp_labs <- trends_comp_can %>%
+  filter(non_overlap)
+
+comp_xy <- ggplot(data = trends_comp_can,
+                  aes(x = trend_2024,
+                      y = trend,
+                      alpha = 1/CI,
+                      colour = non_overlap))+
+  geom_point()+
+  geom_errorbar(aes(ymin = trend_q_0.05,
+                    ymax = trend_q_0.95,
+                    colour = non_overlap),
+                alpha = 0.2,
+                width = 0)+
+  geom_errorbar(aes(xmin = trend_q_0.05_2024,
+                    xmax = trend_q_0.95_2024,
+                    colour = non_overlap),
+                alpha = 0.2,
+                width = 0)+
+  geom_abline(intercept = 0,slope = 1)+
+  geom_hline(yintercept = 0)+
+  geom_vline(xintercept = 0)+
+  ggrepel::geom_text_repel(data = sp_labs,aes(label = Species_ID_Espèce_core),
+                           min.segment.length = 0)+
+  coord_cartesian(xlim = c(-8,8),
+                  ylim = c(-8,8))+
+  theme_bw()+
+  labs(title = "Short-term trends")+
+  xlab("Last year's estimate")+
+  ylab("This year's estimate")+
+  scale_colour_viridis_d(end = 0.8, direction = -1)
+print(comp_xy)
+
+
 dev.off()
 
 
 
 
 comp_xy_cov <- ggplot(data = trends_comp,
-                  aes(x = reliab_cov_2023,
+                  aes(x = reliab_cov_2024,
                       y = reliab.cov,
                       colour = coverage))+
   geom_point(alpha = 0.2)+
@@ -309,13 +354,13 @@ trends_comp_sel <- trends_comp %>%
 
 
 comp_xy_sel <- ggplot(data = trends_comp_sel,
-                  aes(x = trend_2023,
+                  aes(x = trend_2024,
                       y = trend,
                       colour = factor(bbs_num)))+
   geom_point()+
   geom_errorbar(aes(ymin = trend_q_0.05, ymax = trend_q_0.95),
                 alpha = 0.4)+
-  geom_errorbar(aes(xmin = trend_q_0.05_2023, xmax = trend_q_0.95_2023),
+  geom_errorbar(aes(xmin = trend_q_0.05_2024, xmax = trend_q_0.95_2024),
                  alpha = 0.4,
                 orientation = "y")+
   geom_abline(intercept = 0,slope = 1)+
@@ -720,9 +765,10 @@ trends_bil <- trends %>%
          ID_Espece_fr = Alpha_Code_FR__Code_Alpha_FR_core,
          BBS_Number__Numero_BBS = BBS_Number__Numéro_BBS_core,
          Sort_Order__Ordre_de_tri = Sort_Order__Ordre_de_tri_core) |>
-  select(-c(strata_included,strata_excluded,region,for_web,
-            bbs_num))
+  select(-c(strata_included,strata_excluded,region,for_web))
 
+
+#tmp <- trends_bil |> filter(is.na(BBS_Number__Numero_BBS))
 
 
 
@@ -930,7 +976,7 @@ sp_no_coverage <- trends %>%
          p_missing_coverage = covFALSE/covTRUE)
 
 
-saveRDS(sp_no_coverage,"species_coverage_summary.rds")
+saveRDS(sp_no_coverage,paste0("species_coverage_summary_",YYYY,".rds"))
 
 
 sp_no_cov_atall <- sp_no_coverage |>
@@ -945,7 +991,7 @@ sp_no_coverage_details <- trends %>%
 table(sp_no_coverage_details$region_type)
 
 
-sp_no_coverage_ly <- readRDS("species_coverage_summary.rds")
+sp_no_coverage_ly <- readRDS(paste0("species_coverage_summary_",YYYY-1,".rds"))
 
 
 
@@ -954,16 +1000,17 @@ sp_no_coverage_ly <- readRDS("species_coverage_summary.rds")
 
 # SOCB upload files -------------------------------------------------------
 
-
-socb_areas <- read_csv("data/SOCB_regions.csv") %>%
-  filter(results_code == "BBS") %>%
-  select(area_code,area_name)
+#
+# socb_areas <- read_csv("data/SOCB_regions.csv") %>%
+#   filter(results_code == "BBS") %>%
+#   select(area_code,area_name)
 
 #
 # trends_out <- trends %>%
 #   filter((for_web == TRUE | region %in% c("survey-wide","United States of America")))
 
 trends_out2 <- trends  %>%
+  left_join(core_link,by = c("bbs_num" = "aou")) |>
   mutate(years = paste(start_year,end_year,sep = "-"),
          results_code = "BBS",
          season = "breeding",
@@ -976,10 +1023,10 @@ trends_out2 <- trends  %>%
          index_type = "mean_predicted_count",
          sample_size_units = "number of routes",
          trend_time = ifelse(trend_time == "Three-generation","3Gen-Recent",trend_time)) %>%
-  left_join(.,socb_areas, by = "area_code") %>%
+  #left_join(.,socb_areas, by = "area_code") %>%
   #select(-area_code) %>%
   rename(species_name = species,
-         species_code = Species_ID_core,
+         species_code = Species_ID_Espèce_core,
          species_id = naturecounts_species_id,
          period = trend_time,
          year_start = start_year,
@@ -1016,7 +1063,7 @@ trends_socb <- trends_out2 %>%
   select(results_code,
            version,
            area_code,
-           area_name,
+           #area_name,
            season,
            period,
            species_name,
@@ -1178,7 +1225,8 @@ indices_socb <- indices %>%
                     "region",
                     "region_type",
                     "trend_time",
-                    "year")) %>%
+                    "year")) |>
+  #left_join(core_link,by = c("bbs_num" = "aou")) |>
   group_by(species,region,region_type,trend_time) %>%
   mutate(LOESS_index = loess_func(index,year),
          results_code = "BBS",
@@ -1191,10 +1239,10 @@ indices_socb <- indices %>%
          trend_time = as.character(trend_time),
          trend_time = ifelse(trend_time == "Three-generation","3Gen-Recent",trend_time)) %>%
   ungroup() %>%
-  left_join(.,socb_areas, by = "area_code") %>%
+  #left_join(.,socb_areas, by = "area_code") %>%
   #select(-area_code) %>%
   rename(species_name = species,
-         species_code = Species_ID_core,
+         species_code = Species_ID_Espèce_core,
          species_id = naturecounts_species_id,
          period = trend_time,
          upper_ci = index_q_0.95,
@@ -1221,7 +1269,7 @@ indices_socb <- indices %>%
          version,
          area_code,
          species_id,
-         area_name,
+        # area_name,
          season,
          period,
          species_name,

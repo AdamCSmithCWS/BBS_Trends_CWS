@@ -33,7 +33,7 @@ external_dir <- "e:/BBS_Trends_CWS"
 # output_dir <- "F:/CWS_2022_BBS_Analyses/output"
 
 
-n_cores <- 6
+n_cores <- 8
 re_run <- TRUE
 
 # species list that also includes generation length
