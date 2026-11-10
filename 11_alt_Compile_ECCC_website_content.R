@@ -47,7 +47,7 @@ web <- trends %>%
 
 # web_species <- read.csv("required_data/BBS_AvianCore.csv")
 
-avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
+avian_core <- readxl::read_xlsx("required_data/Avian_Core_20251124.xlsx") %>%
   filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES","HORE")) %>%
   select(Species_ID_Espèce, BBS_Number__Numéro_BBS, Sort_Order__Ordre_de_tri) %>%
   rename_with(.,.fn = ~paste0(.x,"_core")) %>%
@@ -59,7 +59,7 @@ avian_core <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
          aou = ifelse(Species_ID_Espèce_core == "WAVI", 6270,aou))
 
 
-avian_core_table <- readxl::read_xlsx("data/Avian_Core_20251124.xlsx") %>%
+avian_core_table <- readxl::read_xlsx("required_data/Avian_Core_20251124.xlsx") %>%
   filter(!Species_ID_Espèce %in% c("RBME_EAS","RBME_WES","HORE")) %>%
   select(Species_ID_Espèce, Full_Species__Espèce_complète, BBS_Number__Numéro_BBS,
          English_Name__Nom_Anglais,French_Name__Nom_Français,
@@ -311,7 +311,10 @@ survey_w <- data.frame(region_type = "survey-wide",
                        region_name_en = "Survey-wide",
                        region_name_fr = "Zone complète du relevé")
 
-regional_prefixes_sorts <- readxl::read_excel("data/State_prefixes.xlsx")
+
+
+
+regional_prefixes_sorts <- readxl::read_excel("required_data/State_prefixes.xlsx")
 
 regions <- bind_rows(survey_w,
                      countries,
@@ -353,6 +356,7 @@ repl_temp_bcr <- function(x){
                           bcr = as.character(c(c(68:77),73,76)))
   y <- x
   for(i in 1:length(x)){
+    if(grepl(pattern = "13C",x[i])){next}
     if(any(!is.na(str_match(pattern = temp_bcrs$temp_name,string = x[i])))){
       ww <- str_extract(pattern = temp_bcrs$temp_name,string = x[i])
       ww <- ww[!is.na(ww)]
@@ -364,8 +368,40 @@ repl_temp_bcr <- function(x){
   return(y)
 }
 
+repl_temp_bcr2 <- function(x){
+  temp_bcrs <- data.frame(temp_name = c("168"),
+                          bcr = as.character(13))
+  y <- x
+  for(i in 1:length(x)){
+    if(any(!is.na(str_match(pattern = temp_bcrs$temp_name,string = x[i])))){
+      ww <- str_extract(pattern = temp_bcrs$temp_name,string = x[i])
+      ww <- ww[!is.na(ww)]
+      bc <- temp_bcrs[which(temp_bcrs$temp_name == ww),"bcr"]
+      y[i] <- str_replace(x[i],pattern = ww,replacement = bc)
+    }
 
-bcr_sorts <- readxl::read_excel("data/BCR_prefixes.xlsx") |>
+  }
+  return(y)
+}
+
+# repl_temp_bcr2 <- function(x){
+#   temp_bcrs <- data.frame(temp_name = c("03C","03N","03S","06N","06S","07W","07H","07E","08W","08E","07O","08O"),
+#                           bcr = as.character(c(c(68:77),73,76)))
+#   y <- x
+#   for(i in 1:length(x)){
+#     if(any(!is.na(str_match(pattern = temp_bcrs$temp_name,string = x[i])))){
+#       ww <- str_extract(pattern = temp_bcrs$temp_name,string = x[i])
+#       ww <- ww[!is.na(ww)]
+#       bc <- temp_bcrs[which(temp_bcrs$temp_name == ww),"bcr"]
+#       y[i] <- str_replace(x[i],pattern = ww,replacement = bc)
+#     }
+#
+#   }
+#   return(y)
+# }
+
+
+bcr_sorts <- readxl::read_xlsx("required_data/BCR_prefixes.xlsx") |>
   mutate(across(.cols = c(shortCode,bcrE,bcrF),
                 .fns = ~repl_temp_bcr(.x)))
 
@@ -415,10 +451,10 @@ bcr_regions_link <- bcr_sorts %>%
   mutate(sortF = row_number(bcrNameF)) %>%
   arrange(bcrID)
 
-bcr_regions <- bcr_regions_link %>%
+bcr_regions_save <- bcr_regions_link %>%
   select(-c(geo.area,region_type,region))
 
-write_excel_csv(bcr_regions,paste0("website/bbs_bcr_",YYYY+1,".csv"))
+write_excel_csv(bcr_regions_save,paste0("website/bbs_bcr_",YYYY+1,".csv"))
 
 
 
@@ -441,8 +477,8 @@ write_excel_csv(bcr_regions,paste0("website/bbs_bcr_",YYYY+1,".csv"))
 #   return(y)
 # }
 
-strata_sorts <- read_csv("data/bbs_asr_lookups_20260514.csv") |>
-  select(-c(9:10)) |>
+strata_sorts <- read_csv("required_data/bbs_asr_lookups_20260514.csv") |>
+  select(-c(9)) |>
   mutate(across(.cols = c(asrID,code,asrNameE,asrNameF),
                 .fns = ~repl_temp_bcr(.x)))
 
@@ -460,7 +496,9 @@ strat_regions_link <- strats %>%
   mutate(sortE = row_number(asrNameE))  |>
   arrange(asrNameF) |>
   ungroup() |>
-  mutate(sortF = row_number(asrNameF))
+  mutate(sortF = row_number(asrNameF),
+         shortCode = asrID) |>
+  relocate(asrID,shortCode)
 
 
 strat_regions <- strat_regions_link |>
@@ -486,7 +524,7 @@ regs <- unique(regions$region)
 regs_web <- unique(web$region)
 
 if( any(!regs_web %in% regs)){
-  paste("missing",regs_web[which(!regs_web %in% regs)])
+  print(paste("missing",regs_web[which(!regs_web %in% regs)]))
   stop("missing regions from the regional tables for website")
 }
 
