@@ -443,12 +443,6 @@ bcr_regions_link <- bcr_sorts %>%
          geo.area,
          region_type,
          region) |>
-  arrange(bcrNameE) |>
-  ungroup() |>
-  mutate(sortE = row_number(bcrNameE))  |>
-  arrange(bcrNameF) |>
-  ungroup() |>
-  mutate(sortF = row_number(bcrNameF)) %>%
   arrange(bcrID)
 
 bcr_regions_save <- bcr_regions_link %>%
